@@ -1,5 +1,6 @@
-create table users
-(
-    id   UUID not null constraint users_pk primary key,
-    email text NOT NULL
-);
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
