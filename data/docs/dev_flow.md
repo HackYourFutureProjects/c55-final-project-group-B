@@ -25,7 +25,7 @@ each step by hand, then run the same steps through Airflow. Near the end you
 will run four simple SQL checks — those are how you prove the chain actually
 worked.
 
-**Team-a walkthrough.** Commands and URLs below use team-b's resources
+**Team-b walkthrough.** Commands and URLs below use team-b's resources
 (`sthyffpteamb`, `team_b`, `rg-hyf-fp-team-b`, `acrhyffpb`,
 `vm-hyf-team-b`). On team-b, team-c, or team-d, run the same steps and swap
 those names — see the table in [`../README.md`](../README.md#setup). Personal
@@ -698,7 +698,7 @@ laptop and the scheduled run can never collide:
 The team-b prod Airflow is at
 `[vm-hyf-team-b.westeurope.cloudapp.azure.com](https://vm-hyf-team-b.westeurope.cloudapp.azure.com)`.
 The other three teams' prod Airflow instances follow the same pattern
-(`vm-hyf-team-b`/`b`/`c`), so if you ever see a URL from another team's
+(`vm-hyf-team-a`/`c`/`d`), so if you ever see a URL from another team's
 screen share, do not assume it is yours.
 
 **Logging in.** Each student gets their own login to their team's prod
@@ -939,7 +939,7 @@ GitHub Actions run for the SHA it deployed, and check the **prod ACA job**
 logs in prod Airflow — a bad merge shows up there first.
 
 For reference, the other three teams' prod Airflow is at
-`vm-hyf-team-b`, `vm-hyf-team-b`, and `vm-hyf-team-c`
+`vm-hyf-team-a`, `vm-hyf-team-c`, and `vm-hyf-team-d`
 (`.westeurope.cloudapp.azure.com`) — never point your DAG or CLI commands at
 one of those by mistake.
 
