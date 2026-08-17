@@ -11,7 +11,7 @@ make it yours, which is a different and more interesting problem than making it
 exist.
 
 > **Team-b walkthrough.** Examples in this folder use team-b's cloud resources
-> (`sthyffpteamb`, `team_b`, `rg-hyf-fp-team-b`). If you are on team-b, team-c,
+> (`sthyffpteamb`, `team_b`, `rg-hyf-fp-team-b`). If you are on team-a, team-c,
 > or team-d, keep the same commands and replace those names with yours — see
 > [Setup](#setup) for the mapping. Personal settings (`LANDING_PREFIX`,
 > `DBT_SCHEMA`, your Databricks token) stay yours on every team.
@@ -193,6 +193,7 @@ Key Vault). On another team, swap the four team identifiers:
 
 | If you are on | Storage account | Catalog | Resource group | Registry |
 |---|---|---|---|---|
+| team-a | `sthyffpteama` | `team_a` | `rg-hyf-fp-team-a` | `acrhyffpa` |
 | team-b | `sthyffpteamb` | `team_b` | `rg-hyf-fp-team-b` | `acrhyffpb` |
 | team-c | `sthyffpteamc` | `team_c` | `rg-hyf-fp-team-c` | `acrhyffpc` |
 | team-d | `sthyffpteamd` | `team_d` | `rg-hyf-fp-team-d` | `acrhyffpd` |

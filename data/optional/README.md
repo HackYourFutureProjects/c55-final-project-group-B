@@ -118,7 +118,7 @@ you are using a free one.
 
 ### Where the key lives
 
-In your team's Databricks secret scope (`team_b` in the walkthrough; `team_b`,
+In your team's Databricks secret scope (`team_b` in the walkthrough; `team_a`,
 `team_c`, or `team_d` on other teams), and nowhere else. Not in the repository,
 not in `data/.env`, not in the dbt project, not in a notebook cell.
 
@@ -148,7 +148,7 @@ models:
       fct_title_discipline:
         # Was false. Nothing built it while it was.
         +enabled: true
-        +secret_scope: team_b   # team_b, team_c, or team_d on other teams
+        +secret_scope: team_b   # team_a, team_c, or team_d on other teams
         # Optional. Leave it out and the model uses the free one it ships with.
         +llm_model: openai/gpt-oss-20b:free
 ```

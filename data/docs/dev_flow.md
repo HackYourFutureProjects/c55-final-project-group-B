@@ -27,7 +27,7 @@ worked.
 
 **Team-b walkthrough.** Commands and URLs below use team-b's resources
 (`sthyffpteamb`, `team_b`, `rg-hyf-fp-team-b`, `acrhyffpb`,
-`vm-hyf-team-b`). On team-b, team-c, or team-d, run the same steps and swap
+`vm-hyf-team-b`). On team-a, team-c, or team-d, run the same steps and swap
 those names — see the table in [`../README.md`](../README.md#setup). Personal
 settings (`LANDING_PREFIX`, `DBT_SCHEMA`, `dev_<yourname>`) stay yours on
 every team.
