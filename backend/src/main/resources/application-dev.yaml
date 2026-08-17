@@ -1,5 +1,0 @@
-logging:
-  level:
-    root: INFO
-
-# Add any additional configuration for the development environment
