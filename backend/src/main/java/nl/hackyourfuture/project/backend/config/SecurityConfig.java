@@ -18,6 +18,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/docs/**").permitAll()
+                        .requestMatchers("/api/job-titles").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
