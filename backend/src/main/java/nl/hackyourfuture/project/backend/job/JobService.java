@@ -16,9 +16,10 @@ public class JobService {
         return jobRepository.findAllJobTitles();
     }
 
-    public List<JobSummaryDto> findJobs() {
-        return jobRepository.findJobs();
+    public List<JobSummaryDto> findJobs(String jobTitle, String city, String province) {
+        return jobRepository.findJobs(jobTitle, city, province);
     }
+
     public List<String> getDistinctCities() {
         return jobRepository.findAllDistinctCities();
     }

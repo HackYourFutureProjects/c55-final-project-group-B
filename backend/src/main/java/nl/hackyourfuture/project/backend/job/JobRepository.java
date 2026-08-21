@@ -20,24 +20,25 @@ public class JobRepository {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
-    public List<JobSummaryDto> findJobs() {
-        String sql = """
-                SELECT job_id,
-                       title,
-                       company_name,
-                       location_city,
-                       location_province,
-                       description,
-                       latitude,
-                       longitude,
-                       created,
-                       redirect_url,
-                       ingested_at
-                FROM analytics.fct_postings
-                ORDER BY created DESC
-                """;
+    public List<JobSummaryDto> findJobs(String jobTitle, String city, String province) {
 
-        return jdbcTemplate.query(
+        String sql = """
+            SELECT job_id,
+                   title,
+                   company_name,
+                   location_city,
+                   location_province,
+                   description,
+                   latitude,
+                   longitude,
+                   created,
+                   redirect_url,
+                   ingested_at
+            FROM analytics.fct_postings
+            ORDER BY created DESC
+            """;
+
+        List<JobSummaryDto> allJobs = jdbcTemplate.query(
                 sql,
                 (resultSet, rowNumber) -> new JobSummaryDto(
                         resultSet.getString("job_id"),
@@ -53,6 +54,12 @@ public class JobRepository {
                         resultSet.getString("ingested_at")
                 )
         );
+
+        return allJobs.stream()
+                .filter(job -> jobTitle == null || job.title().toLowerCase().contains(jobTitle.toLowerCase()))
+                .filter(job -> city == null || job.locationCity().equalsIgnoreCase(city))
+                .filter(job -> province == null || job.locationProvince().equalsIgnoreCase(province))
+                .toList();
     }
 
     public List<String> findAllDistinctCities() {
