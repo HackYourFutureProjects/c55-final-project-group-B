@@ -1,6 +1,7 @@
 package nl.hackyourfuture.project.backend.job;
 
 import lombok.RequiredArgsConstructor;
+import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +15,9 @@ public class JobService {
     public List<String> getAllJobTitles() {
         return jobRepository.findAllJobTitles();
     }
+
+    public List<JobSummaryDto> findJobs() {
+        return jobRepository.findJobs();
+    }
+
 }

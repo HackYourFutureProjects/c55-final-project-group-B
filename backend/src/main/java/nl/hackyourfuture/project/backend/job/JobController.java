@@ -17,15 +17,15 @@ import java.util.List;
 @Tag(name = "Jobs", description = "Operations for retrieving job postings")
 public class JobController {
 
-    private final JobRepository jobRepository;
+    private final JobService jobService;
 
     @GetMapping
     @Operation(
-            summary = "List latest jobs",
+            summary = "List jobs",
             description = "Returns all jobs ordered by publication date, newest first."
     )
-    @ApiResponse(responseCode = "200", description = "Latest jobs retrieved successfully")
-    public List<JobSummaryDto> getLatestJobs() {
-        return jobRepository.findLatestJobs();
+    @ApiResponse(responseCode = "200", description = "Jobs retrieved successfully")
+    public List<JobSummaryDto> getJobs() {
+        return jobService.findJobs();
     }
 }

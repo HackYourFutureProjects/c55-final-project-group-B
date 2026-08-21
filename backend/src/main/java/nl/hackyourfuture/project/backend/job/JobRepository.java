@@ -5,7 +5,6 @@ import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Repository
@@ -21,30 +20,39 @@ public class JobRepository {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
-    public List<JobSummaryDto> findLatestJobs() {
+    public List<JobSummaryDto> findJobs() {
         String sql = """
-                SELECT posting_id,
+                SELECT job_id,
                        title,
                        company_name,
-                       location,
-                       is_remote,
-                       discipline,
-                       posted_at
+                       location_city,
+                       location_province,
+                       description,
+                       latitude,
+                       longitude,
+                       created,
+                       redirect_url,
+                       ingested_at
                 FROM analytics.fct_postings
-                ORDER BY posted_at DESC
+                ORDER BY created DESC
                 """;
 
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNumber) -> new JobSummaryDto(
-                        resultSet.getString("posting_id"),
+                        resultSet.getString("job_id"),
                         resultSet.getString("title"),
                         resultSet.getString("company_name"),
-                        resultSet.getString("location"),
-                        resultSet.getBoolean("is_remote"),
-                        resultSet.getString("discipline"),
-                        resultSet.getObject("posted_at", OffsetDateTime.class)
+                        resultSet.getString("location_city"),
+                        resultSet.getString("location_province"),
+                        resultSet.getString("description"),
+                        resultSet.getObject("latitude", Double.class),
+                        resultSet.getObject("longitude", Double.class),
+                        resultSet.getString("created"),
+                        resultSet.getString("redirect_url"),
+                        resultSet.getString("ingested_at")
                 )
         );
     }
+
 }
