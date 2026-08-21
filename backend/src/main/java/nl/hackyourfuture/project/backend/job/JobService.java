@@ -14,4 +14,8 @@ public class JobService {
     public List<String> getAllJobTitles() {
         return jobRepository.findAllJobTitles();
     }
+
+    public List<String> getDistinctCities() {
+        return jobRepository.findAllDistinctCities();
+    }
 }

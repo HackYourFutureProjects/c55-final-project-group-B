@@ -23,5 +23,5 @@ public class LocationController {
     public List<String> getCities() {
         return jobService.getDistinctCities();
     }
-    
+
 }
