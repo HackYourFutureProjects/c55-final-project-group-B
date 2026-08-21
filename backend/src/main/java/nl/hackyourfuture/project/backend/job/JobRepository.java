@@ -15,7 +15,8 @@ public class JobRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<String> findAllJobTitles() {
-        String sql = "SELECT DISTINCT title FROM analytics.fct_postings ORDER BY title";
+        // INITCAP(title) converts the first letter of each word in the title to uppercase and the rest to lowercase.
+        String sql = "SELECT DISTINCT INITCAP(title) title FROM analytics.fct_postings ORDER BY title";
         // Runs the SQL and returns each row's single column value converted to a String, collected into a List
         return jdbcTemplate.queryForList(sql, String.class);
     }
