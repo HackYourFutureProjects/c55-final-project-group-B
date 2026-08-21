@@ -55,4 +55,10 @@ public class JobRepository {
         );
     }
 
+    public List<String> findAllDistinctCities() {
+        String sql = "SELECT DISTINCT INITCAP(location_city) location_city FROM analytics.fct_postings ORDER BY location_city";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+
 }
