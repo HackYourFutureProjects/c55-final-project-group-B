@@ -15,6 +15,7 @@ models:
         tests: [not_null]
       - name: company_name
         description: "(string) Hiring company name."
+        tests: [not_null]
       - name: location_city 
         description: "(string) Primary city string." #here we still need to split the city and province from the location string, but we can do that in a later step.
         tests: [not_null]
