@@ -22,4 +22,8 @@ public class JobService {
     public List<String> getDistinctCities() {
         return jobRepository.findAllDistinctCities();
     }
+
+    public List<String> getDistinctProvinces() {
+        return jobRepository.findAllDistinctProvinces();
+    }
 }
