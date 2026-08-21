@@ -24,4 +24,10 @@ public class LocationController {
         return jobService.getDistinctCities();
     }
 
+    @Operation(summary = "Get all distinct provinces")
+    @GetMapping("/provinces")
+    public List<String> getProvinces() {
+        return jobService.getDistinctProvinces();
+    }
+
 }

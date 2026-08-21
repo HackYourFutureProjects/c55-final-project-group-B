@@ -61,4 +61,10 @@ public class JobRepository {
     }
 
 
+    public List<String> findAllDistinctProvinces() {
+        String sql = "SELECT DISTINCT INITCAP(location_province) location_province FROM analytics.fct_postings ORDER BY location_province";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+
 }
