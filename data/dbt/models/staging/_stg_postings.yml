@@ -14,15 +14,16 @@ models:
 
       - name: company_name
         description: "(string) Hiring company name."
+
+      - name: location_display_name
+        description: 
+          (string) Raw display name for the location as sent by source, often 'City, Province'.
+          Coalesced to 'Unknown' when missing or empty.
         tests: [not_null]
 
-      - name: location_city 
-        description: "(string) Primary city string."
-        tests: [not_null]
-
-      - name: location_province
-        description: "(string) Primary province string."
-        tests: [not_null]
+      - name: location_area
+        description:  (array<string>)includes the raw area hierarchy array as sent by Adzuna (e.g. country, province, city).
+          Array position/order is not guaranteed across postings 
 
       - name: description
         description: "(text) Explanation of the job, as advertised. This is a long text field."
@@ -61,3 +62,9 @@ models:
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
+
+      - name: source_file
+        description: "(string) File path in the Volume this record was ingested from."
+
+      - name: ingest_date
+        description: "(date) Partition date this record was ingested under."
