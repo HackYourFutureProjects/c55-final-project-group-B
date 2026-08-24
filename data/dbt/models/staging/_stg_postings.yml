@@ -16,14 +16,14 @@ models:
         description: "(string) Hiring company name."
 
       - name: location_display_name
-        description: 
+        description: >
           (string) Raw display name for the location as sent by source, often 'City, Province'.
           Coalesced to 'Unknown' when missing or empty.
-        tests: [not_null]
+          tests: [not_null]
 
       - name: location_area
-        description:  (array<string>)includes the raw area hierarchy array as sent by Adzuna (e.g. country, province, city).
-          Array position/order is not guaranteed across postings 
+        description: >
+          (array<string>)includes the raw area hierarchy array as sent by Adzuna (e.g. country, province, city).
 
       - name: description
         description: "(text) Explanation of the job, as advertised. This is a long text field."

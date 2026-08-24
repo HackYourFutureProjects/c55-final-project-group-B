@@ -33,7 +33,7 @@ with
             cast(id as string) as job_id,
             trim(title) as title,
 
-            -- Safe nested lookup for company and area array
+-- Pass through raw company/location fields; no array indexing — city/province parsed downstream
             
             nullif(trim(company.display_name), '') as company_name,
             coalesce(nullif(trim(location.display_name), ''), 'Unknown') as location_display_name,
