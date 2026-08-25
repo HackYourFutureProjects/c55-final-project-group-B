@@ -100,7 +100,7 @@ def fetch_all_pages(
     base_url = os.environ.get(
         "SOURCE_API_URL",
         "https://api.adzuna.com/v1/api/jobs/{country_code}/search/{page}",
-    )
+    ) 
 
     # Make sure we actually have keys before trying to hit the API
     if not app_id or not app_key:
