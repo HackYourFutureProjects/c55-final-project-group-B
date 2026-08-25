@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: int_postings_title
+    description: >
+      Cleans title and company_name from stg_postings. Drops postings with
+      empty/blank titles and strips legal/country suffixes from company_name.
+      All other columns are passed through unchanged from stg_postings.
+    columns:
+      - name: job_id
+        tests: [unique, not_null]
+
+      - name: title_cleaned
+        description: >
+          Title with whitespace normalized. Never null — rows with an empty
+          title are dropped in this model.
+        tests: [not_null]
+
+      - name: company_name_cleaned
+        description: >
+          company_name with legal/country suffixes (B.V., N.V., NL) stripped.
+          Still nullable — no alias mapping applied yet.
