@@ -1,30 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import styles from "./page.module.css";
+import { SiteHeader } from "@/components/site-header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "HYF Final Project",
-  description: "HackYourFuture final project",
+  title: "Flint — Find your next role in the Netherlands",
+  description:
+    "Flint is a job search platform with roles across the Netherlands. Search by role, city or province and find your next spark.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${inter.variable}`}>
       <body>
-        <div className={styles.page}>
-          <main className={styles.main}>{children}</main>
-        </div>
+        <SiteHeader />
+        <main>{children}</main>
       </body>
     </html>
   );
