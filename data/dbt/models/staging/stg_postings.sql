@@ -8,21 +8,8 @@ with
         from
             read_files(
                 '{{ var("landing_path") }}',
-                format => 'json',
-                schemahints => '
-                    id string,
-                    title string,
-                    description string,
-                    created string,
-                    redirect_url string,
-                    latitude double,
-                    longitude double,
-                    salary_min double,
-                    salary_max double,
-                    company struct<display_name: string>,
-                    location struct<display_name: string, area: array<string>>,
-                    category struct<label: string, tag: string>
-                '
+                format => 'json'
+                
             )
 
     ),
