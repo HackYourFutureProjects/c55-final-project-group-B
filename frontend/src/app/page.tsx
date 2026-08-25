@@ -1,10 +1,11 @@
-import Link from "next/link";
+import { FeatureCards } from "@/components/feature-cards";
+import { Hero } from "@/components/hero";
 
 export default function Home() {
   return (
-    <div>
-      <h1>HYF Final Project</h1>
-      <Link href="/users">View users</Link>
-    </div>
+    <>
+      <Hero />
+      <FeatureCards />
+    </>
   );
 }
