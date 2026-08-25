@@ -1,4 +1,4 @@
---ask Marah about trimming company NAMES with regex,do we to completely drop or just trim?
+--We need to clean again the title later
 
 
 with source as (
@@ -8,31 +8,55 @@ with source as (
 ),
 
 cleaned as (
-
     select
-        * except (title, company_name),
+        -- Clean title: strip parentheticals, pipes, bullets, "via Zorgwerk...", trailing dash+location, sentence tails
+        nullif(
+            trim(
+                regexp_replace(
+                    regexp_replace(
+                        regexp_replace(
+                            regexp_replace(
+                                regexp_replace(
+                                    regexp_replace(
+                                        regexp_replace(trim(title), '\\s+', ' '),
+                                        '\\s*\\([^)]*\\)\\s*$', ''
+                                    ),
+                                    '\\s*\\|.*$', ''
+                                ),
+                                '\\s*•.*$', ''
+                            ),
+                            '\\s+via\\s+Zorgwerk\\s+in.*$', ''
+                        ),
+                        '\\s*[–-]\\s*[A-Z][a-zA-Zäöüéèëïí]+(\\s+en\\s+omgeving)?\\s*$', ''
+                    ),
+                    '\\.\\s+[A-Z].*$', ''
+                )
+            ),
+            ''
+        ) as title,
 
-        nullif(regexp_replace(trim(title), '\\s+', ' '), '') as title_cleaned,
-
+        -- Clean company_name: strip trailing legal suffixes (NL, B.V., N.V.), normalize whitespace
         case
             when company_name is null then null
             else
-                trim(
-                    regexp_replace(
+                nullif(
+                    trim(
                         regexp_replace(
-                            company_name,
-                            '(?i)\\s*-\\s*(NL|B\\.?V\\.?|N\\.?V\\.?)\\s*$',
-                            ''
-                        ),
-                        '\\s+', ' '
-                    )
+                            regexp_replace(
+                                company_name,
+                                '(?i)\\s*-\\s*(NL|B\\.?V\\.?|N\\.?V\\.?)\\s*$',
+                                ''
+                            ),
+                            '\\s+', ' '
+                        )
+                    ),
+                    ''
                 )
-        end as company_name_cleaned
+        end as company_name
 
     from source
-
 )
 
-select *
+select title, company_name
 from cleaned
-where title_cleaned is not null
+where title is not null;

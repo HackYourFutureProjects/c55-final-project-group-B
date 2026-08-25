@@ -3,20 +3,25 @@ version: 2
 models:
   - name: int_postings_title
     description: >
-      Cleans title and company_name from stg_postings. Drops postings with
-      empty/blank titles and strips legal/country suffixes from company_name.
-      All other columns are passed through unchanged from stg_postings.
+      Cleaned version of stg_postings. Strips job title noise (parentheticals,
+      pipe-separated details, bullet-separated location/specialty tails, "via
+      Zorgwerk in ..." segments, trailing dash + place names, and sentence-style
+      trailing descriptions) and normalizes company_name by removing trailing
+      legal suffixes (NL, B.V., N.V.) and collapsing whitespace.
+      NOTE: title cleaning still needs further work (see leading comment in
+      the model SQL) — some multi-word place names and edge cases are not
+      yet handled.
     columns:
-      - name: job_id
-        tests: [unique, not_null]
-
-      - name: title_cleaned
+      - name: title
         description: >
-          Title with whitespace normalized. Never null — rows with an empty
-          title are dropped in this model.
-        tests: [not_null]
+          Cleaned job title with trailing location/description noise removed
+          and whitespace normalized. Null/empty titles are filtered out by
+          the model's WHERE clause.
+        tests:
+          - not_null
 
-      - name: company_name_cleaned
+      - name: company_name
         description: >
-          company_name with legal/country suffixes (B.V., N.V., NL) stripped.
-          Still nullable — no alias mapping applied yet.
+          Cleaned company name with trailing legal-entity suffixes
+          (NL, B.V., N.V.) stripped and whitespace normalized. Can be null
+          if the source company_name was null or became empty after cleaning.
