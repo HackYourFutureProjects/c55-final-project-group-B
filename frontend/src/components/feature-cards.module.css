@@ -1,0 +1,53 @@
+.section {
+  background-color: var(--highlight-low);
+}
+
+.grid {
+  display: grid;
+  gap: 32px;
+  padding-block: 44px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature {
+  padding: 24px;
+}
+
+.swatch {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+}
+
+.swatchPine {
+  background-color: var(--pine);
+}
+
+.swatchIris {
+  background-color: var(--iris);
+}
+
+.swatchRose {
+  background-color: var(--rose);
+}
+
+.title {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.body {
+  margin-top: 12px;
+  color: var(--subtle);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
