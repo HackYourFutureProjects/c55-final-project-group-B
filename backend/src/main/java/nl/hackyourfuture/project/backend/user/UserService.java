@@ -18,6 +18,7 @@ public class UserService {
     public UserResponse createUser(UserRequest request) {
         var newUser = User.builder()
                 .id(UUID.randomUUID())
+                .name(request.name())
                 .email(request.email())
                 .build();
         var created = userRepository.createUser(newUser);
@@ -27,6 +28,7 @@ public class UserService {
     public UserResponse updateUser(UUID id, UserRequest request) {
         var updatedUser = User.builder()
                 .id(id)
+                .name(request.name())
                 .email(request.email())
                 .build();
         var updated = userRepository.updateUser(updatedUser);

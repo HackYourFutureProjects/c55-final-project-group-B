@@ -12,6 +12,14 @@ public record UserResponse(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         UUID id,
+
+        @Schema(
+                description = "Name of the user",
+                example = "John Mauro",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        String name,
+
         @Schema(
                 description = "Email address of the user",
                 example = "user@example.com",
@@ -22,6 +30,7 @@ public record UserResponse(
     public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
+                user.getName(),
                 user.getEmail()
         );
     }
