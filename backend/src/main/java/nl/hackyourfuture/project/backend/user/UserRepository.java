@@ -14,21 +14,23 @@ public class UserRepository {
 
     public static final RowMapper<User> USER_ROW_MAPPER = (rs, _) -> User.builder()
             .id(rs.getObject("id", UUID.class))
+            .name(rs.getString("name"))
             .email(rs.getString("email"))
             .build();
 
     public List<User> getAllUsers() {
         return jdbcClient
-                .sql("SELECT id, email FROM users")
+                .sql("SELECT id, name,  email FROM users ORDER BY name")
                 .query(USER_ROW_MAPPER)
                 .list();
     }
 
     public User createUser(User user) {
         jdbcClient
-                .sql("INSERT INTO users (id, email) " +
-                        "VALUES (:id, :email)")
+                .sql("INSERT INTO users (id, name, email) " +
+                        "VALUES (:id, :name, :email)")
                 .param("id", user.getId())
+                .param("name", user.getName())
                 .param("email", user.getEmail())
                 .update();
         return user;
@@ -37,10 +39,13 @@ public class UserRepository {
     public User updateUser(User user) {
         jdbcClient.sql("""
                         UPDATE users
-                        SET email=:email
+                        SET name = :name,
+                            email=:email,
+                            updated_at = CURRENT_TIMESTAMP
                         WHERE id=:id
                         """)
                 .param("id", user.getId())
+                .param("name", user.getName())
                 .param("email", user.getEmail())
                 .update();
         return user;
