@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -34,6 +35,21 @@ public class UserRepository {
                 .param("email", user.getEmail())
                 .update();
         return user;
+    }
+
+    public Optional<User> createRegisteredUser(User user, String passwordHash) {
+        return jdbcClient.sql("""
+                        INSERT INTO users (id, name, email, password_hash)
+                        VALUES (:id, :name, :email, :passwordHash)
+                        ON CONFLICT (LOWER(BTRIM(email))) DO NOTHING
+                        RETURNING id, name, email
+                        """)
+                .param("id", user.getId())
+                .param("name", user.getName())
+                .param("email", user.getEmail())
+                .param("passwordHash", passwordHash)
+                .query(USER_ROW_MAPPER)
+                .optional();
     }
 
     public User updateUser(User user) {
