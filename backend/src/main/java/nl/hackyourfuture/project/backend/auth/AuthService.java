@@ -1,6 +1,6 @@
 package nl.hackyourfuture.project.backend.auth;
 
-import lombok.RequiredArgsConstructor;
+import nl.hackyourfuture.project.backend.auth.dto.LoginRequest;
 import nl.hackyourfuture.project.backend.auth.dto.RegistrationRequest;
 import nl.hackyourfuture.project.backend.user.User;
 import nl.hackyourfuture.project.backend.user.UserRepository;
@@ -14,10 +14,29 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final String dummyHash;
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.dummyHash = passwordEncoder.encode(UUID.randomUUID().toString());
+    }
+
+    public LoginUser login(LoginRequest request) {
+        var candidate = userRepository.findLoginUserByEmail(request.email());
+        String hash = candidate.map(LoginUser::passwordHash).orElse(dummyHash);
+        boolean supportedLength = request.password().getBytes(StandardCharsets.UTF_8).length <= 72;
+        boolean matches = passwordEncoder.matches(supportedLength ? request.password() : "", hash);
+        if (!supportedLength || !matches || candidate.isEmpty()
+                || candidate.get().passwordHash() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+        return candidate.get();
+    }
 
     public UserResponse register(RegistrationRequest request) {
         // BCrypt limits bytes, whereas the DTO's @Size measures characters.
