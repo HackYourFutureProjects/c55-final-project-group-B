@@ -1,6 +1,7 @@
 package nl.hackyourfuture.project.backend.user;
 
 import lombok.RequiredArgsConstructor;
+import nl.hackyourfuture.project.backend.auth.LoginUser;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -49,6 +50,18 @@ public class UserRepository {
                 .param("email", user.getEmail())
                 .param("passwordHash", passwordHash)
                 .query(USER_ROW_MAPPER)
+                .optional();
+    }
+
+    public Optional<LoginUser> findLoginUserByEmail(String email) {
+        return jdbcClient.sql("""
+                        SELECT id, name, email, password_hash FROM users
+                        WHERE LOWER(BTRIM(email)) = :email
+                        """)
+                .param("email", email)
+                .query((rs, rowNumber) -> new LoginUser(
+                        rs.getObject("id", UUID.class), rs.getString("name"),
+                        rs.getString("email"), rs.getString("password_hash")))
                 .optional();
     }
 
