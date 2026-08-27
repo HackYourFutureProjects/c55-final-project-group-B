@@ -20,12 +20,15 @@
   --radius: 6px;
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
+  --transition-shadow: box-shadow 250ms ease;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-inter), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -85,7 +88,7 @@ a {
   box-shadow: var(--shadow-hard-sm);
   transition:
     translate 0.15s ease,
-    box-shadow 0.15s ease;
+    var(--transition-shadow);
 }
 
 .button:hover {
@@ -120,4 +123,14 @@ a {
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: var(--surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

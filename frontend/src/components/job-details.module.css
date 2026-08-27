@@ -1,0 +1,54 @@
+.title {
+  font-size: 1.5rem;
+}
+
+.company {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--pine);
+}
+
+.location {
+  color: var(--subtle);
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+}
+
+.card {
+  display: flex;
+  padding: 12px;
+  border-bottom: 1px solid var(--subtle);
+}
+
+.details {
+  flex: 1;
+}
+
+.aside {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.date {
+  text-align: end;
+  color: var(--muted);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.description {
+  padding: 12px;
+  white-space: pre-line;
+}
