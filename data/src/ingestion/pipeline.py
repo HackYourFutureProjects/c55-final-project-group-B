@@ -33,6 +33,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("pipeline")
 
+# Landing-folder name under LANDING_PREFIX (local / aca-dev / prod raw).
+# Same in every environment for a single source — not an env var.
+SOURCE_NAME = "postings"
+
 
 class MissingSetting(RuntimeError):
     """A required environment variable is not set."""
@@ -43,7 +47,6 @@ class Config:
     """What the ingestion job needs. Names only, no credentials."""
 
     source_api_url: str   
-    source_name: str
     # Empty only for a --local run, which never opens a connection to Azure.
     storage_account: str
     databricks_catalog: str
@@ -68,7 +71,6 @@ def load_config(local: bool = False) -> Config:
 
     return Config(
         source_api_url=required("SOURCE_API_URL"),
-        source_name=os.getenv("SOURCE_NAME", "source"),
         storage_account="" if local else required("STORAGE_ACCOUNT"),
         databricks_catalog=os.getenv("DATABRICKS_CATALOG", "team_b"),
         # The scheduled run writes `prod/raw`. Your own runs write
@@ -103,7 +105,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
         )
 
     # 4. Construct destination partition path
-    path = blob_path(config.source_name, run_date, config.landing_prefix)
+    path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
     # 5. Land raw un-transformed records (local disk or Azure)
     if local_dir is not None:
@@ -122,6 +124,12 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
         container=config.landing_container,
     )
 
+    landing_root = os.getenv("LANDING_PATH")
+    readable = (
+        f"{landing_root.rstrip('/')}/{SOURCE_NAME}"
+        if landing_root
+        else "(set LANDING_PATH so dbt reads what you just wrote)"
+    )
     logger.info(
         "Pipeline finished: %d landed, %d rejected, readable at %s",
         landed,
