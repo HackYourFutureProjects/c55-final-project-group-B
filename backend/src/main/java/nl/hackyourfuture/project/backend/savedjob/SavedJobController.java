@@ -24,6 +24,7 @@ public class SavedJobController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Save a job", description = "Adds a job posting to the current user's saved jobs.")
     @ApiResponse(responseCode = "201", description = "The job was saved")
+    @ApiResponse(responseCode = "404", description = "The job does not exist")
     public void save(@Valid @RequestBody SaveJobRequest request, Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         savedJobService.save(userId, request.jobId());
