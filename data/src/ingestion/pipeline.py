@@ -6,6 +6,7 @@ Settings come from the environment: .env on your machine, the job definition in
 Azure. Every one is a name or a URL. There is no secret here, because the job
 authenticates as itself. See the README, "Settings".
 """
+
 # we added here also the fetch_all_pages function.
 import argparse
 import logging
@@ -46,7 +47,7 @@ class MissingSetting(RuntimeError):
 class Config:
     """What the ingestion job needs. Names only, no credentials."""
 
-    source_api_url: str   
+    source_api_url: str
     # Empty only for a --local run, which never opens a connection to Azure.
     storage_account: str
     databricks_catalog: str
@@ -88,7 +89,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     # 1. Fetch raw data across all pages
     # fetch_all_pages internally calls fetch_raw for each page and it have the fetch_raw function that handles the retry logic, rate-limit exponential backoff, and error handling. It returns a list of raw records collected from the source API.
-    raw_records = fetch_all_pages(country_code="nl", max_pages=5,results_per_page=50)
+    raw_records = fetch_all_pages(country_code="nl", max_pages=5, results_per_page=50)
 
     # 2. Validate records against Pydantic model as a quality check
     parsed, rejected = parse_records(raw_records)
