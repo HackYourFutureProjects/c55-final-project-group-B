@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.savedjob.dto.SaveJobRequest;
+import nl.hackyourfuture.project.backend.savedjob.dto.SavedJobResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,5 +30,14 @@ public class SavedJobController {
     public void save(@Valid @RequestBody SaveJobRequest request, Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         savedJobService.save(userId, request.jobId());
+    }
+
+
+    @GetMapping
+    @Operation(summary = "List saved jobs", description = "Returns the current user's saved job postings, most recently saved first.")
+    @ApiResponse(responseCode = "200", description = "The list of saved jobs")
+    public List<SavedJobResponse> getSavedJobs(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return savedJobService.getSavedJobs(userId);
     }
 }
