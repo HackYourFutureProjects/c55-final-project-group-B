@@ -1,6 +1,6 @@
-import { Job } from "@/app/jobs/types";
-import SaveJobButton from "./save-job-button";
+import type { Job } from "@/app/jobs/types";
 import styles from "./job-card.module.css";
+import SaveJobButton from "./save-job-button";
 
 export default function JobCard({ job }: { job: Job }) {
   return (

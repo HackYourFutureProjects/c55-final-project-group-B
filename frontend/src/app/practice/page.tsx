@@ -1,8 +1,8 @@
-import styles from "./page.module.css";
 import JobCard from "@/components/job-card";
-import { Job } from "../jobs/types";
-import { BACKEND_API_URL } from "@/lib/config";
 import JobDetails from "@/components/job-details";
+import { BACKEND_API_URL } from "@/lib/config";
+import type { Job } from "../jobs/types";
+import styles from "./page.module.css";
 
 export default async function PracticePage() {
   const response = await fetch(`${BACKEND_API_URL}/api/jobs`);

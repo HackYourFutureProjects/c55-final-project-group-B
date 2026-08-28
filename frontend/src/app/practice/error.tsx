@@ -1,6 +1,6 @@
 "use client";
 
-export default function Error({
+export default function PracticeError({
   error,
   reset,
 }: {
@@ -11,7 +11,9 @@ export default function Error({
     <div>
       <h2>Something went wrong</h2>
       <p>{error.message}</p>
-      <button onClick={reset}>Try again</button>
+      <button type="button" onClick={reset}>
+        Try again
+      </button>
     </div>
   );
 }
