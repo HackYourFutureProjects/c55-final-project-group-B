@@ -9,25 +9,25 @@ from src.ingestion.ingest import parse_records
 from src.ingestion.models import Posting
 
 GOOD = {
-    "slug": "data-engineer-acme",
+    "id": "12345",
     "title": "Data Engineer",
-    "company_name": "Acme",
-    "location": "Amsterdam",
-    "remote": True,
-    "tags": ["sql", "python"],
-    "created_at": 1786481729,
+    "created": 1786481729,
+    "company": {"display_name": "Acme"},
+    "location": {"display_name": "Amsterdam", "area": ["Amsterdam", "Netherlands"]},
+    "category": {"label": "IT Jobs", "tag": "it-jobs"},
+    "description": "Build pipelines.",
 }
 
 
 def test_good_record_survives():
     parsed, rejected = parse_records([GOOD])
     assert rejected == 0
-    assert parsed[0].slug == "data-engineer-acme"
+    assert parsed[0].id == "12345"
 
 
 def test_one_bad_record_does_not_lose_the_batch():
     """The whole point of counting rejections instead of raising."""
-    parsed, rejected = parse_records([GOOD, {"slug": "missing-everything-else"}])
+    parsed, rejected = parse_records([GOOD, {"id": "missing-everything-else"}])
     assert len(parsed) == 1
     assert rejected == 1
 
@@ -47,8 +47,8 @@ def test_epoch_seconds_become_an_aware_datetime():
     would put some postings on the wrong day.
     """
     posting = Posting.model_validate(GOOD)
-    assert posting.created_at.tzinfo is not None
-    assert posting.created_at == datetime(2026, 8, 11, 20, 55, 29, tzinfo=UTC)
+    assert posting.created.tzinfo is not None
+    assert posting.created == datetime(2026, 8, 11, 20, 55, 29, tzinfo=UTC)
 
 
 def test_missing_required_field_is_rejected():

@@ -7,7 +7,7 @@ with
             _metadata.file_modification_time as ingested_at
         from
             read_files(
-                '{{ var("landing_path") }}',
+                '{{ var("landing_path") }}/postings',
                 format => 'json'
                 
             )
