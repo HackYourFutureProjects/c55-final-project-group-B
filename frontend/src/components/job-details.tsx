@@ -1,5 +1,5 @@
 import type { Job } from "@/app/jobs/types";
-import { formatPostedDate } from "@/lib/dateFormat";
+import { formatPostedDate } from "@/lib/formatPostedDate";
 import styles from "./job-details.module.css";
 import SaveJobButton from "./save-job-button";
 

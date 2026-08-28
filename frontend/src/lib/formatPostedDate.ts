@@ -10,7 +10,7 @@ export function formatPostedDate(created: string | null): string | null {
 
   return date.toLocaleDateString("en-GB", {
     day: "numeric",
-    month: "short",
+    month: "long",
     year: "numeric",
   });
 }
