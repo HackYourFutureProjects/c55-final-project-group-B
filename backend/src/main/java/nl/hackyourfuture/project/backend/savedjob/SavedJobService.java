@@ -3,7 +3,6 @@ package nl.hackyourfuture.project.backend.savedjob;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.JobRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
