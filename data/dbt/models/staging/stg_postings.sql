@@ -1,3 +1,4 @@
+-- SQLFluff syntax check runs in CI on changed dbt models.
 with
     source as (
 
