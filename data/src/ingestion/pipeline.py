@@ -17,7 +17,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .ingest import fetch_all_pages,parse_records
+from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
     PRODUCTION_CONTAINER,
@@ -134,10 +134,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
         "Pipeline finished: %d landed, %d rejected, readable at %s",
         landed,
         rejected,
-        os.getenv(
-            "LANDING_PATH",
-            "(set LANDING_PATH so dbt reads what you just wrote)",
-        ),
+        readable,
     )
     return landed
 
