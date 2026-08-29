@@ -73,5 +73,10 @@ public class JobRepository {
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
+    public boolean existsById(String jobId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM analytics.fct_postings WHERE job_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, jobId));
+    }
+
 
 }
