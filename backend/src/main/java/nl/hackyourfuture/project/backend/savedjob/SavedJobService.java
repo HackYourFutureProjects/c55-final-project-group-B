@@ -28,4 +28,11 @@ public class SavedJobService {
     public List<SavedJobResponse> getSavedJobs(UUID userId) {
         return savedJobRepository.findSavedJobsByUserId(userId);
     }
+
+    public void deleteSavedJob(UUID userId, String jobId) {
+        int rowsDeleted = savedJobRepository.deleteByUserIdAndJobId(userId, jobId);
+        if (rowsDeleted == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Saved job not found");
+        }
+    }
 }
