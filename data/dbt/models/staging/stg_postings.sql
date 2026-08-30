@@ -5,7 +5,7 @@ with
             *,
             _metadata.file_path as source_file,
             _metadata.file_modification_time as ingested_at
-        from read_files('{{ var("landing_path") }}', format => 'json')
+        from read_files('{{ var("landing_path") }}', format => 'json') -- When we add new api we need '{{ var("landing_path") }}/postings'
 
     ),
 
