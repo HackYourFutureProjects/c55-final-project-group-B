@@ -1,0 +1,80 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  transition: box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hard);
+}
+
+@media (min-width: 640px) {
+  .card {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.details {
+  flex: 1;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.company {
+  color: var(--pine);
+  font-weight: 600;
+}
+
+.separator {
+  color: var(--muted);
+}
+
+.meta > span:last-child {
+  color: var(--subtle);
+}
+
+.summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 16px;
+  color: var(--subtle);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.posted {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.action {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+@media (min-width: 640px) {
+  .action {
+    align-self: center;
+  }
+}
