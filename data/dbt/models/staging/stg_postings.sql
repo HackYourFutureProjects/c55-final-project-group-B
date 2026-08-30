@@ -3,16 +3,16 @@ with
 
         select
             *,
-            _metadata.file_path as source_file, -- metadata causing an error check that
+            _metadata.file_path as source_file,  -- metadata causing an error check that
             _metadata.file_modification_time as ingested_at
-        from read_files('{{ var("landing_path") }}', format => 'json') -- When we add new api we need '{{ var("landing_path") }}/postings'
+        from read_files('{{ var("landing_path") }}', format => 'json')  -- When we add new api we need '{{ var("landing_path") }}/postings'
 
     ),
- 
+
     renamed as (
 
         select
-            cast(id as string) as job_id, -- cheack id
+            cast(id as string) as job_id,  -- cheack id
             trim(title) as title,
 
             nullif(trim(company.display_name), '') as company_name,
@@ -24,7 +24,7 @@ with
             trim(description) as description,
             cast(latitude as double) as latitude,
             cast(longitude as double) as longitude,
-            cast(salary_min as double) as salary_min, -- We need to check
+            cast(salary_min as double) as salary_min,  -- We need to check
             cast(salary_max as double) as salary_max,
             cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
