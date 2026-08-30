@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: int_postings_coordinates
+    description: >
+      Cleans latitude/longitude values from `stg_postings`. Raw coordinates are
+      preserved as `latitude_raw` / `longitude_raw`, while `latitude` and
+      `longitude` are nullified when missing, "null island" (0,0), outside
+      valid lat/lon ranges, or outside the expected Netherlands bounding box
+      (lat 50.5–53.7, lon 3.2–7.3). `is_geo_known` flags whether a row has a
+      trustworthy geocode.
+    columns:
+      - name: job_id
+        description: Unique identifier for the job posting.
+        tests:
+          - not_null
+          - unique
+
+      - name: title
+        description: Job posting title.
+
+      - name: latitude_raw
+        description: Raw, unmodified latitude value as sourced from `stg_postings`.
+
+      - name: longitude_raw
+        description: Raw, unmodified longitude value as sourced from `stg_postings`.
+
+      - name: latitude
+        description: >
+          Cleaned latitude, rounded to 6 decimal places. Null when the raw
+          value is missing, part of a (0,0) "null island" pair, outside the
+          -90/90 range, or outside the expected NL bounding box.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 50.5
+              max_value: 53.7
+              config:
+                where: "latitude is not null"
+
+      - name: longitude
+        description: >
+          Cleaned longitude, rounded to 6 decimal places. Null when the raw
+          value is missing, part of a (0,0) "null island" pair, outside the
+          -180/180 range, or outside the expected NL bounding box.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 3.2
+              max_value: 7.3
+              config:
+                where: "longitude is not null"
+
+      - name: is_geo_known
+        description: >
+          Boolean flag indicating whether the row has a trustworthy, in-bounds
+          geocode (true) or whether latitude/longitude were nullified as bad
+          data (false).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]

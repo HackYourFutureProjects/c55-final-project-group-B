@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: int_postings_salary
+    description: "Intermediate model for cleaning, transforming, and standardizing job salary data, including calculated metrics, quality flags, bands, and display text."
+    columns:
+      - name: job_id
+        description: "Primary key / unique identifier for the job posting."
+        tests:
+          - unique
+          - not_null
+
+      - name: salary_min
+        description: "Minimum stated salary parsed and cast to numeric type."
+
+      - name: salary_max
+        description: "Maximum stated salary parsed and cast to numeric type."
+
+      - name: salary_is_predicted
+        description: "Boolean flag indicating whether the salary was estimated/predicted rather than explicitly stated by the employer."
+
+      - name: has_salary_info
+        description: "Boolean flag indicating if any salary data (min or max) is present."
+        tests:
+          - not_null
+
+      - name: salary_midpoint
+        description: "Average of salary_min and salary_max if both exist, otherwise whichever boundary value is present."
+
+      - name: is_salary_outlier
+        description: "Boolean flag identifying implausible annual salary bounds (< €5,000 or > €300,000)."
+        tests:
+          - not_null
+
+      - name: salary_range_width
+        description: "Difference between salary_max and salary_min; null if either bound is missing."
+
+      - name: salary_band
+        description: "Categorical bucket for salary range grouping."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'unknown'
+                - 'under_30k'
+                - '30k_50k'
+                - '50k_75k'
+                - '75k_100k'
+                - 'over_100k'
+
+      - name: salary_display
+        description: "Formatted human-readable currency string for display purposes."
+        tests:
+          - not_null
+
+      - name: salary_note
+        description: "Categorical indicator describing the data source quality or trust level."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'not available'
+                - 'Unreliable value'
+                - 'Estimated'
+                - 'Stated by employer'

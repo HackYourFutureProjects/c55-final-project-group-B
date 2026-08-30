@@ -1,6 +1,6 @@
 """VM-only dev integration DAG for the final project pipeline.
 
-Manual trigger on the team Airflow VM: job-fp-ingest-dev, dev_airflow schema,
+Daily 09:00 Europe/Amsterdam on the team Airflow VM: job-fp-ingest-dev, dev_airflow schema,
 analytics_dev publish. Not loaded on Astro (laptops have DATABRICKS_TOKEN in
 data/.env). For local DAG runs use final_project_pipeline in pipeline_dag.py.
 
@@ -28,10 +28,11 @@ DEFAULT_ARGS = {
 
 
 def databricks_environment_dev() -> dict[str, str]:
-    from pipeline_dag import secret, setting
+    from pipeline_dag import secret, setting, team_slug
 
     catalog = setting("DATABRICKS_CATALOG")
-    landing_default = f"/Volumes/{catalog}/landing/dev/aca-dev/postings"
+    # Parent prefix only; staging appends /postings.
+    landing_default = f"/Volumes/{catalog}/landing/dev/aca-dev"
     where = {
         "DATABRICKS_HOST": setting("DATABRICKS_HOST"),
         "DATABRICKS_HTTP_PATH": setting("DATABRICKS_HTTP_PATH"),
@@ -39,7 +40,7 @@ def databricks_environment_dev() -> dict[str, str]:
         "DBT_SCHEMA": setting("DBT_SCHEMA_DEV", "dev_airflow"),
         "LANDING_PATH": setting("LANDING_PATH_DEV", landing_default),
     }
-    team = setting("TEAM")
+    team = team_slug()
     return {
         **where,
         "AZURE_TENANT_ID": setting("AZURE_TENANT_ID"),
@@ -52,9 +53,9 @@ def databricks_environment_dev() -> dict[str, str]:
 
 @dag(
     dag_id="final_project_pipeline_dev",
-    description="Dev integration on the team VM: aca-dev landing, dev_airflow, analytics_dev publish",
+    description="Mode 3: VM platform-dev — aca-dev landing, main code, dev_airflow, analytics_dev",
     start_date=pendulum.datetime(2026, 1, 1, tz="Europe/Amsterdam"),
-    schedule=None,
+    schedule="0 9 * * *",
     catchup=False,
     max_active_runs=1,
     default_args=DEFAULT_ARGS,
@@ -68,6 +69,25 @@ def final_project_pipeline_dev():
 
         job_name = setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev")
         return start_job(job_name)
+
+    @task
+    def list_landing_files() -> int:
+        """SPIKE: list every file under LANDING_PATH_DEV before dbt reads them."""
+        from src.common.warehouse import Warehouse
+
+        os.environ.update(databricks_environment_dev())
+        path = os.environ["LANDING_PATH"]
+        safe = path.replace("'", "''")
+        rows = Warehouse.from_env().run(
+            "select path, length, modificationTime "
+            f"from read_files('{safe}', format => 'binaryFile') "
+            "order by path"
+        )
+        print(f"LANDING_PATH={path}")
+        print(f"files_found={len(rows)}")
+        for file_path, length, modified in rows:
+            print(f"  file={file_path} bytes={length} modified={modified}")
+        return len(rows)
 
     @task
     def dbt_build() -> str:
@@ -92,7 +112,7 @@ def final_project_pipeline_dev():
 
     @task
     def publish_to_backend() -> int:
-        from pipeline_dag import secret, setting
+        from pipeline_dag import secret, setting, team_slug
 
         from src.publishing import sync
 
@@ -114,16 +134,13 @@ def final_project_pipeline_dev():
         )
 
         if not os.environ.get("BACKEND_PG_PASSWORD"):
-            team = setting("TEAM")
-            secret_name = setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-team-{team}"
+            team = team_slug()
+            secret_name = setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
             os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
-        if hasattr(sync, "run_all"):
-            counts = sync.run_all()
-            return sum(counts.values())
         return sync.run()
 
-    ingest() >> dbt_build() >> publish_to_backend()
+    ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend()
 
 
 if not os.environ.get("DATABRICKS_TOKEN"):

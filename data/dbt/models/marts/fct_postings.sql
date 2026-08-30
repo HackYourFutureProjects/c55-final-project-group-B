@@ -13,32 +13,46 @@
 with
     postings as (select * from {{ ref("stg_postings") }}),
 
-    tag_counts as (
-
-        -- int_posting_tags has one row per posting and tag, so counting it
-        -- gives tags per posting. Doing it here rather than `size(tags)` means
-        -- this counts the same cleaned, de-duplicated tags that
-        -- fct_tag_popularity counts, instead of raw array length.
-        select posting_id, count(*) as tag_count
-        from {{ ref("int_posting_tags") }}
-        group by posting_id
-
-    )
+    job_title_company as (select * from {{ ref("int_postings_title_company") }}),
+    locations as (select * from {{ ref("int_postings_locations") }}),
+    salary as (select * from {{ ref("int_postings_salary") }}),
+    category as (select * from {{ ref("int_postings_category") }}),
+    geographic as (select * from {{ ref("int_postings_coordinates") }})
 
 select
-    postings.posting_id,
-    postings.title,
-    postings.company_name,
-    postings.location,
-    postings.is_remote,
-    postings.tags,
-    -- A posting with no tags has no rows in int_posting_tags, so the join
-    -- finds nothing and the count has to be put back as zero. Without the
-    -- coalesce it would be null, and "null tags" and "no tags" are different
-    -- claims to make to the backend.
-    coalesce(tag_counts.tag_count, 0) as tag_count,
-    postings.posted_at,
-    date(postings.posted_at) as posted_date,
+    -- Primary Keys & Core Details
+    postings.job_id,
+    job_title_company.title as title,
+    job_title_company.company_name as company_name,
+    postings.description as description,
+
+    -- Location Details
+    locations.city as location_city,
+    locations.province as location_province,
+    geographic.latitude as latitude,
+    geographic.longitude as longitude,
+
+    -- Dates & URLs
+    postings.created,
+    postings.redirect_url,
+
+    -- Category Attributes
+    category.is_category_known,
+    category.category_label,
+    category.category_tag,
+
+    -- Salary Attributes
+    salary.salary_min,
+    salary.salary_max,
+    salary.salary_display,
+    salary.salary_note,
+
+    -- Audit Lineage
     postings.ingested_at
+
 from postings
-left join tag_counts on postings.posting_id = tag_counts.posting_id
+left join job_title_company on postings.job_id = job_title_company.job_id
+left join locations on postings.job_id = locations.job_id
+left join salary on postings.job_id = salary.job_id
+left join category on postings.job_id = category.job_id
+left join geographic on postings.job_id = geographic.job_id

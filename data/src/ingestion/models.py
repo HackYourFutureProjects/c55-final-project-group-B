@@ -1,6 +1,7 @@
 """Validation models for the source data. Replace with your source's shape."""
 
 from datetime import UTC, datetime
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -48,7 +49,7 @@ class Posting(BaseModel):
 
     @field_validator("created", mode="before")
     @classmethod
-    def _epoch_to_datetime(cls, value: datetime | int | float) -> datetime | int | float:
+    def _epoch_to_datetime(cls, value: datetime | float) -> datetime | int | float:
         if isinstance(value, (int, float)):
             return datetime.fromtimestamp(value, tz=UTC)
         return value

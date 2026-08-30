@@ -23,7 +23,7 @@ from ..common.warehouse import Queryable, Warehouse
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MART = "fct_postings_enriched"
+DEFAULT_MART = "fct_postings"
 DEFAULT_TABLE = "fct_postings"
 
 # What a Databricks column becomes in Postgres. Anything not listed becomes
