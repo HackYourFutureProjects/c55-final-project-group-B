@@ -13,12 +13,15 @@ export type Job = {
   ingestedAt: string | null;
 };
 
+// Mirrors the backend's UserResponse (never includes the password hash).
 export type User = {
   id: string;
   name: string;
   email: string;
 };
 
+// Mirrors Spring's ProblemDetail error body. `errors` is only present on 400
+// and maps a field name to its validation message.
 export type ProblemDetail = {
   title: string;
   status: number;
