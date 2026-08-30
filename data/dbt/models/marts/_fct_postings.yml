@@ -7,7 +7,7 @@ models:
       backend API. Adding a column is safe; renaming or removing one breaks
       the backend and must be agreed with them first.
     columns:
-      - name: posting_id
+      - name: job_id
         description: Stable unique identifier. Use this as the API resource id.
         tests: [unique, not_null]
       - name: title
@@ -15,22 +15,18 @@ models:
         tests: [not_null]
       - name: company_name
         description: "(string) Hiring company name."
-      - name: location_city 
+      - name: description
+        description: "(string) Full job description text from the source."
+      - name: location_city
         description: "(string) Primary city string." #here we still need to split the city and province from the location string, but we can do that in a later step.
         tests: [not_null]
-      - name: tags
-        description: Array of tags from the source. Becomes a JSON array once synced to the backend.
-      - name: tag_count
-        description: How many distinct tags this posting has, counted after cleaning. Zero, never null.
-        tests: [not_null]
-      - name: posted_at
-        description: Timestamp the posting was published at the source.
-        tests: [not_null]
+      - name: location_province
+        description: "(string) Province/region string for the job location."
       - name: latitude
         description: "(float / double) Latitude of the job location, if available."
       - name: longitude
         description: "(float / double) Longitude of the job location, if available."
-      - name: created #Change 
+      - name: created
         description: "(timestamp) Timestamp the posting was created at the source."
         tests: [not_null]
       - name: redirect_url
@@ -39,16 +35,15 @@ models:
       - name: category_label
         description: >
           (string) The category label from the source. This is a string, not a stable
-          identifier. Use it for display purposes only,and it's written in dutch for example :"Administratieve".
+          identifier. Use it for display purposes only, and it's written in dutch for example: "Administratieve".
       - name: is_category_known
         description: >
           (boolean) Whether the category is known or not. This is a boolean, not a stable
           identifier. Use it for display purposes only.
-
       - name: category_tag
         description: >
           (string) The category tag from the source. This is a string, not a stable
-          identifier. Use it for display purposes only,and  it's written in english for example: "admin-jobs".
+          identifier. Use it for display purposes only, and it's written in english for example: "admin-jobs".
       - name: salary_min
         description: >
           (float / double) The minimum salary from the source. This is a float, not a stable
@@ -57,10 +52,17 @@ models:
         description: >
           (float / double) The maximum salary from the source. This is a float, not a stable
           identifier. Use it for display purposes only.
-      - name: salary_display # if they want to use it
+      - name: salary_display
         description: >
           (string) The salary display string from the source. This is a string, not a stable
-          identifier. Use it for display purposes only. #Change
+          identifier. Use it for display purposes only.
+      - name: salary_note
+        description: >
+          (string) Notes on salary reliability/source, e.g. whether it was stated by the
+          employer or estimated.
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
+
+
+        #review under tags
