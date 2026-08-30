@@ -45,3 +45,9 @@ models:
       fct_title_discipline:
         +enabled: false
         +secret_scope: team_b
+
+
+
+
+
+
