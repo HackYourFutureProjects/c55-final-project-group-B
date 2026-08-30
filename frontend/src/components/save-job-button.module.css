@@ -20,9 +20,18 @@
   scale: 0.9;
 }
 
+/* Applied from shared state: every button for this job fills in. */
 .save {
   color: var(--love);
+}
+
+/* Applied only to the button that was clicked. */
+.animateSave {
   animation: save 350ms ease-in-out;
+}
+
+.animateRemove {
+  animation: remove 250ms ease-out;
 }
 
 @keyframes save {
@@ -41,10 +50,6 @@
   100% {
     transform: scale(1) rotate(0);
   }
-}
-
-.remove {
-  animation: remove 250ms ease-out;
 }
 
 @keyframes remove {
