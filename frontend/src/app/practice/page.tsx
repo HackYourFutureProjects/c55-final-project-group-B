@@ -1,7 +1,7 @@
 import JobCard from "@/components/job-card";
 import JobDetails from "@/components/job-details";
 import { BACKEND_API_URL } from "@/lib/config";
-import type { Job } from "../jobs/types";
+import type { Job } from "@/lib/types";
 import styles from "./page.module.css";
 
 export default async function PracticePage() {
