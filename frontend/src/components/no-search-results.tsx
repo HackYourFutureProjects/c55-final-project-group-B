@@ -11,7 +11,9 @@ export default function NoSearchResults({
   return (
     <div className={styles.layout}>
       <p>
-        No jobs found {`for ${q}`} {` in ${place}`}
+        No jobs found
+        {q ? ` for ${q}` : ""}
+        {place ? ` in ${place}` : ""}
       </p>
       <Link href="/jobs" className="button">
         Clear search
