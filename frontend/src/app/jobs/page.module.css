@@ -1,0 +1,42 @@
+.intro {
+  border-bottom: 1px solid var(--highlight-high);
+  padding-block: 56px 40px;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.subtitle {
+  max-width: 36rem;
+  margin-inline: auto;
+  margin-top: 16px;
+  color: var(--subtle);
+  font-size: 17px;
+}
+
+.search {
+  margin-top: 32px;
+}
+
+.results {
+  background-color: var(--highlight-low);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 980px;
+  padding-block: 44px;
+}
+
+.notice {
+  color: var(--subtle);
+  text-align: center;
+}

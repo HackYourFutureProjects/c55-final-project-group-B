@@ -1,0 +1,49 @@
+.hero {
+  border-bottom: 1px solid var(--highlight-high);
+  padding-block: 72px 48px;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.accent {
+  color: var(--pine);
+}
+
+.accentDot {
+  color: var(--rose);
+}
+
+.tagline {
+  max-width: 36rem;
+  margin-inline: auto;
+  margin-top: 20px;
+  color: var(--subtle);
+  font-size: 17px;
+}
+
+.search {
+  margin-top: 36px;
+}
+
+.note {
+  margin-top: 24px;
+  color: var(--subtle);
+  font-size: 15px;
+}
+
+.noteLink {
+  color: var(--pine);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+.noteLink:hover {
+  text-decoration: underline;
+}

@@ -7,22 +7,24 @@ models:
       backend API. Adding a column is safe; renaming or removing one breaks
       the backend and must be agreed with them first.
     columns:
-      - name: job_id
-        description: "(string) Stable unique identifier. Use this as the API resource id."
+      - name: posting_id
+        description: Stable unique identifier. Use this as the API resource id.
         tests: [unique, not_null]
       - name: title
-        description: "(string) Job title as advertised."
+        description: Job title as advertised.
         tests: [not_null]
       - name: company_name
         description: "(string) Hiring company name."
       - name: location_city 
         description: "(string) Primary city string." #here we still need to split the city and province from the location string, but we can do that in a later step.
         tests: [not_null]
-      - name: description
-        description: "(text) Explanation of the job, as advertised. This is a long text field."
+      - name: tags
+        description: Array of tags from the source. Becomes a JSON array once synced to the backend.
+      - name: tag_count
+        description: How many distinct tags this posting has, counted after cleaning. Zero, never null.
         tests: [not_null]
-      - name: location_province
-        description: "(string) Primary province string."
+      - name: posted_at
+        description: Timestamp the posting was published at the source.
         tests: [not_null]
       - name: latitude
         description: "(float / double) Latitude of the job location, if available."
