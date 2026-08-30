@@ -49,4 +49,7 @@ with
     )
 
 select *
-from deduplicated
+from
+    deduplicated
+
+    -- working on ingest

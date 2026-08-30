@@ -54,7 +54,7 @@ env:
   DATABRICKS_CATALOG: team_b
   DATABRICKS_HOST: https://adb-7405619530719547.7.azuredatabricks.net
   DATABRICKS_HTTP_PATH: /sql/1.0/warehouses/0aae52a375e34214
-  SOURCE_API_URL: https://www.arbeitnow.com/api/job-board-api
+  SOURCE_API_URL: https://api.adzuna.com/v1/api/jobs/{country_code}/search/{page}
 
 jobs:
   lint-and-test:
@@ -75,10 +75,11 @@ jobs:
         working-directory: ./data
         run: uv sync --extra dev --extra sync --extra dbt
 
-      # Lint/format/types only the files this change touches under data/. A
-      # full-tree `ruff check .` would fail a clean DAG PR (or merge) because of
-      # someone else's pre-existing issue elsewhere in the tree. Pytest still
-      # runs the whole suite — that is a behaviour gate, not a style gate.
+      - name: Install dbt dependencies
+        working-directory: ./data
+        run: uv run dbt deps --project-dir dbt --profiles-dir dbt
+
+      # Lint/format/types only the files this change touches under data/...
       - name: List changed data files
         id: changes
         env:
@@ -131,11 +132,12 @@ jobs:
       # Conflict-marker scan, dbt parse, and SQLFluff syntax (PRS) on changed
       # dbt SQL. No warehouse or GitHub secrets. sqlfmt still owns layout.
       - name: Check dbt project
+        working-directory: ./data
         env:
           DBT_SCHEMA: ci
           LANDING_PATH: /Volumes/${{ env.DATABRICKS_CATALOG }}/landing/prod
           FILES: ${{ steps.changes.outputs.sql }}
-        run: bash .github/scripts/check-dbt-project.sh
+        run: bash ../.github/scripts/check-dbt-project.sh
 
       - name: Types
         working-directory: ./data
@@ -198,7 +200,7 @@ jobs:
           if bag.import_errors:
               for path, error in bag.import_errors.items():
                   print(f"::error file={path}::{error}")
-              sys.exit(1)
+                  sys.exit(1)
           print(f"{len(bag.dags)} DAG(s) imported cleanly: {', '.join(bag.dags)}")
           PY
 
@@ -289,99 +291,4 @@ jobs:
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: |
-          set -euo pipefail
-          image="$REGISTRY/pipeline:${{ github.sha }}"
-          identity="/subscriptions/$SUBSCRIPTION/resourcegroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY"
-          client_id="$(az identity show --ids "$identity" --query clientId -o tsv)"
-
-          # LANDING_CONTAINER is set here rather than in the image, so the same
-          # image is what you already ran against `dev`. The container name is
-          # the whole difference between a rehearsal and production. It repeats
-          # the code default on purpose: this is the value that actually takes
-          # effect, and it should be readable here without opening storage.py.
-          env_vars="SOURCE_API_URL=${{ env.SOURCE_API_URL }} \
-                    STORAGE_ACCOUNT=${{ env.STORAGE_ACCOUNT }} \
-                    LANDING_CONTAINER=prod \
-                    LANDING_PREFIX=raw \
-                    DATABRICKS_CATALOG=${{ env.DATABRICKS_CATALOG }} \
-                    AZURE_CLIENT_ID=$client_id"
-
-          if az containerapp job show -g "$RG" -n "$JOB" -o none 2>/dev/null; then
-            echo "updating $JOB -> $image"
-            az containerapp job update -g "$RG" -n "$JOB" \
-              --image "$image" --set-env-vars $env_vars -o none
-          else
-            echo "creating $JOB -> $image"
-            az containerapp job create -g "$RG" -n "$JOB" \
-              --environment "$ENVIRONMENT" --trigger-type Manual \
-              --replica-timeout 1800 --replica-retry-limit 1 \
-              --cpu 0.5 --memory 1.0Gi \
-              --image "$image" \
-              --mi-user-assigned "$identity" \
-              --registry-identity "$identity" --registry-server "$REGISTRY" \
-              --env-vars $env_vars -o none
-          fi
-
-          echo "### Deployed \`pipeline:${{ github.sha }}\` to \`$JOB\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Writes to the \`prod\` container. Run it with:" >> "$GITHUB_STEP_SUMMARY"
-          echo '```bash' >> "$GITHUB_STEP_SUMMARY"
-          echo "az containerapp job start -g $RG -n $JOB" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-  deploy-dev:
-    # Mode 2 dev ingest job: same image as prod, writes dev/aca-dev instead.
-    # Keeps job-fp-ingest-dev in step with every merge to main without a manual
-    # az containerapp job update from a laptop.
-    needs: [build]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Sign in to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ env.AZURE_CLIENT_ID }}
-          tenant-id: ${{ env.AZURE_TENANT_ID }}
-          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Create or update the dev ingestion job
-        env:
-          RG: ${{ env.AZURE_RESOURCE_GROUP }}
-          JOB: job-fp-ingest-dev
-          ENVIRONMENT: ${{ env.ACA_ENVIRONMENT }}
-          IDENTITY: ${{ env.ACA_IDENTITY }}
-          REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
-          SUBSCRIPTION: ${{ env.AZURE_SUBSCRIPTION_ID }}
-        run: |
-          set -euo pipefail
-          image="$REGISTRY/pipeline:${{ github.sha }}"
-          identity="/subscriptions/$SUBSCRIPTION/resourcegroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY"
-          client_id="$(az identity show --ids "$identity" --query clientId -o tsv)"
-
-          env_vars="SOURCE_API_URL=${{ env.SOURCE_API_URL }} \
-                    STORAGE_ACCOUNT=${{ env.STORAGE_ACCOUNT }} \
-                    LANDING_CONTAINER=dev \
-                    LANDING_PREFIX=aca-dev \
-                    DATABRICKS_CATALOG=${{ env.DATABRICKS_CATALOG }} \
-                    AZURE_CLIENT_ID=$client_id"
-
-          if az containerapp job show -g "$RG" -n "$JOB" -o none 2>/dev/null; then
-            echo "updating $JOB -> $image"
-            az containerapp job update -g "$RG" -n "$JOB" \
-              --image "$image" --set-env-vars $env_vars -o none
-          else
-            echo "creating $JOB -> $image"
-            az containerapp job create -g "$RG" -n "$JOB" \
-              --environment "$ENVIRONMENT" --trigger-type Manual \
-              --replica-timeout 1800 --replica-retry-limit 1 \
-              --cpu 0.5 --memory 1.0Gi \
-              --image "$image" \
-              --mi-user-assigned "$identity" \
-              --registry-identity "$identity" --registry-server "$REGISTRY" \
-              --env-vars $env_vars -o none
-          fi
-
-          echo "### Deployed \`pipeline:${{ github.sha }}\` to \`$JOB\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Writes to the \`dev\` container under prefix \`aca-dev\`." >> "$GITHUB_STEP_SUMMARY"
+          set -euo
