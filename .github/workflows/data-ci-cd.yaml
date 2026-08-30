@@ -77,7 +77,7 @@ jobs:
 
       - name: Install dbt dependencies
         working-directory: ./data
-        run: uv run dbt deps --project-dir dbt --profiles-dir d
+        run: uv run dbt deps --project-dir dbt --profiles-dir dbt
 
       # Lint/format/types only the files this change touches under data/...
       - name: List changed data files
@@ -291,4 +291,14 @@ jobs:
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: |
-          set -euo
+          set -euo pipefail
+          client_id="${{ env.AZURE_CLIENT_ID }}"
+
+          env_vars="SOURCE_API_URL=${{ env.SOURCE_API_URL }} \
+                    STORAGE_ACCOUNT=${{ env.STORAGE_ACCOUNT }} \
+                    LANDING_CONTAINER=prod \
+                    LANDING_PREFIX=raw \
+                    DATABRICKS_CATALOG=${{ env.DATABRICKS_CATALOG }} \
+                    AZURE_CLIENT_ID=$client_id"
+
+          az containerapp job update \--name "$JOB" \--resource-group "$RG" \--image "$REGISTRY/pipeline:${{ github.sha }}" \--secrets "adzuna-app-id=$ADZUNA_APP_ID" "adzuna-app-key=$ADZUNA_APP_KEY" \--set-env-vars $env_vars
