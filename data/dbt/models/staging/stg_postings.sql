@@ -3,38 +3,12 @@ with
 
         select
             *,
-            _metadata.file_path as source_file,
-            _metadata.file_modification_time as ingested_at
+            input_file_name() as source_file,
+            current_timestamp() as ingested_at
         from
-            -- You do not need a raw table. `read_files` reads the JSON straight
-            -- out of the landing folder, so there is no CREATE TABLE step to
-            -- write and nothing to keep in sync: this staging model is the
-            -- first thing that touches the data.
-            --
-            -- It handles a folder whose files do not all have the same shape:
-            -- it infers one unified schema across every file it reads. A field
-            -- only present in newer files is simply empty for the older rows
-            -- rather than failing the read, so a source that adds a field next
-            -- month needs no backfill and no change here.
-            --
-            -- https://docs.databricks.com/aws/en/sql/language-manual/functions/read_files
             read_files(
-                '{{ var("landing_path") }}',
-                format => 'json',
-                schemahints => '
-                    id string,
-                    title string,
-                    created string,
-                    company struct<display_name: string>,
-                    location struct<display_name: string, area: array<string>>,
-                    category struct<label: string, tag: string>,
-                    description string,
-                    redirect_url string,
-                    latitude double,
-                    longitude double,
-                    salary_min double,
-                    salary_max double
-                '
+                '{{ var("landing_path") }}/postings',
+                format => 'json'
             )
 
     ),
@@ -42,42 +16,30 @@ with
     renamed as (
 
         select
-            -- Standardize primary key
             cast(id as string) as job_id,
-            
-            -- Basic text cleaning
             trim(title) as title,
-            
-            -- Access nested structs
-            coalesce(nullif(trim(company.display_name),'Unknown') as company_name,
-            
-            -- Access nested array items (Adzuna area array: [province, city])
-            -- Use coalesce to provide a default value if the city or province is missing or empty
-            coalesce(nullif(trim(location.area[1]), ''), 'Unknown') as location_city,
-            coalesce(nullif(trim(location.area[0]), ''), 'Unknown') as location_province
 
+-- Pass through raw company/location fields; no array indexing — city/province parsed downstream
             
+            nullif(trim(company.display_name), '') as company_name,
+            coalesce(nullif(trim(location.display_name), ''), 'Unknown') as location_display_name,
+            location.area as location_area,
+
             trim(description) as description,
-            
-            -- Numeric coordinates and salary values
             cast(latitude as double) as latitude,
             cast(longitude as double) as longitude,
             cast(salary_min as double) as salary_min,
             cast(salary_max as double) as salary_max,
-            
-            -- Timestamp conversion from ISO string
+            cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
-            
-            -- Nested category metadata
             category.label as category_label,
             category.tag as category_tag,
             redirect_url,
-            
-            -- Lineage and file partition metadata
+
             source_file,
-            ingest_date,
+            to_date(ingested_at) as ingest_date,
             ingested_at
-            
+
         from source
 
     ),

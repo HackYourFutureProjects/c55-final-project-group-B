@@ -17,7 +17,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .ingest import fetch_raw, fetch_all_pages,parse_records
+from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
     PRODUCTION_CONTAINER,
@@ -106,6 +106,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     path = blob_path(config.source_name, run_date, config.landing_prefix)
 
     # 5. Land raw un-transformed records (local disk or Azure)
+
     if local_dir is not None:
         landed = land_local_json(local_dir, path, raw_records)
         logger.info(

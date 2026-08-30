@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: int_postings_category
+    description: "Intermediate model for cleaning, formatting, and standardizing Dutch and English job categories, including a quality coverage flag."
+    columns:
+      - name: job_id
+        description: "Primary key / unique identifier for the job posting."
+        tests:
+          - unique
+          - not_null
+
+      - name: title
+        description: "Original title of the job posting."
+
+      - name: category_label
+        description: "Cleaned Dutch category label (e.g., 'Algemeen' or cleaned category name without 'vacatures' suffix)."
+
+      - name: category_tag
+        description: "Cleaned and title-cased English category tag derived from URL slugs."
+
+      - name: is_category_known
+        description: "Boolean flag indicating whether a valid, non-generic category is present in either language field."
+        tests:
+          - not_null

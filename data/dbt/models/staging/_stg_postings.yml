@@ -1,5 +1,4 @@
 version: 2
-
 models:
   - name: stg_postings
     description: Cleaned postings, one row per posting.
@@ -7,57 +6,50 @@ models:
       - name: job_id
         description: "(string) Stable unique identifier. Use this as the API resource id."
         tests: [unique, not_null]
-
       - name: title
         description: "(string) Job title as advertised."
         tests: [not_null]
-
       - name: company_name
         description: "(string) Hiring company name."
-        tests: [not_null]
-
-      - name: location_city 
-        description: "(string) Primary city string."
-        tests: [not_null]
-
-      - name: location_province
-        description: "(string) Primary province string."
-        tests: [not_null]
-
+      - name: location_display_name
+        description: >
+          (string) Raw display name for the location as sent by source, often 'City, Province'.
+          Coalesced to 'Unknown' when missing or empty.
+          tests: [not_null]
+      - name: location_area
+        description: >
+          (array<string>)includes the raw area hierarchy array as sent by Adzuna (e.g. country, province, city).
       - name: description
         description: "(text) Explanation of the job, as advertised. This is a long text field."
         tests: [not_null]
-
       - name: latitude
         description: "(float / double) Latitude of the job location, if available."
-
       - name: longitude
         description: "(float / double) Longitude of the job location, if available."
-
       - name: created
         description: "(timestamp) Timestamp the posting was created at the source."
         tests: [not_null]
-
       - name: redirect_url
         description: "(string / text) URL to the original posting on the source website."
         tests: [not_null]
-
       - name: category_label
         description: >
           (string) The category label from the source. Use it for display purposes only.
           Example: "Administratieve vacatures".
-
       - name: category_tag
         description: >
           (string) The category tag from the source. Use it for display purposes only.
           Example: "admin-jobs".
-
       - name: salary_min
         description: "(float / double) Minimum salary for the job, if available."
-
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
-
+      - name: salary_is_predicted
+        description: "(boolean) Whether the salary is predicted by the source."
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
+      - name: source_file
+        description: "(string) File path in the Volume this record was ingested from."
+      - name: ingest_date
+        description: "(date) Partition date this record was ingested under."
