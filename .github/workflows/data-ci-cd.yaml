@@ -300,5 +300,8 @@ jobs:
                     LANDING_PREFIX=raw \
                     DATABRICKS_CATALOG=${{ env.DATABRICKS_CATALOG }} \
                     AZURE_CLIENT_ID=$client_id"
-
-          az containerapp job update \--name "$JOB" \--resource-group "$RG" \--image "$REGISTRY/pipeline:${{ github.sha }}" \--secrets "adzuna-app-id=$ADZUNA_APP_ID" "adzuna-app-key=$ADZUNA_APP_KEY" \--set-env-vars $env_vars
+          az containerapp job update \
+          --name "$JOB" \
+          --resource-group "$RG" \
+          --image "$REGISTRY/pipeline:${{ github.sha }}" \
+          --secrets "adzuna-app-id=$ADZUNA_APP_ID" "adzuna-app-key=$ADZUNA_APP_KEY"
