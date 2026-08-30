@@ -132,11 +132,12 @@ jobs:
       # Conflict-marker scan, dbt parse, and SQLFluff syntax (PRS) on changed
       # dbt SQL. No warehouse or GitHub secrets. sqlfmt still owns layout.
       - name: Check dbt project
+        working-directory: ./data
         env:
           DBT_SCHEMA: ci
           LANDING_PATH: /Volumes/${{ env.DATABRICKS_CATALOG }}/landing/prod
           FILES: ${{ steps.changes.outputs.sql }}
-        run: bash .github/scripts/check-dbt-project.sh
+        run: bash ../.github/scripts/check-dbt-project.sh
 
       - name: Types
         working-directory: ./data
