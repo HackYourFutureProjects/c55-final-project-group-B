@@ -1,0 +1,28 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-hard);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form input {
+  font-family: var(--font-body);
+  color: var(--text);
+  background-color: var(--highlight-low);
+  border: 1px solid var(--highlight-high);
+  padding: 8px;
+}
+
+.name {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
