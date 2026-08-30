@@ -1,42 +1,41 @@
-.intro {
-  border-bottom: 1px solid var(--highlight-high);
-  padding-block: 56px 40px;
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.hero {
+  padding: 42px;
   text-align: center;
+  border-bottom: 1px solid var(--highlight-high);
 }
 
-.title {
+.heading {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 42px);
+  font-size: 2.75rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-.subtitle {
-  max-width: 36rem;
-  margin-inline: auto;
-  margin-top: 16px;
-  color: var(--subtle);
-  font-size: 17px;
-}
-
-.search {
-  margin-top: 32px;
+  padding: 36px;
 }
 
 .results {
+  flex: 1;
   background-color: var(--highlight-low);
+  padding: 36px;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 980px;
-  padding-block: 44px;
+  flex: 0 0 420px;
+  gap: 12px;
 }
 
-.notice {
+.details {
+  flex: 1;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  padding: 0px 16px;
   color: var(--subtle);
-  text-align: center;
 }
