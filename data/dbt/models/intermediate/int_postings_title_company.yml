@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_postings_title
+  - name: int_postings_title_company
     description: >
       Cleaned version of stg_postings. Strips job title noise (parentheticals,
       pipe-separated details, bullet-separated location/specialty tails, "via

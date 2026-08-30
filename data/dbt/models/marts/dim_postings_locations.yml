@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_locations
+    description: "Dimension table containing deduplicated geographic location details."
+    columns:
+      - name: location_key
+        description: "Primary key: MD5 hash of country, province, city, and municipality."
+        tests:
+          - unique
+          - not_null
+
+      - name: country
+        description: "Standardized country name."
+
+      - name: province
+        description: "Standardized province name."
+
+      - name: city
+        description: "Cleaned city or town name."
+
+      - name: municipality
+        description: "Municipality name."

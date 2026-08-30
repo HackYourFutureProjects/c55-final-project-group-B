@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: int_postings_locations
+    description: "Standardizes and cleans raw geographic hierarchy data (country, province, city, municipality) from job postings."
+    columns:
+      - name: location_display_name
+        description: "Raw unparsed location string directly from the source."
+
+      - name: location_area
+        description: "Raw array containing geographic hierarchy levels."
+
+      - name: country
+        description: "Cleaned country name in Title Case. Defaults to 'Unknown' if NULL."
+        tests:
+          - not_null
+
+      - name: province
+        description: "Cleaned Dutch province name in Title Case (e.g., Noord-Brabant)."
+        tests:
+          - not_null
+
+      - name: city
+        description: "Extracted city or town name, cleaned of special characters and formatted in Title Case."
+        tests:
+          - not_null
+
+      - name: municipality
+        description: "Extracted municipality name for 4-level location hierarchies; defaults to 'Unknown' if omitted."

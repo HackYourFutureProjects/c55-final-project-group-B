@@ -6,6 +6,7 @@ Settings come from the environment: .env on your machine, the job definition in
 Azure. Every one is a name or a URL. There is no secret here, because the job
 authenticates as itself. See the README, "Settings".
 """
+
 # we added here also the fetch_all_pages function.
 import argparse
 import logging
@@ -17,7 +18,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .ingest import fetch_all_pages,parse_records
+from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
     PRODUCTION_CONTAINER,
@@ -33,6 +34,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("pipeline")
 
+# Landing-folder name under LANDING_PREFIX (local / aca-dev / prod raw).
+# Same in every environment for a single source — not an env var.
+SOURCE_NAME = "postings"
+
 
 class MissingSetting(RuntimeError):
     """A required environment variable is not set."""
@@ -42,8 +47,7 @@ class MissingSetting(RuntimeError):
 class Config:
     """What the ingestion job needs. Names only, no credentials."""
 
-    source_api_url: str   
-    source_name: str
+    source_api_url: str
     # Empty only for a --local run, which never opens a connection to Azure.
     storage_account: str
     databricks_catalog: str
@@ -68,7 +72,6 @@ def load_config(local: bool = False) -> Config:
 
     return Config(
         source_api_url=required("SOURCE_API_URL"),
-        source_name=os.getenv("SOURCE_NAME", "source"),
         storage_account="" if local else required("STORAGE_ACCOUNT"),
         databricks_catalog=os.getenv("DATABRICKS_CATALOG", "team_b"),
         # The scheduled run writes `prod/raw`. Your own runs write
@@ -86,7 +89,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     # 1. Fetch raw data across all pages
     # fetch_all_pages internally calls fetch_raw for each page and it have the fetch_raw function that handles the retry logic, rate-limit exponential backoff, and error handling. It returns a list of raw records collected from the source API.
-    raw_records = fetch_all_pages(country_code="nl", max_pages=5,results_per_page=50)
+    raw_records = fetch_all_pages(country_code="nl", max_pages=5, results_per_page=50)
 
     # 2. Validate records against Pydantic model as a quality check
     parsed, rejected = parse_records(raw_records)
@@ -103,9 +106,10 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
         )
 
     # 4. Construct destination partition path
-    path = blob_path(config.source_name, run_date, config.landing_prefix)
+    path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
     # 5. Land raw un-transformed records (local disk or Azure)
+
     if local_dir is not None:
         landed = land_local_json(local_dir, path, raw_records)
         logger.info(
@@ -122,14 +126,17 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
         container=config.landing_container,
     )
 
+    landing_root = os.getenv("LANDING_PATH")
+    readable = (
+        f"{landing_root.rstrip('/')}/{SOURCE_NAME}"
+        if landing_root
+        else "(set LANDING_PATH so dbt reads what you just wrote)"
+    )
     logger.info(
         "Pipeline finished: %d landed, %d rejected, readable at %s",
         landed,
         rejected,
-        os.getenv(
-            "LANDING_PATH",
-            "(set LANDING_PATH so dbt reads what you just wrote)",
-        ),
+        readable,
     )
     return landed
 
