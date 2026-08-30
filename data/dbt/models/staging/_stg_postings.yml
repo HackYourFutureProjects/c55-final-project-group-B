@@ -51,5 +51,5 @@ models:
         tests: [not_null]
       - name: source_file
         description: "(string) File path in the Volume this record was ingested from."
-      - name: ingest_date
+      - name: ingest_date #check this
         description: "(date) Partition date this record was ingested under."

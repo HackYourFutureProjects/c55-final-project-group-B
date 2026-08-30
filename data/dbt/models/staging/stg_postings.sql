@@ -24,7 +24,7 @@ with
             trim(description) as description,
             cast(latitude as double) as latitude,
             cast(longitude as double) as longitude,
-            cast(salary_min as double) as salary_min,
+            cast(salary_min as double) as salary_min, -- We need to check
             cast(salary_max as double) as salary_max,
             cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
