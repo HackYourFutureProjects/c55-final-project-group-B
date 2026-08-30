@@ -65,4 +65,17 @@ public class SavedJobRepository {
                 ))
                 .list();
     }
+
+
+    public int deleteByUserIdAndJobId(UUID userId, String jobId) {
+        String sql = """
+        DELETE FROM saved_jobs
+        WHERE user_id = :userId AND job_id = :jobId
+        """;
+
+        return jdbcClient.sql(sql)
+                .param("userId", userId)
+                .param("jobId", jobId)
+                .update();   // return how many row affect, if return 0 mean not found.
+    }
 }

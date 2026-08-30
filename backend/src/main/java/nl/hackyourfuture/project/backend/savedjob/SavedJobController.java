@@ -27,7 +27,7 @@ public class SavedJobController {
     @Operation(summary = "Save a job", description = "Adds a job posting to the current user's saved jobs.")
     @ApiResponse(responseCode = "201", description = "The job was saved")
     @ApiResponse(responseCode = "404", description = "The job does not exist")
-    public void save(@Valid @RequestBody SaveJobRequest request, Authentication authentication) {
+    public void saveJob(@Valid @RequestBody SaveJobRequest request, Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         savedJobService.save(userId, request.jobId());
     }
@@ -40,4 +40,16 @@ public class SavedJobController {
         UUID userId = UUID.fromString(authentication.getName());
         return savedJobService.getSavedJobs(userId);
     }
+
+
+    @DeleteMapping("/{jobId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Unsave a job", description = "Removes a job posting from the current user's saved jobs.")
+    @ApiResponse(responseCode = "204", description = "The job was removed")
+    @ApiResponse(responseCode = "404", description = "The job was not in the user's saved jobs")
+    public void deleteSavedJob(@PathVariable String jobId, Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        savedJobService.deleteSavedJob(userId, jobId);
+    }
+    
 }
