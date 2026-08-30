@@ -10,27 +10,14 @@
 -- Change: rename to your domain and decide the grain. Write one sentence in
 -- _fct_postings.yml saying what one row means. If you cannot write that
 -- sentence, the mart is not ready.
-
 with
-    postings as (
-        select * from {{ ref("stg_postings") }}
-    ),
+    postings as (select * from {{ ref("stg_postings") }}),
 
-    job_title_company as(
-        select * from {{ ref('int_postings_title_company') }}
-    ),
-    locations as(
-        select * from {{ ref('int_postings_locations') }}
-    ),
-    salary as(
-        select * from {{ ref('int_postings_salary') }}
-    ),
-    category as(
-        select * from {{ ref('int_postings_category') }}
-    ),
-    geographic as(
-        select * from {{ ref('int_postings_coordinates') }}
-    )
+    job_title_company as (select * from {{ ref("int_postings_title_company") }}),
+    locations as (select * from {{ ref("int_postings_locations") }}),
+    salary as (select * from {{ ref("int_postings_salary") }}),
+    category as (select * from {{ ref("int_postings_category") }}),
+    geographic as (select * from {{ ref("int_postings_coordinates") }})
 
 select
     -- Primary Keys & Core Details
