@@ -1,14 +1,12 @@
 "use client";
 
 import { HeartIcon } from "@phosphor-icons/react";
-import { useState } from "react";
 import styles from "./save-job-button.module.css";
+import { useSavedJobs } from "./saved-jobs-provider";
 
-export default function SaveJobButton() {
-  const [saved, setSaved] = useState(false);
-  function handleClick() {
-    setSaved((prev) => !prev);
-  }
+export default function SaveJobButton({ jobId }: { jobId: string }) {
+  const { savedJobIds, toggleSaved } = useSavedJobs();
+  const saved = savedJobIds.has(jobId);
 
   return (
     <button
@@ -16,7 +14,7 @@ export default function SaveJobButton() {
       className={`${styles.like} ${saved ? styles.save : styles.remove}`}
       aria-label={saved ? "Unsave job" : "Save job"}
       aria-pressed={saved}
-      onClick={handleClick}
+      onClick={() => toggleSaved(jobId)}
     >
       <HeartIcon size={20} weight={saved ? "fill" : "bold"} />
     </button>
