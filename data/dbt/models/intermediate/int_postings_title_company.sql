@@ -1,4 +1,5 @@
 with
+    -- source as {{ ref("stg_postings") }},
     source as (select * from {{ ref("stg_postings") }}),
 
     cleaned as (

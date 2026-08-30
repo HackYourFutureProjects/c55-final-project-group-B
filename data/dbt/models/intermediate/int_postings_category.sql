@@ -1,5 +1,6 @@
 with
-    source as (select * from team_b.dev_mareh.stg_postings),
+    -- source as {{ ref("stg_postings") }},
+    source as (select * from {{ ref("stg_postings") }}),
 
     cleaned_categories as (
         select
