@@ -75,10 +75,11 @@ jobs:
         working-directory: ./data
         run: uv sync --extra dev --extra sync --extra dbt
 
-      # Lint/format/types only the files this change touches under data/. A
-      # full-tree `ruff check .` would fail a clean DAG PR (or merge) because of
-      # someone else's pre-existing issue elsewhere in the tree. Pytest still
-      # runs the whole suite — that is a behaviour gate, not a style gate.
+      - name: Install dbt dependencies
+        working-directory: ./data
+        run: uv run dbt deps
+
+      # Lint/format/types only the files this change touches under data/...
       - name: List changed data files
         id: changes
         env:
