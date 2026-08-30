@@ -1,7 +1,7 @@
 export default function SuccessPage() {
   return (
     <div className="container">
-      <h1>🙂</h1>
+      <p aria-hidden="true">🙂</p>
       <h1>Success!</h1>
     </div>
   );
