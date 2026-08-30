@@ -1,0 +1,22 @@
+.layout {
+  display: flex;
+  align-items: flex-start;
+  margin: 12px;
+  gap: 32px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 420px;
+  gap: 12px;
+}
+
+.pane {
+  flex: 1;
+}
+
+.jobs {
+  color: var(--subtle);
+  padding: 0px 16px;
+}

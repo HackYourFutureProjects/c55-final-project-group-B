@@ -1,80 +1,62 @@
 .card {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 28px;
-  transition: box-shadow 0.15s ease;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hard);
-}
-
-@media (min-width: 640px) {
-  .card {
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.details {
-  flex: 1;
+  flex-direction: row;
+  padding: 16px;
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--text);
+  transition:
+    translate 250ms cubic-bezier(0.34, 1.8, 0.64, 1),
+    var(--transition-shadow);
+  position: relative;
 }
 
 .title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
-  margin-top: 4px;
-  font-size: 15px;
+  font-size: 1.25rem;
 }
 
 .company {
-  color: var(--pine);
+  font-size: 1rem;
   font-weight: 600;
+  color: var(--pine);
 }
 
-.separator {
-  color: var(--muted);
-}
-
-.meta > span:last-child {
+.location {
   color: var(--subtle);
 }
 
-.summary {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-top: 16px;
+.card:hover {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard);
+  background-color: var(--base);
+  transition:
+    translate 250ms cubic-bezier(0.34, 1.8, 0.64, 1),
+    var(--transition-shadow);
+}
+
+.card.selected {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard);
+  transition:
+    translate 250ms cubic-bezier(0.34, 1.8, 0.64, 1),
+    var(--transition-shadow);
+}
+
+.details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.date {
+  text-align: center;
+  font-size: 0.875rem;
   color: var(--subtle);
-  font-size: 14.5px;
-  line-height: 1.6;
-}
-
-.posted {
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 13px;
-  font-style: italic;
-}
-
-.action {
-  flex-shrink: 0;
-  align-self: flex-start;
-}
-
-@media (min-width: 640px) {
-  .action {
-    align-self: center;
-  }
 }

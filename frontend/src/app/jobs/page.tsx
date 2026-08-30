@@ -1,4 +1,4 @@
-import { JobCard } from "@/components/job-card";
+import JobCard from "@/components/job-card";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import styles from "./page.module.css";
@@ -6,8 +6,6 @@ import type { Job } from "./types";
 
 const LATEST_JOBS_LIMIT = 10;
 
-// The location <select> submits a single value, so city and province
-// options are prefixed to tell them apart for the backend filters.
 function parseLocation(location?: string): {
   city?: string;
   province?: string;
