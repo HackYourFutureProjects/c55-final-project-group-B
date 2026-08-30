@@ -12,3 +12,16 @@ export type Job = {
   redirectUrl: string | null;
   ingestedAt: string | null;
 };
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export type ProblemDetail = {
+  title: string;
+  status: number;
+  detail: string;
+  errors?: Record<string, string>;
+};
