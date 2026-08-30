@@ -1,4 +1,4 @@
-import type { Job } from "@/app/jobs/types";
+import type { Job } from "@/lib/types";
 import { formatPostedDateShort } from "@/lib/formatPostedDateShort";
 import styles from "./job-card.module.css";
 import SaveJobButton from "./save-job-button";
