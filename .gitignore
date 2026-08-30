@@ -233,3 +233,4 @@ airflow_settings.yaml
 # --- data track: local secrets ---
 data/.env
 data/airflow/.env
+lid.176.bin

@@ -280,12 +280,14 @@ jobs:
 
       - name: Create or update the ingestion job
         env:
-          RG: ${{ env.AZURE_RESOURCE_GROUP }}
-          JOB: ${{ env.ACA_INGEST_JOB }}
-          ENVIRONMENT: ${{ env.ACA_ENVIRONMENT }}
-          IDENTITY: ${{ env.ACA_IDENTITY }}
-          REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
-          SUBSCRIPTION: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+          JOB: ${{ vars.ACA_INGEST_JOB }}
+          ENVIRONMENT: ${{ vars.ACA_ENVIRONMENT }}
+          IDENTITY: ${{ vars.ACA_IDENTITY }}
+          REGISTRY: ${{ vars.ACR_NAME }}.azurecr.io
+          SUBSCRIPTION: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: |
           set -euo pipefail
           image="$REGISTRY/pipeline:${{ github.sha }}"
