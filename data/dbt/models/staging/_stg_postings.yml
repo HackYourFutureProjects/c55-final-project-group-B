@@ -44,12 +44,12 @@ models:
         description: "(float / double) Minimum salary for the job, if available."
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
+      - name: salary_is_predicted
+        description: "(boolean) Whether the salary is predicted by the source."
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
-
       - name: source_file
         description: "(string) File path in the Volume this record was ingested from."
-
       - name: ingest_date
         description: "(date) Partition date this record was ingested under."

@@ -3,13 +3,12 @@ with
 
         select
             *,
-            _metadata.file_path as source_file,
-            _metadata.file_modification_time as ingested_at
+            input_file_name() as source_file,
+            current_timestamp() as ingested_at
         from
             read_files(
                 '{{ var("landing_path") }}/postings',
                 format => 'json'
-                
             )
 
     ),
@@ -31,7 +30,7 @@ with
             cast(longitude as double) as longitude,
             cast(salary_min as double) as salary_min,
             cast(salary_max as double) as salary_max,
-
+            cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
             category.label as category_label,
             category.tag as category_tag,

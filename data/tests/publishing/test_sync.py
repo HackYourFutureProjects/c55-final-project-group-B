@@ -1,8 +1,7 @@
-"""The publish step: type mapping, and the order of the swap.
+"""The publish step: type mapping, schema stamping, and the atomic table swap order.
 
-The ordering test is the one that matters. Every other bug here shows up the
-first time you run it; getting the swap wrong shows up as a backend reading a
-table that is briefly missing, which nobody reproduces on demand.
+Tests for `src/publishing/sync.py`. Validates zero-downtime swaps so backend
+APIs never query a missing or partially filled table.
 """
 
 import pytest
@@ -10,15 +9,51 @@ from conftest import FakeWarehouse
 
 from src.publishing import sync
 
+# 1. Matching your actual fct_postings mart columns and data types
 COLUMNS = [
-    ("posting_id", "STRING"),
-    ("jobs_posted", "BIGINT"),
-    ("remote_pct", "DECIMAL(5,1)"),
-    ("is_remote", "BOOLEAN"),
-    ("posted_at", "TIMESTAMP"),
-    ("tags", "ARRAY<STRING>"),
+    ("job_id", "STRING"),
+    ("title", "STRING"),
+    ("company_name", "STRING"),
+    ("description", "STRING"),
+    ("location_city", "STRING"),
+    ("location_province", "STRING"),
+    ("latitude", "DECIMAL(9,6)"),
+    ("longitude", "DECIMAL(9,6)"),
+    ("created", "TIMESTAMP"),
+    ("redirect_url", "STRING"),
+    ("is_category_known", "BOOLEAN"),
+    ("category_label", "STRING"),
+    ("category_tag", "STRING"),
+    ("salary_min", "NUMERIC"),
+    ("salary_max", "NUMERIC"),
+    ("salary_display", "STRING"),
+    ("salary_note", "STRING"),
+    ("ingested_at", "TIMESTAMP"),
 ]
-ROWS = [["a1", 3, 66.7, True, "2026-08-12T00:00:00Z", '["sql"]']]
+
+# Mock data row aligned with your schema
+ROWS = [
+    [
+        "job_12345",
+        "Data Engineer",
+        "Tech Corp",
+        "Job description text",
+        "Amsterdam",
+        "North Holland",
+        52.3676,
+        4.9041,
+        "2026-08-29T10:00:00Z",
+        "https://example.com/job/12345",
+        True,
+        "Algemeen",
+        "Data Engineering",
+        45000.00,
+        65000.00,
+        "€45,000 - €65,000",
+        "Stated by employer",
+        "2026-08-29T10:30:00Z",
+    ]
+]
 
 
 class FakeCursor:
@@ -26,9 +61,6 @@ class FakeCursor:
         self.log = log
 
     def execute(self, statement, params=None):
-        # Statements are psycopg SQL objects now, not strings. as_string()
-        # renders one the way the server will see it, which is what the
-        # ordering assertions below read.
         self.log.append(" ".join(statement.as_string().split()))
 
     def executemany(self, statement, rows):
@@ -71,25 +103,20 @@ def test_type_mapping():
 
 
 def test_unknown_type_becomes_text():
-    """Keeping the value beats guessing at it. A column nobody thought about
-    should not fail the run."""
+    """Unrecognized types fallback to text without failing the publishing step."""
     assert sync.postgres_type("ARRAY<STRING>") == "text"
     assert sync.postgres_type("MAP<STRING,INT>") == "text"
 
 
 def index_of(statements: list[str], fragment: str) -> int:
-    """Position of the first statement containing `fragment`.
-
-    A named failure rather than a bare `next()`, so a test that breaks tells
-    you which statement went missing instead of raising StopIteration.
-    """
     for position, statement in enumerate(statements):
         if fragment in statement:
             return position
-    raise AssertionError(f"no statement contained {fragment!r}: {statements}")
+    raise AssertionError(f"No statement contained {fragment!r}: {statements}")
 
 
 def test_publish_swaps_in_the_right_order(connection):
+    """Load staging first, drop old, rename staging last."""
     count = sync.publish("dsn", "analytics", "fct_postings", COLUMNS, ROWS)
     assert count == 1
 
@@ -99,16 +126,11 @@ def test_publish_swaps_in_the_right_order(connection):
     dropped = index_of(statements, 'drop table if exists "analytics"."fct_postings"')
     renamed = index_of(statements, "rename to")
 
-    # Load first, swap last. Anything else means a reader can see a table that
-    # is only half there.
     assert staging_created < inserted < dropped < renamed
     assert connection.committed
 
 
 def test_first_publish_works_with_no_existing_table(connection):
-    """The `if exists` subtlety. The obvious version of this pattern renames the
-    current table out of the way first, which cannot work the very first time,
-    on exactly the run you most want to succeed."""
     sync.publish("dsn", "analytics", "fct_postings", COLUMNS, ROWS)
     drop = connection.log[
         index_of(connection.log, 'drop table if exists "analytics"."fct_postings"')
@@ -117,7 +139,7 @@ def test_first_publish_works_with_no_existing_table(connection):
 
 
 def test_publishing_zero_rows_is_refused(connection):
-    """An empty mart over a good table is a data loss incident."""
+    """Prevents zero-row overwrites in production."""
     with pytest.raises(ValueError, match="zero rows"):
         sync.publish("dsn", "analytics", "fct_postings", COLUMNS, [])
     assert connection.log == []
@@ -126,29 +148,30 @@ def test_publishing_zero_rows_is_refused(connection):
 def test_reading_an_empty_mart_is_refused():
     warehouse = FakeWarehouse()
     with pytest.raises(ValueError, match="no rows"):
-        sync.read_mart(warehouse, "main", "fct_postings_enriched")
+        sync.read_mart(warehouse, "main", "fct_postings")
 
 
 def test_the_source_schema_is_stamped_on_the_table(connection):
-    """One shared `analytics_dev` means the last publish wins, which is right for
-    a place two tracks meet but leaves nobody able to say why the columns changed.
-    The comment names the warehouse schema the rows came from."""
-    sync.publish("dsn", "analytics_dev", "fct_postings", COLUMNS, ROWS, source="team_b.dev_alex")
+    """Verifies that the databricks source schema (team_b.dev_mareh) is recorded in table comments."""
+    sync.publish(
+        "dsn",
+        "analytics_dev",
+        "fct_postings",
+        COLUMNS,
+        ROWS,
+        source="team_b.dev_mareh",
+    )
 
     comment = connection.log[index_of(connection.log, "comment on table")]
     assert '"analytics_dev"."fct_postings"' in comment
-    assert "from team_b.dev_alex at " in comment
+    assert "from team_b.dev_mareh at " in comment
 
 
 def test_the_stamp_lands_after_the_swap(connection):
-    """Comment the published table, not the staging one: the rename would carry
-    the comment across, but only by accident of ordering."""
-    sync.publish("dsn", "analytics_dev", "fct_postings", COLUMNS, ROWS, source="s")
+    sync.publish("dsn", "analytics_dev", "fct_postings", COLUMNS, ROWS, source="team_b.dev_mareh")
     assert index_of(connection.log, "rename to") < index_of(connection.log, "comment on table")
 
 
 def test_no_source_means_no_comment(connection):
-    """Callers that do not know where the rows came from should not write a
-    misleading stamp, and an unstamped table is better than a wrong one."""
     sync.publish("dsn", "analytics", "fct_postings", COLUMNS, ROWS)
     assert not any("comment on table" in statement for statement in connection.log)

@@ -109,6 +109,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
     # 5. Land raw un-transformed records (local disk or Azure)
+
     if local_dir is not None:
         landed = land_local_json(local_dir, path, raw_records)
         logger.info(
