@@ -1,5 +1,5 @@
 import Loading from "@/components/loading";
 
-export default function PracticeLoading() {
+export default function JobsLoading() {
   return <Loading />;
 }
