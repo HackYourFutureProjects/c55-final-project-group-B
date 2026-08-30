@@ -8,11 +8,11 @@ with
         from read_files('{{ var("landing_path") }}', format => 'json') -- When we add new api we need '{{ var("landing_path") }}/postings'
 
     ),
-
+ 
     renamed as (
 
         select
-            cast(id as string) as job_id,
+            cast(id as string) as job_id, -- cheack id
             trim(title) as title,
 
             nullif(trim(company.display_name), '') as company_name,
