@@ -77,7 +77,7 @@ jobs:
 
       - name: Install dbt dependencies
         working-directory: ./data
-        run: uv run dbt deps --project-dir dbt --profiles-dir dbt
+        run: uv run dbt deps --project-dir dbt --profiles-dir d
 
       # Lint/format/types only the files this change touches under data/...
       - name: List changed data files

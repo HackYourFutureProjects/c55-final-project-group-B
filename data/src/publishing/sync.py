@@ -13,6 +13,7 @@ import argparse
 import logging
 import os
 import sys
+import time
 from datetime import UTC, datetime
 from typing import LiteralString
 
@@ -42,6 +43,38 @@ TYPE_MAP: dict[str, LiteralString] = {
 }
 
 
+def connect_with_retry(
+    dsn: str, attempts: int = 3, delay_seconds: float = 3.0, **kwargs
+) -> psycopg.Connection:
+    """Connect, retrying past a cold-started database.
+
+    Railway's free tier suspends an idle Postgres instance and takes a few
+    seconds to wake it back up. The first connection attempt after a period
+    of inactivity can be dropped mid-handshake ("server closed the connection
+    unexpectedly") even though the database is healthy seconds later. This
+    retries a few times with a short pause rather than failing the whole task
+    over what is, in practice, a wake-up delay.
+    """
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            return psycopg.connect(dsn, **kwargs)
+        except psycopg.OperationalError as exc:
+            last_error = exc
+            if attempt == attempts:
+                break
+            logger.warning(
+                "connect attempt %d/%d failed (%s); retrying in %.0fs",
+                attempt,
+                attempts,
+                exc,
+                delay_seconds,
+            )
+            time.sleep(delay_seconds)
+    assert last_error is not None
+    raise last_error
+
+
 def postgres_type(databricks_type: str) -> LiteralString:
     """Translate one column type. LiteralString because psycopg insists."""
     return TYPE_MAP.get(databricks_type.upper().split("(")[0], "text")
@@ -66,7 +99,7 @@ def read_backend_table(dsn: str, table: str, schema: str = "app") -> list[dict]:
     worst a mistake here can do is return the wrong rows.
     """
     statement = SQL("select * from {}").format(Identifier(schema, table))
-    with psycopg.connect(dsn) as connection, connection.cursor() as cursor:
+    with connect_with_retry(dsn) as connection, connection.cursor() as cursor:
         cursor.execute(statement)
         names = [column.name for column in cursor.description or []]
         rows = [dict(zip(names, row, strict=True)) for row in cursor.fetchall()]
@@ -105,7 +138,7 @@ def publish(
         for name, type_text in columns
     )
 
-    connection = psycopg.connect(dsn, autocommit=False)
+    connection = connect_with_retry(dsn, autocommit=False)
     try:
         with connection.cursor() as cursor:
             cursor.execute(SQL("drop table if exists {}").format(staging))
