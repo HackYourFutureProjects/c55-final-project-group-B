@@ -66,3 +66,15 @@ export async function login(email: string, password: string): Promise<User> {
   }
   return res.json();
 }
+
+export async function register(
+  name: string,
+  email: string,
+  password: string,
+): Promise<User> {
+  const res = await postJson("/api/auth/register", { name, email, password });
+  if (!res.ok) {
+    throw await readError(res);
+  }
+  return res.json();
+}
