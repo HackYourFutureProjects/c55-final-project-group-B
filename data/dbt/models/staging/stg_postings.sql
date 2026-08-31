@@ -16,13 +16,17 @@ with
             trim(title) as title,
 
             -- Parsing nested JSON strings using get_json_object & schema parsing
-            nullif(trim(get_json_object(company, '$.display_name')), '') as company_name,
-            
+            nullif(
+                trim(get_json_object(company, '$.display_name')), ''
+            ) as company_name,
+
             coalesce(
-                nullif(trim(get_json_object(location, '$.display_name')), ''), 'Unknown' --error from here
+                nullif(trim(get_json_object(location, '$.display_name')), ''), 'Unknown'  -- error from here STRUCT
             ) as location_display_name,
 
-            from_json(get_json_object(location, '$.area'), 'ARRAY<STRING>') as location_area,
+            from_json(
+                get_json_object(location, '$.area'), 'ARRAY<STRING>'
+            ) as location_area,
 
             trim(description) as description,
             cast(latitude as double) as latitude,
@@ -31,7 +35,7 @@ with
             cast(salary_max as double) as salary_max,
             cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
-            
+
             get_json_object(category, '$.label') as category_label,
             get_json_object(category, '$.tag') as category_tag,
             redirect_url,
