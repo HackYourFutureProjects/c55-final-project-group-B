@@ -21,6 +21,7 @@
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
   --transition-shadow: box-shadow 250ms ease;
+  --transition-shadow-sm: box-shadow 150ms ease;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-inter), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
@@ -120,11 +121,20 @@ a {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition:
+    0.15s ease,
+    var(--transition-shadow);
 }
 
 .button-secondary:hover {
   background-color: var(--overlay);
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.button-secondary:active {
+  translate: 1px 1px;
+  box-shadow: none;
 }
 
 .card {
