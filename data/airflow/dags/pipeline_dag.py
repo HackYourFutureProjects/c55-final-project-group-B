@@ -110,10 +110,12 @@ def dbt_command() -> str:
     laptop for a credential it is deliberately not allowed to have.
     """
     target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
-    return (
+    deps = f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
+    build = (
         f"{DBT_RUNNER} build --target {target} "
         f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     )
+    return f"{deps} && {build}"
 
 
 def setting(name: str, default: str | None = None) -> str:
