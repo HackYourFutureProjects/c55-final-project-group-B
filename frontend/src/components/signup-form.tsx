@@ -73,7 +73,6 @@ export default function SignupForm() {
           type="email"
           name="email"
           id="email"
-          autoComplete="email"
           placeholder="user@example.com"
           required
           className={styles.input}
@@ -91,7 +90,7 @@ export default function SignupForm() {
           type="password"
           name="password"
           id="password"
-          autoComplete="new-password"
+          placeholder="**********"
           minLength={8}
           required
           className={styles.input}

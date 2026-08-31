@@ -22,7 +22,7 @@ export default function JobDetails({ job }: { job: Job }) {
                 href={job.redirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`button`}
+                className="button"
               >
                 Apply now
               </a>
