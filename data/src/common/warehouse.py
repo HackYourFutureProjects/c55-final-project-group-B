@@ -173,7 +173,7 @@ class Warehouse:
 
     def run(self, statement: str) -> list[list]:
         """Run one statement and return its rows, as lists of strings."""
-        return self.query(statement)[1] #Here
+        return self.query(statement)[1]  # Here
 
     def query(self, statement: str) -> tuple[list[tuple[str, str]], list[list]]:
         """Run one statement and return (columns, rows), waiting for it.
@@ -197,7 +197,7 @@ class Warehouse:
 
         state = body.get("status", {}).get("state")
         if state != "SUCCEEDED":
-            raise WarehouseError(f"statement {state}: {body.get('status')}") #Here
+            raise WarehouseError(f"statement {state}: {body.get('status')}")  # Here
 
         schema = body.get("manifest", {}).get("schema", {}).get("columns", [])
         columns = [(c.get("name", ""), c.get("type_text", "STRING")) for c in schema]
