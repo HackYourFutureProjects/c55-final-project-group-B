@@ -1,5 +1,6 @@
 .section {
   background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
 }
 
 .grid {
@@ -16,14 +17,22 @@
 
 .feature {
   padding: 24px;
+  transition: var(--transition-shadow);
 }
 
-.swatch {
+.feature:hover {
+  transition: var(--transition-shadow);
+  box-shadow: var(--shadow-hard);
+}
+
+.icon {
+  color: var(--base);
   display: block;
   width: 36px;
   height: 36px;
   border: 1px solid var(--text);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-hard-sm);
 }
 
 .swatchPine {

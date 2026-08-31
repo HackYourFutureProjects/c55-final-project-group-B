@@ -1,4 +1,4 @@
-import { SpinnerIcon } from "@phosphor-icons/react/dist/ssr";
+import { SpinnerIcon } from "@phosphor-icons/react/ssr";
 import styles from "./loading.module.css";
 
 export default function Loading() {

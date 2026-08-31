@@ -21,6 +21,7 @@
 
 .link {
   font-size: 15px;
+  font-weight: 500;
   transition: color 0.15s ease;
 }
 

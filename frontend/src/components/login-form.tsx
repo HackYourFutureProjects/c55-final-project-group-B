@@ -46,7 +46,6 @@ export default function LoginForm() {
           type="email"
           name="email"
           id="email"
-          autoComplete="email"
           placeholder="user@example.com"
           required
           className={styles.input}
@@ -61,7 +60,7 @@ export default function LoginForm() {
           type="password"
           name="password"
           id="password"
-          autoComplete="current-password"
+          placeholder="**********"
           required
           className={styles.input}
         />

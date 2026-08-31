@@ -12,7 +12,7 @@ export function Hero() {
         </h1>
 
         <p className={styles.tagline}>
-          Thousands of roles across the Netherlands to explore!
+          Thousands of jobs across the Netherlands to explore!
         </p>
 
         <div className={styles.search}>
@@ -24,7 +24,7 @@ export function Hero() {
           <Link href="/signup" className={styles.noteLink}>
             Sign up
           </Link>{" "}
-          for personalized results.
+          to save jobs.
         </p>
       </div>
     </section>

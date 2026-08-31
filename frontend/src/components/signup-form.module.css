@@ -23,6 +23,18 @@
   background-color: var(--highlight-low);
   border: 1px solid var(--highlight-high);
   border-radius: var(--radius);
+  transition:
+    150ms ease,
+    var(--transition-shadow-sm);
+}
+
+.input:focus {
+  outline: none;
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard-sm);
+  transition:
+    150ms ease,
+    var(--transition-shadow-sm);
 }
 
 .input::placeholder {
@@ -35,6 +47,7 @@
 }
 
 .error {
+  font-weight: bold;
   color: var(--love);
   font-size: 15px;
 }

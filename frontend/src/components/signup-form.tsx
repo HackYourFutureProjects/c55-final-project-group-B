@@ -16,12 +16,18 @@ export default function SignupForm() {
     event.preventDefault();
     setError(null);
     setFieldErrors({});
-    setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name"));
     const email = String(formData.get("email"));
     const password = String(formData.get("password"));
+    const confirmPassword = String(formData.get("confirmPassword"));
+
+    if (password !== confirmPassword) {
+      setFieldErrors({ confirmPassword: "Passwords do not match." });
+      return;
+    }
+    setIsSubmitting(true);
 
     try {
       await register(name, email, password);
@@ -73,7 +79,6 @@ export default function SignupForm() {
           type="email"
           name="email"
           id="email"
-          autoComplete="email"
           placeholder="user@example.com"
           required
           className={styles.input}
@@ -91,7 +96,7 @@ export default function SignupForm() {
           type="password"
           name="password"
           id="password"
-          autoComplete="new-password"
+          placeholder="**********"
           minLength={8}
           required
           className={styles.input}
@@ -102,6 +107,24 @@ export default function SignupForm() {
         </p>
         {fieldErrors.password && (
           <p className={styles.error}>{fieldErrors.password}</p>
+        )}
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="confirmPassword" className={styles.label}>
+          Confirm password
+        </label>
+        <input
+          type="password"
+          name="confirmPassword"
+          id="confirmPassword"
+          placeholder="**********"
+          minLength={8}
+          required
+          className={styles.input}
+        />
+        {fieldErrors.confirmPassword && (
+          <p className={styles.error}>{fieldErrors.confirmPassword}</p>
         )}
       </div>
 
