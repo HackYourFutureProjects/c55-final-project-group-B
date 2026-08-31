@@ -16,7 +16,7 @@ export default function JobDetails({ job }: { job: Job }) {
         <div className={styles.aside}>
           <p className={styles.date}>{posted}</p>
           <div className={styles.buttons}>
-            <SaveJobButton />
+            <SaveJobButton jobId={job.jobId} />
             {job.redirectUrl && (
               <a
                 href={job.redirectUrl}

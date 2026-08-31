@@ -1,6 +1,7 @@
 import JobCard from "@/components/job-card";
 import JobDetails from "@/components/job-details";
 import NoSearchResults from "@/components/no-search-results";
+import { SavedJobsProvider } from "@/components/saved-jobs-provider";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import type { Job } from "@/lib/types";
@@ -90,26 +91,28 @@ export default async function JobsPage({
       <section className={styles.results}>
         <div className="container">
           {hasResults ? (
-            <div className={styles.layout}>
-              <div className={styles.list}>
-                <p className={styles.subtitle}>
-                  {count} {count === 1 ? "job" : "jobs"} available{" "}
-                  {q && `for ${q}`}
-                  {place && ` in ${place}`}
-                </p>
-                {jobs.map((job) => (
-                  <JobCard
-                    key={job.jobId}
-                    job={job}
-                    isSelected={job.jobId === selectedJob.jobId}
-                    href={hrefFor(job.jobId)}
-                  />
-                ))}
+            <SavedJobsProvider>
+              <div className={styles.layout}>
+                <div className={styles.list}>
+                  <p className={styles.subtitle}>
+                    {count} {count === 1 ? "job" : "jobs"} available{" "}
+                    {q && `for ${q}`}
+                    {place && ` in ${place}`}
+                  </p>
+                  {jobs.map((job) => (
+                    <JobCard
+                      key={job.jobId}
+                      job={job}
+                      isSelected={job.jobId === selectedJob.jobId}
+                      href={hrefFor(job.jobId)}
+                    />
+                  ))}
+                </div>
+                <div className={styles.details}>
+                  <JobDetails job={selectedJob} />
+                </div>
               </div>
-              <div className={styles.details}>
-                <JobDetails job={selectedJob} />
-              </div>
-            </div>
+            </SavedJobsProvider>
           ) : (
             <NoSearchResults q={q} place={place} />
           )}

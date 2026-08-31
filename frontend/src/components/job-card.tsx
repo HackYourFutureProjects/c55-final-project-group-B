@@ -27,7 +27,7 @@ export default function JobCard({
         <p className={styles.location}>{job.locationCity}</p>
       </div>
       <div className={styles.aside}>
-        <SaveJobButton />
+        <SaveJobButton jobId={job.jobId} />
         <p className={styles.date}>{posted}</p>
       </div>
     </div>
