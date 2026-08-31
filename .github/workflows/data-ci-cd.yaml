@@ -301,7 +301,8 @@ jobs:
                     DATABRICKS_CATALOG=${{ env.DATABRICKS_CATALOG }} \
                     AZURE_CLIENT_ID=$client_id"
           az containerapp job update \
-          --name "$JOB" \
-          --resource-group "$RG" \
-          --image "$REGISTRY/pipeline:${{ github.sha }}" \
-          --secrets "adzuna-app-id=$ADZUNA_APP_ID" "adzuna-app-key=$ADZUNA_APP_KEY"
+            --name "$JOB" \
+            --resource-group "$RG" \
+            --image "$REGISTRY/pipeline:${{ github.sha }}" \
+            --secrets "adzuna-app-id=$ADZUNA_APP_ID" \
+            --secrets "adzuna-app-key=$ADZUNA_APP_KEY"
