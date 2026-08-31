@@ -4,9 +4,7 @@ import styles from "./site-header.module.css";
 
 const NAV_LINKS = [
   { label: "Jobs", href: "/jobs" },
-  { label: "Companies", href: "/companies" },
   { label: "About", href: "/about" },
-  { label: "For employers", href: "/employers" },
 ];
 
 export function SiteHeader() {
