@@ -1,0 +1,119 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import type { SubmitEvent } from "react";
+import { useState } from "react";
+import { ApiError, login, register } from "@/lib/auth";
+import styles from "./signup-form.module.css";
+
+export default function SignupForm() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setFieldErrors({});
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name"));
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+
+    try {
+      await register(name, email, password);
+      await login(email, password); // registration does not log you in
+      router.push("/success");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setFieldErrors({ email: err.message }); // "Email is already registered"
+      } else if (
+        err instanceof ApiError &&
+        Object.keys(err.fieldErrors).length > 0
+      ) {
+        setFieldErrors(err.fieldErrors); // 400 validation messages per field
+      } else if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.field}>
+        <label htmlFor="name" className={styles.label}>
+          Name
+        </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          autoComplete="name"
+          placeholder="Jane Smith"
+          minLength={2}
+          maxLength={100}
+          required
+          className={styles.input}
+        />
+        {fieldErrors.name && <p className={styles.error}>{fieldErrors.name}</p>}
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="email" className={styles.label}>
+          E-mail
+        </label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          autoComplete="email"
+          placeholder="user@example.com"
+          required
+          className={styles.input}
+        />
+        {fieldErrors.email && (
+          <p className={styles.error}>{fieldErrors.email}</p>
+        )}
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="password" className={styles.label}>
+          Password
+        </label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          autoComplete="new-password"
+          minLength={8}
+          required
+          className={styles.input}
+        />
+        <p className={styles.hint}>
+          Must contain at least an uppercase letter, a lowercase letter and a
+          number.
+        </p>
+        {fieldErrors.password && (
+          <p className={styles.error}>{fieldErrors.password}</p>
+        )}
+      </div>
+
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+
+      <button type="submit" className="button" disabled={isSubmitting}>
+        {isSubmitting ? "Signing up…" : "Sign up"}
+      </button>
+    </form>
+  );
+}

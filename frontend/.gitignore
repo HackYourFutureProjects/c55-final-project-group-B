@@ -13,6 +13,8 @@
 # testing
 /archive/
 /coverage
+/notes/
+
 
 # next.js
 /.next/

@@ -1,10 +1,27 @@
-import { PagePlaceholder } from "@/components/page-placeholder";
+import Link from "next/link";
+import LoginForm from "@/components/login-form";
+import styles from "./page.module.css";
 
 export default function LoginPage() {
   return (
-    <PagePlaceholder
-      title="Log in"
-      detail="This page is not built yet. Authentication is coming in a later sprint."
-    />
+    <section className={styles.section}>
+      <div className="container">
+        <div className={styles.pane}>
+          <h1 className={styles.title}>Log in</h1>
+          <p className={styles.subtitle}>
+            Welcome back. Log in to see your saved jobs.
+          </p>
+
+          <LoginForm />
+
+          <p className={styles.note}>
+            Not a user yet?{" "}
+            <Link href="/signup" className={styles.noteLink}>
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }

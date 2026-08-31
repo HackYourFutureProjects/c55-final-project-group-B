@@ -1,0 +1,44 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.input {
+  padding: 12px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text);
+  background-color: var(--highlight-low);
+  border: 1px solid var(--highlight-high);
+  border-radius: var(--radius);
+}
+
+.input::placeholder {
+  color: var(--subtle);
+}
+
+.error {
+  color: var(--love);
+  font-size: 15px;
+}
+
+.form :global(.button) {
+  align-self: flex-start;
+}
+
+.form :global(.button:disabled) {
+  opacity: 0.6;
+  cursor: wait;
+}

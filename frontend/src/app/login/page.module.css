@@ -1,0 +1,42 @@
+.section {
+  padding-block: 72px 48px;
+}
+
+.pane {
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 32px;
+  background-color: var(--surface);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin-top: 8px;
+  margin-bottom: 28px;
+  color: var(--subtle);
+}
+
+.note {
+  margin-top: 24px;
+  color: var(--subtle);
+  font-size: 15px;
+}
+
+.noteLink {
+  color: var(--pine);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+.noteLink:hover {
+  text-decoration: underline;
+}
