@@ -1,20 +1,28 @@
 import styles from "./feature-cards.module.css";
+import {
+  BriefcaseIcon,
+  BuildingOfficeIcon,
+  CompassIcon,
+} from "@phosphor-icons/react/ssr";
 
 const FEATURES = [
   {
     title: "For job seekers",
     body: "Your next dream job is waiting for you, so what are you waiting for?",
-    swatch: styles.swatchPine,
+    icon: <BriefcaseIcon size={32} />,
+    color: styles.swatchPine,
   },
   {
     title: "For employers",
     body: "Your next great hire is already browsing Flint. Post a role and start reviewing today.",
-    swatch: styles.swatchIris,
+    icon: <BuildingOfficeIcon size={32} />,
+    color: styles.swatchIris,
   },
   {
     title: "Search your region",
     body: "Filter by city or province and search roles across the country.",
-    swatch: styles.swatchRose,
+    icon: <CompassIcon size={32} />,
+    color: styles.swatchRose,
   },
 ];
 
@@ -24,10 +32,9 @@ export function FeatureCards() {
       <div className={`container ${styles.grid}`}>
         {FEATURES.map((feature) => (
           <article key={feature.title} className={`card ${styles.feature}`}>
-            <span
-              aria-hidden
-              className={`${styles.swatch} ${feature.swatch}`}
-            />
+            <span aria-hidden className={`${styles.icon} ${feature.color}`}>
+              {feature.icon}
+            </span>
             <h2 className={styles.title}>{feature.title}</h2>
             <p className={styles.body}>{feature.body}</p>
           </article>

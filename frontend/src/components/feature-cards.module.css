@@ -18,7 +18,8 @@
   padding: 24px;
 }
 
-.swatch {
+.icon {
+  color: var(--base);
   display: block;
   width: 36px;
   height: 36px;
