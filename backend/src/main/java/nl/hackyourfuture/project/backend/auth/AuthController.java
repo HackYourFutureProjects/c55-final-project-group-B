@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CsrfToken;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.auth.dto.RegistrationRequest;
 import nl.hackyourfuture.project.backend.user.dto.UserResponse;
@@ -38,21 +39,29 @@ public class AuthController {
     public UserResponse login(@Valid @RequestBody LoginRequest request,
                               HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         LoginUser user = authService.login(request);
-        var authentication = UsernamePasswordAuthenticationToken.authenticated(
-                user.id().toString(), null, List.of());
-        loginSessionStrategy.onAuthentication(authentication, httpRequest, httpResponse);
-        var context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context, httpRequest, httpResponse);
+        startSession(user.id(), httpRequest, httpResponse);
         return new UserResponse(user.id(), user.name(), user.email());
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Register a user")
-    public UserResponse register(@Valid @RequestBody RegistrationRequest request) {
-        return authService.register(request);
+    @Operation(summary = "Register and log in a user")
+    public UserResponse register(@Valid @RequestBody RegistrationRequest request,
+                                 HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        UserResponse user = authService.register(request);
+        startSession(user.id(), httpRequest, httpResponse);
+        return user;
+    }
+
+    private void startSession(UUID userId, HttpServletRequest request, HttpServletResponse response) {
+        var authentication = UsernamePasswordAuthenticationToken.authenticated(
+                userId.toString(), null, List.of());
+        loginSessionStrategy.onAuthentication(authentication, request, response);
+
+        var context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, request, response);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
