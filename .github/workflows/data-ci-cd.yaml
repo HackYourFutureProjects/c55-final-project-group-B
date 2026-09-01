@@ -292,7 +292,8 @@ jobs:
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: |
           set -euo pipefail
-          client_id="${{ env.AZURE_CLIENT_ID }}"
+          identity="/subscriptions/$SUBSCRIPTION/resourcegroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY"
+          client_id="$(az identity show --ids "$identity" --query clientId -o tsv)"
 
           az containerapp job update \
             --name "$JOB" \
