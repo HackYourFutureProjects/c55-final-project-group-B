@@ -16,42 +16,33 @@ public class JobRepository {
     public List<JobSummaryDto> findJobs(String jobTitle, String city, String province) {
 
         String sql = """
-            SELECT job_id,
-                   title,
-                   company_name,
-                   location_city,
-                   location_province,
-                   description,
-                   latitude,
-                   longitude,
-                   created,
-                   redirect_url,
-                   ingested_at
+            SELECT job_id, title, company_name, location_city, location_province,
+                   description, latitude, longitude, created, redirect_url, ingested_at
             FROM analytics.fct_postings
+            WHERE (:jobTitle::text IS NULL OR title ILIKE '%' || :jobTitle || '%')
+              AND (:city::text IS NULL OR location_city ILIKE :city)
+              AND (:province::text IS NULL OR location_province ILIKE :province)
             ORDER BY created DESC
-            """;
+        """;
 
-        List<JobSummaryDto> allJobs = jdbcClient.sql(sql)
-                .query((resultSet, rowNumber) -> new JobSummaryDto(
-                        resultSet.getString("job_id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("company_name"),
-                        resultSet.getString("location_city"),
-                        resultSet.getString("location_province"),
-                        resultSet.getString("description"),
-                        resultSet.getObject("latitude", Double.class),
-                        resultSet.getObject("longitude", Double.class),
-                        resultSet.getString("created"),
-                        resultSet.getString("redirect_url"),
-                        resultSet.getString("ingested_at")
+        return jdbcClient.sql(sql)
+                .param("jobTitle", jobTitle)
+                .param("city", city)
+                .param("province", province)
+                .query((rs, rn) -> new JobSummaryDto(
+                        rs.getString("job_id"),
+                        rs.getString("title"),
+                        rs.getString("company_name"),
+                        rs.getString("location_city"),
+                        rs.getString("location_province"),
+                        rs.getString("description"),
+                        rs.getObject("latitude", Double.class),
+                        rs.getObject("longitude", Double.class),
+                        rs.getString("created"),
+                        rs.getString("redirect_url"),
+                        rs.getString("ingested_at")
                 ))
                 .list();
-
-        return allJobs.stream()
-                .filter(job -> jobTitle == null || job.title().toLowerCase().contains(jobTitle.toLowerCase()))
-                .filter(job -> city == null || job.locationCity().equalsIgnoreCase(city))
-                .filter(job -> province == null || job.locationProvince().equalsIgnoreCase(province))
-                .toList();
     }
 
     public List<String> findAllJobTitles() {
