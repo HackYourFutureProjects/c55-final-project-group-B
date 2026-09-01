@@ -35,6 +35,7 @@ with
             to_date(ingested_at) as ingest_date,
             ingested_at
         from source
+        where id is not null and created is not null and redirect_url is not null
 
     ),
 
