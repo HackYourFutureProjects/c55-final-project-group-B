@@ -1,9 +1,9 @@
-import styles from "./feature-cards.module.css";
 import {
   BriefcaseIcon,
   BuildingOfficeIcon,
   CompassIcon,
 } from "@phosphor-icons/react/ssr";
+import styles from "./feature-cards.module.css";
 
 const FEATURES = [
   {
