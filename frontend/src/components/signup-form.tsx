@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login, register } from "@/lib/auth";
+import { useCurrentUser } from "../context/current-user-provider";
 import styles from "./signup-form.module.css";
 
 export default function SignupForm() {
   const router = useRouter();
+  const { setUser } = useCurrentUser();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +33,10 @@ export default function SignupForm() {
 
     try {
       await register(name, email, password);
-      await login(email, password); // registration does not log you in
+      // Registration does not create a session, so log in right after and
+      // cache the returned user; the header reads it to show the account menu.
+      const user = await login(email, password);
+      setUser(user);
       router.push("/success");
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
