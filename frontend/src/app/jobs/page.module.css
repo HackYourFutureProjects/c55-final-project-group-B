@@ -32,6 +32,8 @@
 
 .details {
   flex: 1;
+  position: sticky;
+  top: 16px;
 }
 
 .subtitle {
