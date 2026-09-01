@@ -287,13 +287,11 @@ jobs:
           ENVIRONMENT: ${{ env.ACA_ENVIRONMENT }}
           IDENTITY: ${{ env.ACA_IDENTITY }}
           REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
-          SUBSCRIPTION: ${{ env.AZURE_SUBSCRIPTION_ID }}
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: |
           set -euo pipefail
-          identity="/subscriptions/$SUBSCRIPTION/resourcegroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY"
-          client_id="$(az identity show --ids "$identity" --query clientId -o tsv)"
+          client_id="$(az identity show --resource-group "$RG" --name "$IDENTITY" --query clientId -o tsv)"
 
           az containerapp job update \
             --name "$JOB" \
