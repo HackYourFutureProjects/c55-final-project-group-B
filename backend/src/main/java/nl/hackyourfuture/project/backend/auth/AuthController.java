@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import nl.hackyourfuture.project.backend.auth.dto.LoginRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -41,6 +42,12 @@ public class AuthController {
         LoginUser user = authService.login(request);
         startSession(user.id(), httpRequest, httpResponse);
         return new UserResponse(user.id(), user.name(), user.email());
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Get the currently logged-in user")
+    public UserResponse me(Authentication authentication) {
+        return authService.getCurrentUser(authentication.getName());
     }
 
     @PostMapping("/register")

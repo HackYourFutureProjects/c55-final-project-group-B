@@ -55,4 +55,17 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.CONFLICT, "Email is already registered"));
     }
+
+    public UserResponse getCurrentUser(String userId) {
+        try {
+            UUID id = UUID.fromString(userId);
+            return userRepository.findById(id)
+                    .map(UserResponse::from)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.UNAUTHORIZED, "Authenticated user no longer exists"));
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid authenticated user");
+        }
+    }
 }

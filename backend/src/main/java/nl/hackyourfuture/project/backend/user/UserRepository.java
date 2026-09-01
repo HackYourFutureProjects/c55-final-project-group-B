@@ -27,6 +27,18 @@ public class UserRepository {
                 .list();
     }
 
+    public Optional<User> findById(UUID id) {
+        return jdbcClient
+                .sql("""
+                        SELECT id, name, email
+                        FROM users
+                        WHERE id = :id
+                        """)
+                .param("id", id)
+                .query(USER_ROW_MAPPER)
+                .optional();
+    }
+
     public User createUser(User user) {
         jdbcClient
                 .sql("INSERT INTO users (id, name, email) " +
