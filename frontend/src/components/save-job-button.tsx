@@ -3,7 +3,7 @@
 import { HeartIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import styles from "./save-job-button.module.css";
-import { useSavedJobs } from "./saved-jobs-provider";
+import { useSavedJobs } from "../context/saved-jobs-provider";
 
 export default function SaveJobButton({ jobId }: { jobId: string }) {
   const { savedJobIds, toggleSaved } = useSavedJobs();

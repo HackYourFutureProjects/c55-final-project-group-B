@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import UserMenu from "@/components/user-menu";
 import styles from "./site-header.module.css";
 
 const NAV_LINKS = [
@@ -25,14 +26,7 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className={styles.auth}>
-          <Link href="/login" className="button-secondary">
-            Log in
-          </Link>
-          <Link href="/signup" className="button">
-            Sign up
-          </Link>
-        </div>
+        <UserMenu />
       </div>
     </header>
   );

@@ -1,7 +1,7 @@
 import JobCard from "@/components/job-card";
 import JobDetails from "@/components/job-details";
 import NoSearchResults from "@/components/no-search-results";
-import { SavedJobsProvider } from "@/components/saved-jobs-provider";
+import { SavedJobsProvider } from "@/context/saved-jobs-provider";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import type { Job } from "@/lib/types";
