@@ -29,7 +29,7 @@ with
             cast(salary_is_predicted as boolean) as salary_is_predicted,
             to_timestamp(created) as created,
             category.label as category_label,
-            category.tag as category_tag
+            category.tag as category_tag,
             redirect_url,
             source_file,
             to_date(ingested_at) as ingest_date,
