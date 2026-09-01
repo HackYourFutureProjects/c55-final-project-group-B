@@ -306,3 +306,51 @@ jobs:
               AZURE_CLIENT_ID="$client_id" \
               ADZUNA_APP_ID="$ADZUNA_APP_ID" \
               ADZUNA_APP_KEY="$ADZUNA_APP_KEY"
+
+  deploy-dev:
+    # Mode 2 dev ingest job: same image as prod, writes dev/aca-dev instead.
+    # Keeps job-fp-ingest-dev in step with every merge to main without a manual
+    # az containerapp job update from a laptop.
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create or update the dev ingestion job
+        env:
+          RG: ${{ env.AZURE_RESOURCE_GROUP }}
+          JOB: job-fp-ingest-dev
+          ENVIRONMENT: ${{ env.ACA_ENVIRONMENT }}
+          IDENTITY: ${{ env.ACA_IDENTITY }}
+          REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+        run: |
+          set -euo pipefail
+          client_id="$(az identity show --resource-group "$RG" --name "$IDENTITY" --query clientId -o tsv)"
+
+          az containerapp job update \
+            --name "$JOB" \
+            --resource-group "$RG" \
+            --image "$REGISTRY/pipeline:${{ github.sha }}" \
+            --set-env-vars \
+              SOURCE_API_URL="${{ env.SOURCE_API_URL }}" \
+              STORAGE_ACCOUNT="${{ env.STORAGE_ACCOUNT }}" \
+              LANDING_CONTAINER="dev" \
+              LANDING_PREFIX="aca-dev" \
+              DATABRICKS_CATALOG="${{ env.DATABRICKS_CATALOG }}" \
+              AZURE_CLIENT_ID="$client_id" \
+              ADZUNA_APP_ID="$ADZUNA_APP_ID" \
+              ADZUNA_APP_KEY="$ADZUNA_APP_KEY"
+
+          echo "### Deployed \`pipeline:${{ github.sha }}\` to \`$JOB\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Writes to the \`dev\` container under prefix \`aca-dev\`." >> "$GITHUB_STEP_SUMMARY"
