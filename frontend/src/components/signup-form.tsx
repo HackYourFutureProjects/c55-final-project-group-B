@@ -10,11 +10,11 @@ import {
   MailboxIcon,
   LockOpenIcon,
   LockIcon,
-  CheckIcon,
-  XIcon,
 } from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
-import { validate, passwordRules } from "@/lib/validation";
+import { validate } from "@/lib/validation";
+import PasswordChecklist from "./password-checklist";
+import FieldError from "./field-error";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -34,11 +34,15 @@ export default function SignupForm() {
   });
 
   const [error, setError] = useState<string | null>(null);
-
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const clientErrors = validate(values);
+
+  function errorFor(field: keyof typeof values): string | undefined {
+    return touched[field]
+      ? (clientErrors[field] ?? serverErrors[field])
+      : undefined;
+  }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -73,9 +77,9 @@ export default function SignupForm() {
         setServerErrors({ email: err.message }); // "Email is already registered"
       } else if (
         err instanceof ApiError &&
-        Object.keys(err.fieldErrors).length > 0
+        Object.keys(err.serverErrors).length > 0
       ) {
-        setServerErrors(err.fieldErrors); // 400 validation messages per field
+        setServerErrors(err.serverErrors); // 400 validation messages per field
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -105,11 +109,7 @@ export default function SignupForm() {
           onChange={handleChange}
           onBlur={markTouched}
         />
-        {touched.name && (clientErrors.name ?? serverErrors.name) && (
-          <p className={styles.error} role="alert">
-            {clientErrors.name ?? serverErrors.name}
-          </p>
-        )}
+        <FieldError message={errorFor("name")} />
       </div>
 
       <div className={styles.field}>
@@ -127,11 +127,7 @@ export default function SignupForm() {
           onChange={handleChange}
           onBlur={markTouched}
         />
-        {touched.email && (clientErrors.email ?? serverErrors.email) && (
-          <p className={styles.error} role="alert">
-            {clientErrors.email ?? serverErrors.email}
-          </p>
-        )}
+        <FieldError message={errorFor("email")} />
       </div>
 
       <div className={styles.field}>
@@ -149,33 +145,8 @@ export default function SignupForm() {
           onChange={handleChange}
           onFocus={markTouched}
         />
-
-        {touched.password && (
-          <ul className={styles.rules}>
-            {passwordRules.map((rule) => {
-              const passed = rule.test(values.password);
-              return (
-                <li
-                  key={rule.label}
-                  className={passed ? styles.rulePassed : styles.ruleFailed}
-                >
-                  {passed ? (
-                    <CheckIcon weight="duotone" />
-                  ) : (
-                    <XIcon weight="duotone" />
-                  )}
-                  {rule.label}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-
-        {serverErrors.password && (
-          <p className={styles.error} role="alert">
-            {serverErrors.password}
-          </p>
-        )}
+        {touched.password && <PasswordChecklist password={values.password} />}
+        <FieldError message={serverErrors.password} />
       </div>
 
       <div className={styles.field}>
@@ -193,11 +164,7 @@ export default function SignupForm() {
           onChange={handleChange}
           onBlur={markTouched}
         />
-        {touched.confirmPassword && clientErrors.confirmPassword && (
-          <p className={styles.error} role="alert">
-            {clientErrors.confirmPassword}
-          </p>
-        )}
+        <FieldError message={errorFor("confirmPassword")} />
       </div>
 
       {error && (

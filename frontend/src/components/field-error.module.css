@@ -1,0 +1,5 @@
+.error {
+  font-weight: bold;
+  color: var(--love);
+  font-size: 15px;
+}

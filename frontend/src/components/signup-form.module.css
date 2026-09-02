@@ -49,12 +49,6 @@
   font-size: 14px;
 }
 
-.error {
-  font-weight: bold;
-  color: var(--love);
-  font-size: 15px;
-}
-
 .form :global(.button) {
   align-self: flex-start;
 }
@@ -62,22 +56,4 @@
 .form :global(.button:disabled) {
   opacity: 0.6;
   cursor: wait;
-}
-
-.rules {
-  list-style: none;
-}
-
-.rulePassed {
-  display: flex;
-  align-items: center;
-  color: var(--pine);
-  font-weight: 250;
-}
-
-.ruleFailed {
-  display: flex;
-  align-items: center;
-  color: var(--love);
-  font-weight: 500;
 }
