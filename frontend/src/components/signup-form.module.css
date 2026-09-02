@@ -63,3 +63,21 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+.rules {
+  list-style: none;
+}
+
+.rulePassed {
+  display: flex;
+  align-items: center;
+  color: var(--pine);
+  font-weight: 250;
+}
+
+.ruleFailed {
+  display: flex;
+  align-items: center;
+  color: var(--love);
+  font-weight: 500;
+}

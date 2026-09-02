@@ -10,15 +10,30 @@ import {
   MailboxIcon,
   LockOpenIcon,
   LockIcon,
+  CheckIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
+
+const passwordRules = [
+  { label: "Minimum 8 characters", test: (pw: string) => pw.length >= 8 },
+  { label: "One lowercase letter", test: (pw: string) => /[a-z]/.test(pw) },
+  { label: "One uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
+  { label: "One number", test: (pw: string) => /[0-9]/.test(pw) },
+];
 
 export default function SignupForm() {
   const router = useRouter();
   const { setUser } = useCurrentUser();
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("";)
+  const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const passwordsMatch = password === confirmPassword;
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -113,12 +128,32 @@ export default function SignupForm() {
           placeholder="**********"
           minLength={8}
           required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onFocus={() => setPasswordTouched(true)}
           className={styles.input}
         />
-        <p className={styles.hint}>
-          Must contain at least an uppercase letter, a lowercase letter and a
-          number.
-        </p>
+
+        {passwordTouched &&
+          passwordRules.map((rule) => {
+            const passed = rule.test(password);
+            return (
+              <ul className={styles.rules}>
+                <li
+                  key={rule.label}
+                  className={passed ? styles.rulePassed : styles.ruleFailed}
+                >
+                  {passed ? (
+                    <CheckIcon weight="duotone" />
+                  ) : (
+                    <XIcon weight="duotone" />
+                  )}
+                  {rule.label}
+                </li>
+              </ul>
+            );
+          })}
+
         {fieldErrors.password && (
           <p className={styles.error}>{fieldErrors.password}</p>
         )}
@@ -136,6 +171,8 @@ export default function SignupForm() {
           placeholder="**********"
           minLength={8}
           required
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className={styles.input}
         />
         {fieldErrors.confirmPassword && (
