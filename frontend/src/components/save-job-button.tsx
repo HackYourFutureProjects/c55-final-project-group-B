@@ -35,7 +35,7 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
       onClick={handleClick}
       onAnimationEnd={() => setAnimation(null)}
     >
-      <HeartIcon size={20} weight={saved ? "fill" : "bold"} />
+      <HeartIcon size={20} weight={saved ? "fill" : "duotone"} />
     </button>
   );
 }

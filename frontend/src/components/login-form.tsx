@@ -5,7 +5,7 @@ import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
-import { MailboxIcon, PasswordIcon } from "@phosphor-icons/react";
+import { MailboxIcon, LockIcon } from "@phosphor-icons/react";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
@@ -44,7 +44,7 @@ export default function LoginForm() {
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
-          <MailboxIcon size={18} weight="regular" />
+          <MailboxIcon size={18} weight="duotone" />
           <label htmlFor="email">E-mail</label>
         </div>
         <input
@@ -59,7 +59,7 @@ export default function LoginForm() {
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <PasswordIcon size={18} weight="regular" />
+          <LockIcon size={18} weight="duotone" />
           <label htmlFor="password">Password</label>
         </div>
         <input

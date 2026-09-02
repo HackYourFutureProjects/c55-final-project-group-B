@@ -36,7 +36,7 @@ export async function SearchBar({
 
   return (
     <form action="/jobs" method="get" className={styles.form}>
-      <MagnifyingGlassIcon size="18" className={styles.icon} />
+      <MagnifyingGlassIcon size="18" weight="duotone" className={styles.icon} />
       <input
         type="search"
         name="q"

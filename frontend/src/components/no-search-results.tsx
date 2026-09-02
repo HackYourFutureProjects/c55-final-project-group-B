@@ -11,7 +11,12 @@ export default function NoSearchResults({
 }) {
   return (
     <div className={styles.layout}>
-      <BinocularsIcon size={40} className={styles.icon} aria-hidden="true" />
+      <BinocularsIcon
+        size={40}
+        className={styles.icon}
+        weight="duotone"
+        aria-hidden="true"
+      />
       <h2 className={styles.title}>
         No jobs found
         {q && (

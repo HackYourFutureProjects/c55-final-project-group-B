@@ -9,7 +9,7 @@ import {
   IdentificationCardIcon,
   MailboxIcon,
   LockOpenIcon,
-  LockKeyIcon,
+  LockIcon,
 } from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
 
@@ -66,7 +66,7 @@ export default function SignupForm() {
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
-          <IdentificationCardIcon size={18} />
+          <IdentificationCardIcon size={18} weight="duotone" />
           <label htmlFor="name">Name</label>
         </div>
         <input
@@ -85,7 +85,7 @@ export default function SignupForm() {
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <MailboxIcon size={18} />
+          <MailboxIcon size={18} weight="duotone" />
           <label htmlFor="name">E-mail</label>
         </div>
         <input
@@ -103,7 +103,7 @@ export default function SignupForm() {
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <LockOpenIcon size={18} />
+          <LockOpenIcon size={18} weight="duotone" />
           <label htmlFor="name">Password</label>
         </div>
         <input
@@ -126,7 +126,7 @@ export default function SignupForm() {
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <LockKeyIcon size={18} />
+          <LockIcon size={18} weight="duotone" />
           <label htmlFor="name">Confirm password</label>
         </div>
         <input

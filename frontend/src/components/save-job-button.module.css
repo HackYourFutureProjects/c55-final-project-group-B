@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--subtle);
+  color: var(--muted);
   width: 24px;
   height: 24px;
   background: none;
@@ -13,7 +13,7 @@
 }
 
 .like:hover {
-  color: var(--love);
+  scale: 1.15;
 }
 
 .like:active {

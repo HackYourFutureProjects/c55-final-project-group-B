@@ -1,12 +1,10 @@
-import { SpinnerIcon } from "@phosphor-icons/react/ssr";
+import { CircleNotchIcon } from "@phosphor-icons/react/ssr";
 import styles from "./loading.module.css";
 
 export default function Loading() {
   return (
     <div className={`container ${styles.loading}`}>
-      <div className={styles.spinner}>
-        <SpinnerIcon size={64} />
-      </div>
+      <CircleNotchIcon size={64} weight="duotone" className={styles.spinner} />
       <p className={styles.message}>Loading...</p>
     </div>
   );

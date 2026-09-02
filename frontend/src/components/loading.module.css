@@ -17,6 +17,10 @@
   display: inline-block;
 }
 
+.spinner svg {
+  display: block;
+}
+
 .message {
   color: var(--text);
   font-size: 1.25rem;
