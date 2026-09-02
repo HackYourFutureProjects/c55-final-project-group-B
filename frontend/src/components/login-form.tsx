@@ -11,16 +11,20 @@ import styles from "./login-form.module.css";
 export default function LoginForm() {
   const router = useRouter();
   const { setUser } = useCurrentUser();
+  const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const validEmail = /^\S+@\S+\.\S+$/.test(email);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    setEmailTouched(true);
+    if (!validEmail) return;
     setError(null);
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email"));
     const password = String(formData.get("password"));
 
     try {
@@ -40,8 +44,11 @@ export default function LoginForm() {
     }
   }
 
+  const emailError =
+    emailTouched && !validEmail ? "Please enter a valid e-mail address." : null;
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
           <MailboxIcon size={18} weight="duotone" />
@@ -54,7 +61,11 @@ export default function LoginForm() {
           placeholder="user@example.com"
           required
           className={styles.input}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => setEmailTouched(true)}
         />
+        {emailError && <p className={styles.error}>{emailError}</p>}
       </div>
 
       <div className={styles.field}>
