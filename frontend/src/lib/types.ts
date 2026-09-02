@@ -13,6 +13,10 @@ export type Job = {
   ingestedAt: string | null;
 };
 
+export type SavedJob = Job & {
+  savedAt: string;
+};
+
 // Mirrors the backend's UserResponse (never includes the password hash).
 export type User = {
   id: string;
