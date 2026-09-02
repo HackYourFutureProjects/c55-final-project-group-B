@@ -17,7 +17,7 @@ export default function LoginForm() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validEmail = isValidEmail(email);
@@ -36,7 +36,7 @@ export default function LoginForm() {
     setEmailTouched(true);
     setPasswordTouched(true);
     if (!validEmail || passwordEmpty) return;
-    setError(null);
+    setError(undefined);
     setIsSubmitting(true);
 
     try {
@@ -94,11 +94,7 @@ export default function LoginForm() {
         <FieldError message={passwordError} />
       </div>
 
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
+      <FieldError message={error} />
 
       <button type="submit" className="button" disabled={isSubmitting}>
         {isSubmitting ? "Logging in…" : "Log in"}

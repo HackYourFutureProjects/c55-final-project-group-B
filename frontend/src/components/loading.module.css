@@ -13,6 +13,7 @@
 }
 
 .spinner {
+  color: var(--pine);
   animation: spin 1s linear infinite;
   display: inline-block;
 }
