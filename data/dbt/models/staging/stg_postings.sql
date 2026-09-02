@@ -16,11 +16,9 @@ with
             trim(title) as title,
             nullif(trim(company.display_name), '') as company_name,
             coalesce(
-                nullif(trim(get_json_object(location, '$.display_name')), ''), 'Unknown'
+            nullif(trim(location.display_name), ''), 'Unknown'
             ) as location_display_name,
-            from_json(
-                get_json_object(location, '$.area'), 'ARRAY<STRING>'
-            ) as location_area,
+            location.area as location_area,
             trim(description) as description,
             cast(latitude as double) as latitude,
             cast(longitude as double) as longitude,

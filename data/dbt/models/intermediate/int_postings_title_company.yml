@@ -3,19 +3,30 @@ version: 2
 models:
   - name: int_postings_title_company
     description: >
-      Cleaned version of stg_postings. Strips job title noise (parentheticals,
-      pipe-separated details, bullet-separated location/specialty tails, "via
-      Zorgwerk in ..." segments, trailing dash + place names, and sentence-style
-      trailing descriptions) and normalizes company_name by removing trailing
-      legal suffixes (NL, B.V., N.V.) and collapsing whitespace.
+      Cleaned version of stg_postings. Strips job title noise (contract type
+      words, shift-work phrasing, parentheticals, pipe-separated details,
+      bullet-separated location/specialty tails, "via Zorgwerk in ..."
+      segments, trailing dash + place names, sentence-style trailing
+      descriptions, and leading internship/traineeship labels), extracts
+      contract_type_from_title and employment_type as structured signals
+      before stripping them from the title, and normalizes company_name by
+      removing trailing legal suffixes (NL, B.V., N.V.) and collapsing
+      whitespace.
       NOTE: title cleaning still needs further work (see leading comment in
       the model SQL) — some multi-word place names and edge cases are not
       yet handled.
     columns:
+      - name: job_id
+        description: "(string) Foreign key back to stg_postings. Stable unique identifier per posting."
+        tests:
+          - unique
+          - not_null
+
       - name: title
         description: >
-          Cleaned job title with trailing location/description noise removed
-          and whitespace normalized. Null/empty titles are filtered out by
+          Cleaned job title with contract type, shift-work labels, internship
+          labels, and trailing location/description noise removed, and
+          whitespace normalized. Null/empty titles are filtered out by
           the model's WHERE clause.
         tests:
           - not_null
@@ -25,3 +36,28 @@ models:
           Cleaned company name with trailing legal-entity suffixes
           (NL, B.V., N.V.) stripped and whitespace normalized. Can be null
           if the source company_name was null or became empty after cleaning.
+
+      - name: contract_type_from_title
+        description: >
+          (string) Contract type extracted from the raw title before cleaning,
+          based on Dutch/English keyword matches (e.g. "parttime", "voltijd").
+          One of 'part_time', 'full_time', or null if no keyword was found in
+          the title. Display-only — map to a translated label on the
+          frontend rather than storing separate language columns here.
+        tests:
+          - accepted_values:
+              values: ['part_time', 'full_time']
+              config:
+                where: "contract_type_from_title is not null"
+
+      - name: employment_type
+        description: >
+          (string) Employment type extracted from the raw title before
+          cleaning, based on Dutch/English keyword matches (e.g. "stage",
+          "internship", "traineeship"). One of 'graduation_internship',
+          'internship', or 'regular_job' (default when no keyword matches).
+          Display-only — map to a translated label on the frontend rather
+          than storing separate language columns here.
+        tests:
+          - accepted_values:
+              values: ['graduation_internship', 'internship', 'regular_job']
