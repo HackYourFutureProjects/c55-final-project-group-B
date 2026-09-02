@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login } from "@/lib/auth";
-import { useCurrentUser } from "../context/current-user-provider";
+import { useCurrentUser } from "@/context/current-user-provider";
+import { MailboxIcon, PasswordIcon } from "@phosphor-icons/react";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
@@ -25,7 +26,7 @@ export default function LoginForm() {
     try {
       const user = await login(email, password);
       setUser(user);
-      router.push("/success");
+      router.push("/");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setError("Invalid email or password.");
@@ -42,9 +43,10 @@ export default function LoginForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          E-mail
-        </label>
+        <div className={styles.label}>
+          <MailboxIcon size={18} weight="regular" />
+          <label htmlFor="email">E-mail</label>
+        </div>
         <input
           type="email"
           name="email"
@@ -56,9 +58,10 @@ export default function LoginForm() {
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          Password
-        </label>
+        <div className={styles.label}>
+          <PasswordIcon size={18} weight="regular" />
+          <label htmlFor="password">Password</label>
+        </div>
         <input
           type="password"
           name="password"

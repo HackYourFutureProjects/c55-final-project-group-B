@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login, register } from "@/lib/auth";
-import { useCurrentUser } from "../context/current-user-provider";
+import { useCurrentUser } from "@/context/current-user-provider";
+import {
+  IdentificationCardIcon,
+  MailboxIcon,
+  LockOpenIcon,
+  LockKeyIcon,
+} from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
 
 export default function SignupForm() {
@@ -59,9 +65,10 @@ export default function SignupForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label htmlFor="name" className={styles.label}>
-          Name
-        </label>
+        <div className={styles.label}>
+          <IdentificationCardIcon size={18} />
+          <label htmlFor="name">Name</label>
+        </div>
         <input
           type="text"
           name="name"
@@ -77,9 +84,10 @@ export default function SignupForm() {
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          E-mail
-        </label>
+        <div className={styles.label}>
+          <MailboxIcon size={18} />
+          <label htmlFor="name">E-mail</label>
+        </div>
         <input
           type="email"
           name="email"
@@ -94,9 +102,10 @@ export default function SignupForm() {
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          Password
-        </label>
+        <div className={styles.label}>
+          <LockOpenIcon size={18} />
+          <label htmlFor="name">Password</label>
+        </div>
         <input
           type="password"
           name="password"
@@ -116,9 +125,10 @@ export default function SignupForm() {
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="confirmPassword" className={styles.label}>
-          Confirm password
-        </label>
+        <div className={styles.label}>
+          <LockKeyIcon size={18} />
+          <label htmlFor="name">Confirm password</label>
+        </div>
         <input
           type="password"
           name="confirmPassword"
