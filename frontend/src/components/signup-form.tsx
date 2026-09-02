@@ -14,7 +14,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
-import { validate, passwordRules, isValidEmail } from "@/lib/validation";
+import { validate, passwordRules } from "@/lib/validation";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function SignupForm() {
 
   const [error, setError] = useState<string | null>(null);
 
-  const [serrverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const clientErrors = validate(values);
@@ -52,11 +52,13 @@ export default function SignupForm() {
     event.preventDefault();
     setError(null);
     setServerErrors({});
-
-    if (!passwordsMatch) {
-      setServerErrors({ confirmPassword: "Passwords do not match." });
-      return;
-    }
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    });
+    if (Object.keys(clientErrors).length > 0) return;
     setIsSubmitting(true);
 
     try {
@@ -85,7 +87,7 @@ export default function SignupForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
           <IdentificationCardIcon size={18} weight="duotone" />
@@ -97,16 +99,16 @@ export default function SignupForm() {
           id="name"
           autoComplete="name"
           placeholder="Jane Smith"
-          minLength={2}
           maxLength={100}
-          required
           className={styles.input}
           value={values.name}
           onChange={handleChange}
           onBlur={markTouched}
         />
-        {serrverErrors.name && (
-          <p className={styles.error}>{serrverErrors.name}</p>
+        {touched.name && (clientErrors.name ?? serverErrors.name) && (
+          <p className={styles.error} role="alert">
+            {clientErrors.name ?? serverErrors.name}
+          </p>
         )}
       </div>
 
@@ -120,14 +122,15 @@ export default function SignupForm() {
           name="email"
           id="email"
           placeholder="user@example.com"
-          required
           className={styles.input}
           value={values.email}
           onChange={handleChange}
           onBlur={markTouched}
         />
-        {serrverErrors.email && (
-          <p className={styles.error}>{serrverErrors.email}</p>
+        {touched.email && (clientErrors.email ?? serverErrors.email) && (
+          <p className={styles.error} role="alert">
+            {clientErrors.email ?? serverErrors.email}
+          </p>
         )}
       </div>
 
@@ -140,13 +143,11 @@ export default function SignupForm() {
           type="password"
           name="password"
           id="password"
-          placeholder="**********"
-          minLength={8}
-          required
+          placeholder="••••••••••"
+          className={styles.input}
           value={values.password}
           onChange={handleChange}
           onFocus={markTouched}
-          className={styles.input}
         />
 
         {touched.password && (
@@ -170,8 +171,10 @@ export default function SignupForm() {
           </ul>
         )}
 
-        {serrverErrors.password && (
-          <p className={styles.error}>{serrverErrors.password}</p>
+        {serverErrors.password && (
+          <p className={styles.error} role="alert">
+            {serverErrors.password}
+          </p>
         )}
       </div>
 
@@ -184,16 +187,16 @@ export default function SignupForm() {
           type="password"
           name="confirmPassword"
           id="confirmPassword"
-          placeholder="**********"
-          minLength={8}
-          required
+          placeholder="••••••••••"
+          className={styles.input}
           value={values.confirmPassword}
           onChange={handleChange}
-          className={styles.input}
           onBlur={markTouched}
         />
-        {serrverErrors.confirmPassword && (
-          <p className={styles.error}>{serrverErrors.confirmPassword}</p>
+        {touched.confirmPassword && clientErrors.confirmPassword && (
+          <p className={styles.error} role="alert">
+            {clientErrors.confirmPassword}
+          </p>
         )}
       </div>
 

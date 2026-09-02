@@ -63,7 +63,6 @@ export default function LoginForm() {
           name="email"
           id="email"
           placeholder="user@example.com"
-          required
           className={styles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -86,7 +85,6 @@ export default function LoginForm() {
           name="password"
           id="password"
           placeholder="••••••••••"
-          required
           className={styles.input}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
