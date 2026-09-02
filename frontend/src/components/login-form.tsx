@@ -13,19 +13,25 @@ export default function LoginForm() {
   const { setUser } = useCurrentUser();
   const [email, setEmail] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const validEmail = /^\S+@\S+\.\S+$/.test(email);
+  const emailError =
+    emailTouched && !validEmail ? "Please enter a valid e-mail address." : null;
+  const passwordEmpty = password.length === 0;
+  const passwordError =
+    passwordTouched && passwordEmpty ? "Please enter your password." : null;
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setEmailTouched(true);
-    if (!validEmail) return;
+    setPasswordTouched(true);
+    if (!validEmail || passwordEmpty) return;
     setError(null);
     setIsSubmitting(true);
-
-    const formData = new FormData(event.currentTarget);
-    const password = String(formData.get("password"));
 
     try {
       const user = await login(email, password);
@@ -43,9 +49,6 @@ export default function LoginForm() {
       setIsSubmitting(false);
     }
   }
-
-  const emailError =
-    emailTouched && !validEmail ? "Please enter a valid e-mail address." : null;
 
   return (
     <form noValidate className={styles.form} onSubmit={handleSubmit}>
@@ -65,7 +68,11 @@ export default function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setEmailTouched(true)}
         />
-        {emailError && <p className={styles.error}>{emailError}</p>}
+        {emailError && (
+          <p className={styles.error} role="alert">
+            {emailError}
+          </p>
+        )}
       </div>
 
       <div className={styles.field}>
@@ -77,10 +84,18 @@ export default function LoginForm() {
           type="password"
           name="password"
           id="password"
-          placeholder="**********"
+          placeholder="••••••••••"
           required
           className={styles.input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => setPasswordTouched(true)}
         />
+        {passwordError && (
+          <p className={styles.error} role="alert">
+            Please enter your password.
+          </p>
+        )}
       </div>
 
       {error && (
