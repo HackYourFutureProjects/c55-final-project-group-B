@@ -7,6 +7,7 @@ import { ApiError, login } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
 import { MailboxIcon, LockIcon } from "@phosphor-icons/react";
 import { isValidEmail } from "@/lib/validation";
+import FieldError from "./field-error";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
@@ -21,10 +22,14 @@ export default function LoginForm() {
 
   const validEmail = isValidEmail(email);
   const emailError =
-    emailTouched && !validEmail ? "Please enter a valid e-mail address." : null;
+    emailTouched && !validEmail
+      ? "Please enter a valid e-mail address."
+      : undefined;
   const passwordEmpty = password.length === 0;
   const passwordError =
-    passwordTouched && passwordEmpty ? "Please enter your password." : null;
+    passwordTouched && passwordEmpty
+      ? "Please enter your password."
+      : undefined;
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,11 +73,7 @@ export default function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setEmailTouched(true)}
         />
-        {emailError && (
-          <p className={styles.error} role="alert">
-            {emailError}
-          </p>
-        )}
+        <FieldError message={emailError} />
       </div>
 
       <div className={styles.field}>
@@ -90,11 +91,7 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           onBlur={() => setPasswordTouched(true)}
         />
-        {passwordError && (
-          <p className={styles.error} role="alert">
-            Please enter your password.
-          </p>
-        )}
+        <FieldError message={passwordError} />
       </div>
 
       {error && (

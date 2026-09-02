@@ -8,7 +8,7 @@ import type { ProblemDetail, User } from "@/lib/types";
 // per-field validation messages from a 400 response, e.g. { email: "..." }.
 export class ApiError extends Error {
   status: number;
-  serverErrors: Record<string, string>;
+  fieldErrors: Record<string, string>;
 
   constructor(
     status: number,
@@ -17,7 +17,7 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.status = status;
-    this.serverErrors = fieldErrors;
+    this.fieldErrors = fieldErrors;
   }
 }
 

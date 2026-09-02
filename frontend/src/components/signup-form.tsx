@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { ChangeEvent, SubmitEvent, FocusEvent } from "react";
 import { useState } from "react";
-import { ApiError, login, register } from "@/lib/auth";
+import { ApiError, register } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
 import {
   IdentificationCardIcon,
@@ -66,10 +66,7 @@ export default function SignupForm() {
     setIsSubmitting(true);
 
     try {
-      await register(values.name, values.email, values.password);
-      // Registration does not create a session, so log in right after and
-      // cache the returned user; the header reads it to show the account menu.
-      const user = await login(values.email, values.password);
+      const user = await register(values.name, values.email, values.password);
       setUser(user);
       router.push("/success");
     } catch (err) {
@@ -77,9 +74,9 @@ export default function SignupForm() {
         setServerErrors({ email: err.message }); // "Email is already registered"
       } else if (
         err instanceof ApiError &&
-        Object.keys(err.serverErrors).length > 0
+        Object.keys(err.fieldErrors).length > 0
       ) {
-        setServerErrors(err.serverErrors); // 400 validation messages per field
+        setServerErrors(err.fieldErrors); // 400 validation messages per field
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {

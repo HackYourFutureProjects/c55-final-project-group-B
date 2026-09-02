@@ -44,12 +44,6 @@
   color: var(--subtle);
 }
 
-.error {
-  color: var(--love);
-  font-size: 15px;
-  font-weight: bold;
-}
-
 .form :global(.button) {
   align-self: flex-start;
 }
