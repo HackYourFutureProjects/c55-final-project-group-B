@@ -21,6 +21,8 @@ export class ApiError extends Error {
   }
 }
 
+type ApiMethod = "POST" | "DELETE";
+
 type CsrfResponse = {
   headerName: string;
   token: string;
@@ -36,10 +38,14 @@ async function getCsrf(): Promise<CsrfResponse> {
 
 // Every state-changing request needs a fresh CSRF token, because the token
 // changes after login and logout.
-async function postJson(path: string, body?: object): Promise<Response> {
+export async function sendJson(
+  method: ApiMethod,
+  path: string,
+  body?: object,
+): Promise<Response> {
   const csrf = await getCsrf();
   return fetch(path, {
-    method: "POST",
+    method: method,
     headers: {
       "Content-Type": "application/json",
       [csrf.headerName]: csrf.token,
@@ -50,7 +56,7 @@ async function postJson(path: string, body?: object): Promise<Response> {
 
 // Turns a failed response into an ApiError. The 403 for a missing CSRF token
 // is not in the ProblemDetail shape, so parsing is wrapped in try/catch.
-async function readError(res: Response): Promise<ApiError> {
+export async function readError(res: Response): Promise<ApiError> {
   try {
     const problem: ProblemDetail = await res.json();
     return new ApiError(res.status, problem.detail, problem.errors ?? {});
@@ -72,7 +78,7 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function login(email: string, password: string): Promise<User> {
-  const res = await postJson("/api/auth/login", { email, password });
+  const res = await sendJson("POST", "/api/auth/login", { email, password });
   if (!res.ok) {
     throw await readError(res);
   }
@@ -81,7 +87,7 @@ export async function login(email: string, password: string): Promise<User> {
 
 // Ends the server session. The backend answers 204 and expires the cookie.
 export async function logout(): Promise<void> {
-  const res = await postJson("/api/auth/logout");
+  const res = await sendJson("POST", "/api/auth/logout");
   if (!res.ok) {
     throw await readError(res);
   }
@@ -92,7 +98,11 @@ export async function register(
   email: string,
   password: string,
 ): Promise<User> {
-  const res = await postJson("/api/auth/register", { name, email, password });
+  const res = await sendJson("POST", "/api/auth/register", {
+    name,
+    email,
+    password,
+  });
   if (!res.ok) {
     throw await readError(res);
   }
