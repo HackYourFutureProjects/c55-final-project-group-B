@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { SubmitEvent } from "react";
+import type { ChangeEvent, SubmitEvent, FocusEvent } from "react";
 import { useState } from "react";
 import { ApiError, login, register } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
@@ -14,59 +14,66 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
-
-const passwordRules = [
-  { label: "Minimum 8 characters", test: (pw: string) => pw.length >= 8 },
-  { label: "One lowercase letter", test: (pw: string) => /[a-z]/.test(pw) },
-  { label: "One uppercase letter", test: (pw: string) => /[A-Z]/.test(pw) },
-  { label: "One number", test: (pw: string) => /[0-9]/.test(pw) },
-];
+import { validate, passwordRules, isValidEmail } from "@/lib/validation";
 
 export default function SignupForm() {
   const router = useRouter();
   const { setUser } = useCurrentUser();
+
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
   const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState("";)
-  const [password, setPassword] = useState("");
-  const [passwordTouched, setPasswordTouched] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const [serrverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const passwordsMatch = password === confirmPassword;
+  const clientErrors = validate(values);
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function markTouched(e: FocusEvent<HTMLInputElement>) {
+    setTouched((prev) => ({ ...prev, [e.target.name]: true }));
+  }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setFieldErrors({});
+    setServerErrors({});
 
-    const formData = new FormData(event.currentTarget);
-    const name = String(formData.get("name"));
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-    const confirmPassword = String(formData.get("confirmPassword"));
-
-    if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match." });
+    if (!passwordsMatch) {
+      setServerErrors({ confirmPassword: "Passwords do not match." });
       return;
     }
     setIsSubmitting(true);
 
     try {
-      await register(name, email, password);
+      await register(values.name, values.email, values.password);
       // Registration does not create a session, so log in right after and
       // cache the returned user; the header reads it to show the account menu.
-      const user = await login(email, password);
+      const user = await login(values.email, values.password);
       setUser(user);
       router.push("/success");
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setFieldErrors({ email: err.message }); // "Email is already registered"
+        setServerErrors({ email: err.message }); // "Email is already registered"
       } else if (
         err instanceof ApiError &&
         Object.keys(err.fieldErrors).length > 0
       ) {
-        setFieldErrors(err.fieldErrors); // 400 validation messages per field
+        setServerErrors(err.fieldErrors); // 400 validation messages per field
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -94,14 +101,19 @@ export default function SignupForm() {
           maxLength={100}
           required
           className={styles.input}
+          value={values.name}
+          onChange={handleChange}
+          onBlur={markTouched}
         />
-        {fieldErrors.name && <p className={styles.error}>{fieldErrors.name}</p>}
+        {serrverErrors.name && (
+          <p className={styles.error}>{serrverErrors.name}</p>
+        )}
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
           <MailboxIcon size={18} weight="duotone" />
-          <label htmlFor="name">E-mail</label>
+          <label htmlFor="email">E-mail</label>
         </div>
         <input
           type="email"
@@ -110,16 +122,19 @@ export default function SignupForm() {
           placeholder="user@example.com"
           required
           className={styles.input}
+          value={values.email}
+          onChange={handleChange}
+          onBlur={markTouched}
         />
-        {fieldErrors.email && (
-          <p className={styles.error}>{fieldErrors.email}</p>
+        {serrverErrors.email && (
+          <p className={styles.error}>{serrverErrors.email}</p>
         )}
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
           <LockOpenIcon size={18} weight="duotone" />
-          <label htmlFor="name">Password</label>
+          <label htmlFor="password">Password</label>
         </div>
         <input
           type="password"
@@ -128,17 +143,17 @@ export default function SignupForm() {
           placeholder="**********"
           minLength={8}
           required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onFocus={() => setPasswordTouched(true)}
+          value={values.password}
+          onChange={handleChange}
+          onFocus={markTouched}
           className={styles.input}
         />
 
-        {passwordTouched &&
-          passwordRules.map((rule) => {
-            const passed = rule.test(password);
-            return (
-              <ul className={styles.rules}>
+        {touched.password && (
+          <ul className={styles.rules}>
+            {passwordRules.map((rule) => {
+              const passed = rule.test(values.password);
+              return (
                 <li
                   key={rule.label}
                   className={passed ? styles.rulePassed : styles.ruleFailed}
@@ -150,19 +165,20 @@ export default function SignupForm() {
                   )}
                   {rule.label}
                 </li>
-              </ul>
-            );
-          })}
+              );
+            })}
+          </ul>
+        )}
 
-        {fieldErrors.password && (
-          <p className={styles.error}>{fieldErrors.password}</p>
+        {serrverErrors.password && (
+          <p className={styles.error}>{serrverErrors.password}</p>
         )}
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
           <LockIcon size={18} weight="duotone" />
-          <label htmlFor="name">Confirm password</label>
+          <label htmlFor="confirmPassword">Confirm password</label>
         </div>
         <input
           type="password"
@@ -171,12 +187,13 @@ export default function SignupForm() {
           placeholder="**********"
           minLength={8}
           required
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          value={values.confirmPassword}
+          onChange={handleChange}
           className={styles.input}
+          onBlur={markTouched}
         />
-        {fieldErrors.confirmPassword && (
-          <p className={styles.error}>{fieldErrors.confirmPassword}</p>
+        {serrverErrors.confirmPassword && (
+          <p className={styles.error}>{serrverErrors.confirmPassword}</p>
         )}
       </div>
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ApiError, login } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
 import { MailboxIcon, LockIcon } from "@phosphor-icons/react";
+import { isValidEmail } from "@/lib/validation";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
@@ -18,7 +19,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validEmail = /^\S+@\S+\.\S+$/.test(email);
+  const validEmail = isValidEmail(email);
   const emailError =
     emailTouched && !validEmail ? "Please enter a valid e-mail address." : null;
   const passwordEmpty = password.length === 0;
