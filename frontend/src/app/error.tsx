@@ -1,8 +1,8 @@
 "use client";
 
-import { StatusPage } from "@/components/status-page";
 import { QuestionIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import { StatusPage } from "@/components/status-page";
 
 export default function ErrorPage({
   error,
@@ -18,10 +18,10 @@ export default function ErrorPage({
       heading="Something went wrong..."
       actions={
         <>
-          <Link className="button" href={"/"}>
+          <Link className="button" href="/">
             Back to home
           </Link>
-          <button type="submit" className="button-secondary" onClick={reset}>
+          <button type="button" className="button-secondary" onClick={reset}>
             Try again
           </button>
         </>

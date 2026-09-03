@@ -1,5 +1,5 @@
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "./status-page.module.css";
 
 type Variant = "success" | "warning" | "error";
@@ -35,7 +35,7 @@ export function StatusPage({
           </div>
           <div className={styles.message}>
             {children}
-            <div className={styles.buttons}>{actions}</div>
+            {actions && <div className={styles.buttons}>{actions}</div>}
           </div>
         </section>
       </div>

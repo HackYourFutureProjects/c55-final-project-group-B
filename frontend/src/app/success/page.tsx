@@ -1,6 +1,6 @@
-import { StatusPage } from "@/components/status-page";
 import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
+import { StatusPage } from "@/components/status-page";
 
 export default function SuccessPage() {
   return (
@@ -9,7 +9,7 @@ export default function SuccessPage() {
       variant="success"
       heading="Welcome aboard!"
       actions={
-        <Link className="button" href={"/jobs"}>
+        <Link className="button" href="/jobs">
           Browse jobs
         </Link>
       }
