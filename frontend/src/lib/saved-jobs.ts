@@ -1,4 +1,4 @@
-import { sendJson, readError } from "./auth";
+import { readError, sendJson } from "./auth";
 import type { SavedJob } from "./types";
 
 export async function saveJob(jobId: string): Promise<void> {

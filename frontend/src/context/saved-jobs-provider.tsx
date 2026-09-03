@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useState, useEffect } from "react";
-import { useCurrentUser } from "./current-user-provider";
+import { createContext, useContext, useEffect, useState } from "react";
 import { getSavedJobs, saveJob, unsaveJob } from "@/lib/saved-jobs";
+import { useCurrentUser } from "./current-user-provider";
 
 // Holds which job ids are saved, shared by every SaveJobButton on the page so
 // the heart on a card and the heart in the details pane stay in sync.

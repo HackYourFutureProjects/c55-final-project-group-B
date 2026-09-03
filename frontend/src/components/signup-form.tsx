@@ -1,20 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import type { ChangeEvent, SubmitEvent, FocusEvent } from "react";
-import { useState } from "react";
-import { ApiError, register } from "@/lib/auth";
-import { useCurrentUser } from "@/context/current-user-provider";
 import {
   IdentificationCardIcon,
-  MailboxIcon,
-  LockOpenIcon,
   LockIcon,
+  LockOpenIcon,
+  MailboxIcon,
 } from "@phosphor-icons/react";
-import styles from "./signup-form.module.css";
+import { useRouter } from "next/navigation";
+import type { ChangeEvent, FocusEvent, SubmitEvent } from "react";
+import { useState } from "react";
+import { useCurrentUser } from "@/context/current-user-provider";
+import { ApiError, register } from "@/lib/auth";
 import { validate } from "@/lib/validation";
-import PasswordChecklist from "./password-checklist";
 import FieldError from "./field-error";
+import PasswordChecklist from "./password-checklist";
+import styles from "./signup-form.module.css";
 
 export default function SignupForm() {
   const router = useRouter();

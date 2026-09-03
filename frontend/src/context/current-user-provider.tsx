@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User } from "@/lib/types";
 import { getCurrentUser } from "@/lib/auth";
+import type { User } from "@/lib/types";
 
 type CurrentUserContextValue = {
   user: User | null;
