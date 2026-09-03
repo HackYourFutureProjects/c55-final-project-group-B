@@ -9,7 +9,7 @@ import { getSavedJobs, saveJob, unsaveJob } from "@/lib/saved-jobs";
 // the heart on a card and the heart in the details pane stay in sync.
 type SavedJobsContextValue = {
   savedJobIds: Set<string>;
-  toggleSaved: (jobId: string) => void;
+  toggleSaved: (jobId: string) => Promise<void>;
 };
 
 const SavedJobsContext = createContext<SavedJobsContextValue | null>(null);
@@ -68,7 +68,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       applyToggle(jobId);
-      console.error(err); // TODO: how user save errors
+      console.error(err); // TODO: show user save errors
     }
   }
 
