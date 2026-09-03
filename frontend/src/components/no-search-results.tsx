@@ -2,7 +2,15 @@ import { BinocularsIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./no-search-results.module.css";
 
-export function NoSearchResults({ q, place }: { q?: string; place?: string }) {
+export function NoSearchResults({
+  q,
+  place,
+  clearHref = "/jobs",
+}: {
+  q?: string;
+  place?: string;
+  clearHref?: string;
+}) {
   return (
     <div className={styles.layout}>
       <BinocularsIcon
@@ -28,7 +36,7 @@ export function NoSearchResults({ q, place }: { q?: string; place?: string }) {
         Try searching for a different role or clear the search to browse every
         open job.
       </p>
-      <Link href="/jobs" className="button">
+      <Link href={clearHref} className="button">
         Clear search
       </Link>
     </div>
