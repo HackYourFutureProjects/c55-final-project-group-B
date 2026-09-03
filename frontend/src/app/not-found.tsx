@@ -8,7 +8,6 @@ export default function NotFoundPage() {
       icon={WarningDiamondIcon}
       variant="warning"
       heading="Page not found."
-      children={<p>The page you are looking for does not exist.</p>}
       actions={
         <>
           <Link className="button" href={"/"}>
@@ -19,6 +18,8 @@ export default function NotFoundPage() {
           </Link>
         </>
       }
-    />
+    >
+      <p>The page you are looking for does not exist.</p>
+    </StatusPage>
   );
 }
