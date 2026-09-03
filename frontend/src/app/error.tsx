@@ -4,13 +4,7 @@ import { QuestionIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { StatusPage } from "@/components/status-page";
 
-export default function ErrorPage({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <StatusPage
       icon={QuestionIcon}
