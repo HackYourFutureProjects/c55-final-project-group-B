@@ -1,10 +1,21 @@
-import { PagePlaceholder } from "@/components/page-placeholder";
+import { StatusPage } from "@/components/status-page";
+import { InfoIcon } from "@phosphor-icons/react/ssr";
+import Link from "next/link";
+import { ReactNode } from "react";
 
 export default function AboutPage() {
   return (
-    <PagePlaceholder
-      title="About Flint"
-      detail="This page is not built yet. Learn more about Flint in a later sprint."
-    />
+    <StatusPage
+      icon={InfoIcon}
+      variant="info"
+      heading="Under construction."
+      actions={
+        <Link className="button" href="/">
+          Back to home
+        </Link>
+      }
+    >
+      <p>This page is still being built. Come back another time.</p>
+    </StatusPage>
   );
 }

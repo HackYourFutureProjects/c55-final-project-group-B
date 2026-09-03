@@ -1,8 +1,8 @@
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import type { ReactNode } from "react";
+import { ReactNode } from "react";
 import styles from "./status-page.module.css";
 
-type Variant = "success" | "warning" | "error";
+type Variant = "success" | "warning" | "error" | "info";
 
 type StatusPageProps = {
   icon: PhosphorIcon;
@@ -16,6 +16,7 @@ const iconClass: Record<Variant, string> = {
   success: styles.iconSuccess,
   warning: styles.iconWarning,
   error: styles.iconError,
+  info: styles.iconInfo,
 };
 
 export function StatusPage({

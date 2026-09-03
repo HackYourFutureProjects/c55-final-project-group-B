@@ -46,6 +46,10 @@
   color: var(--rose);
 }
 
+.iconInfo {
+  color: var(--gold);
+}
+
 .buttons {
   display: flex;
   justify-content: space-evenly;
