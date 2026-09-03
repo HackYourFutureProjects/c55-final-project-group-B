@@ -5,11 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 export default function Home() {
   return (
     <>
-      <>
-        <Hero />
-        <FeatureCards />
-      </>
-      <SiteFooter />
+      <Hero />
+      <FeatureCards />
     </>
   );
 }
