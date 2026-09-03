@@ -13,6 +13,7 @@ import { useCurrentUser } from "@/context/current-user-provider";
 import { ApiError, register } from "@/lib/auth";
 import { validate } from "@/lib/validation";
 import FieldError from "./field-error";
+import PasswordInput from "./password-input";
 import PasswordChecklist from "./password-checklist";
 import styles from "./signup-form.module.css";
 
@@ -132,12 +133,12 @@ export default function SignupForm() {
           <LockOpenIcon size={18} weight="duotone" />
           <label htmlFor="password">Password</label>
         </div>
-        <input
-          type="password"
+        <PasswordInput
           name="password"
           id="password"
           placeholder="••••••••••"
           className={styles.input}
+          autoComplete="new-password"
           value={values.password}
           onChange={handleChange}
           onFocus={markTouched}
@@ -151,12 +152,12 @@ export default function SignupForm() {
           <LockIcon size={18} weight="duotone" />
           <label htmlFor="confirmPassword">Confirm password</label>
         </div>
-        <input
-          type="password"
+        <PasswordInput
           name="confirmPassword"
           id="confirmPassword"
           placeholder="••••••••••"
           className={styles.input}
+          autoComplete="new-password"
           value={values.confirmPassword}
           onChange={handleChange}
           onBlur={markTouched}

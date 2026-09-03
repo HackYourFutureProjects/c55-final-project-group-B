@@ -9,6 +9,7 @@ import { ApiError, login } from "@/lib/auth";
 import { isValidEmail } from "@/lib/validation";
 import FieldError from "./field-error";
 import styles from "./login-form.module.css";
+import PasswordInput from "./password-input";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -68,6 +69,7 @@ export default function LoginForm() {
           name="email"
           id="email"
           placeholder="user@example.com"
+          autoComplete="username"
           className={styles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -81,12 +83,12 @@ export default function LoginForm() {
           <LockIcon size={18} weight="duotone" />
           <label htmlFor="password">Password</label>
         </div>
-        <input
-          type="password"
+        <PasswordInput
           name="password"
           id="password"
           placeholder="••••••••••"
           className={styles.input}
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onBlur={() => setPasswordTouched(true)}
