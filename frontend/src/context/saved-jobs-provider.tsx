@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 import { useCurrentUser } from "./current-user-provider";
-import { getSavedJobs } from "@/lib/saved-jobs";
+import { getSavedJobs, saveJob, unsaveJob } from "@/lib/saved-jobs";
 
 // Holds which job ids are saved, shared by every SaveJobButton on the page so
 // the heart on a card and the heart in the details pane stay in sync.
@@ -44,7 +44,7 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
-  function toggleSaved(jobId: string) {
+  function applyToggle(jobId: string) {
     setSavedJobIds((prev) => {
       const next = new Set(prev);
       if (next.has(jobId)) {
@@ -54,6 +54,22 @@ export function SavedJobsProvider({ children }: { children: ReactNode }) {
       }
       return next;
     });
+  }
+
+  async function toggleSaved(jobId: string): Promise<void> {
+    const wasSaved = savedJobIds.has(jobId);
+    applyToggle(jobId);
+
+    try {
+      if (wasSaved) {
+        await unsaveJob(jobId);
+      } else {
+        await saveJob(jobId);
+      }
+    } catch (err) {
+      applyToggle(jobId);
+      console.error(err); // TODO: how user save errors
+    }
   }
 
   return (
