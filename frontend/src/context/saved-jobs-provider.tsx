@@ -1,7 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useCurrentUser } from "./current-user-provider";
+import { getSavedJobs } from "@/lib/saved-jobs";
 
 // Holds which job ids are saved, shared by every SaveJobButton on the page so
 // the heart on a card and the heart in the details pane stay in sync.
@@ -14,6 +16,33 @@ const SavedJobsContext = createContext<SavedJobsContextValue | null>(null);
 
 export function SavedJobsProvider({ children }: { children: ReactNode }) {
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
+  const { user } = useCurrentUser();
+
+  useEffect(() => {
+    if (!user) {
+      setSavedJobIds(new Set());
+      return;
+    }
+    let stale = false;
+    async function loadSavedJobs() {
+      try {
+        const savedJobs = await getSavedJobs();
+        if (stale) return;
+        const ids = savedJobs.map((job) => job.jobId);
+        const savedIds = new Set(ids);
+        setSavedJobIds(savedIds);
+      } catch {
+        // If /saved-jobs can't be reached, fallback to empty Set
+        if (stale) return;
+        setSavedJobIds(new Set());
+      }
+    }
+    loadSavedJobs();
+
+    return () => {
+      stale = true;
+    };
+  }, [user]);
 
   function toggleSaved(jobId: string) {
     setSavedJobIds((prev) => {
