@@ -2,13 +2,7 @@ import { BinocularsIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./no-search-results.module.css";
 
-export default function NoSearchResults({
-  q,
-  place,
-}: {
-  q?: string;
-  place?: string;
-}) {
+export function NoSearchResults({ q, place }: { q?: string; place?: string }) {
   return (
     <div className={styles.layout}>
       <BinocularsIcon

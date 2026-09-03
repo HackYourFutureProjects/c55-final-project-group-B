@@ -1,5 +1,5 @@
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "./status-page.module.css";
 
 type Variant = "success" | "warning" | "error" | "info";

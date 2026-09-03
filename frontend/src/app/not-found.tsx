@@ -7,7 +7,7 @@ export default function NotFoundPage() {
     <StatusPage
       icon={WarningDiamondIcon}
       variant="warning"
-      heading="Page not found."
+      heading="Page not found"
       actions={
         <>
           <Link className="button" href="/">
@@ -19,7 +19,12 @@ export default function NotFoundPage() {
         </>
       }
     >
-      <p>The page you are looking for does not exist.</p>
+      <p>
+        The page you're looking for doesn't exist, or it may have moved.
+        Double-check the address, or pick up where you left off from the home
+        page.
+      </p>
+      <p>Sorry for the detour!</p>
     </StatusPage>
   );
 }

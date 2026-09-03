@@ -15,7 +15,7 @@ export default function ErrorPage({
     <StatusPage
       icon={QuestionIcon}
       variant="error"
-      heading="Something went wrong..."
+      heading="Oops!"
       actions={
         <>
           <Link className="button" href="/">
@@ -27,7 +27,11 @@ export default function ErrorPage({
         </>
       }
     >
-      <p>{error.message}</p>
+      <p>
+        Something went wrong on our end while loading this page. It's usually
+        temporary, so trying again will often sort it out.
+      </p>
+      <p>Thanks for understanding!</p>
     </StatusPage>
   );
 }

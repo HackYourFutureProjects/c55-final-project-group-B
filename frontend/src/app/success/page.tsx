@@ -16,8 +16,9 @@ export default function SuccessPage() {
     >
       <p>
         Your account has been created successfully. You can now save jobs and
-        come back to them anytime. Good luck!
+        come back to them anytime.
       </p>
+      <p>Good luck on your job hunt!</p>
     </StatusPage>
   );
 }
