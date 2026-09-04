@@ -25,6 +25,18 @@ select
     job_title_company.title as title,
     job_title_company.company_name as company_name,
     postings.description as description,
+    -- Job_title_company.contract_type_from_title as contract_type_from_title,
+    -- job_title_company.employment_type as employment_type,
+    -- job_title_company.contract_type_from_title,
+    job_title_company.employment_type,
+    -- postings.contract_type_from_desc,
+    postings.seniority_level,
+    postings.posting_language,
+    postings.required_language,
+    postings.salary_per_hour,
+    postings.weekly_hours,
+    postings.skills,
+    postings.tasks,
 
     -- Location Details
     locations.city as location_city,

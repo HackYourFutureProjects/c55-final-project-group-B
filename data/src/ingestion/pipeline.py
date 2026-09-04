@@ -1,4 +1,4 @@
-"""The ingestion job: fetch, validate, land. This is what the container runs.
+"""The ingestion job: fetch, validate, enrich, land. This is what the container runs.
 
     uv run python -m src.ingestion.pipeline [--run-date YYYY-MM-DD]
 
@@ -7,7 +7,6 @@ Azure. Every one is a name or a URL. There is no secret here, because the job
 authenticates as itself. See the README, "Settings".
 """
 
-# we added here also the fetch_all_pages function.
 import argparse
 import logging
 import os
@@ -18,6 +17,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .enrich import enrich_records
 from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
@@ -74,8 +74,6 @@ def load_config(local: bool = False) -> Config:
         source_api_url=required("SOURCE_API_URL"),
         storage_account="" if local else required("STORAGE_ACCOUNT"),
         databricks_catalog=os.getenv("DATABRICKS_CATALOG", "team_b"),
-        # The scheduled run writes `prod/raw`. Your own runs write
-        # `dev/<your name>`, a different container that you alone can write.
         landing_container=os.getenv("LANDING_CONTAINER", PRODUCTION_CONTAINER),
         landing_prefix=os.getenv("LANDING_PREFIX", PRODUCTION_PREFIX),
     )
@@ -83,15 +81,13 @@ def load_config(local: bool = False) -> Config:
 
 def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     """Run one execution and return the number of records landed."""
-    # Call the LoadConfig function to get the configuration settings for the ingestion job. If local_dir is provided, it indicates a local run, and the storage account is not required.
     config = load_config(local=local_dir is not None)
     run_date = run_date or datetime.now(tz=UTC).date().isoformat()
 
     # 1. Fetch raw data across all pages
-    # fetch_all_pages internally calls fetch_raw for each page and it have the fetch_raw function that handles the retry logic, rate-limit exponential backoff, and error handling. It returns a list of raw records collected from the source API.
     raw_records = fetch_all_pages(country_code="nl", max_pages=5, results_per_page=50)
 
-    # 2. Validate records against Pydantic model as a quality check
+    # 2. Validate records against Pydantic model
     parsed, rejected = parse_records(raw_records)
 
     # 3. Stop execution if no valid records exist
@@ -100,18 +96,21 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     if rejected:
         logger.warning(
-            "%d of %d records failed validation and are still being landed",
+            "%d of %d records failed validation and are still being processed",
             rejected,
             len(raw_records),
         )
 
-    # 4. Construct destination partition path
+    # 4. Enrich records via LLM API calls
+    logger.info("Enriching %d records with LLM...", len(raw_records))
+    enriched_records = enrich_records(raw_records)
+
+    # 5. Construct destination partition path
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
-    # 5. Land raw un-transformed records (local disk or Azure)
-
+    # 6. Land enriched records (local disk or Azure)
     if local_dir is not None:
-        landed = land_local_json(local_dir, path, raw_records)
+        landed = land_local_json(local_dir, path, enriched_records)
         logger.info(
             "Pipeline finished: %d written locally, %d rejected.",
             landed,
@@ -122,7 +121,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     landed = land_raw_json(
         account=config.storage_account,
         path=path,
-        records=raw_records,
+        records=enriched_records,
         container=config.landing_container,
     )
 
@@ -142,17 +141,14 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
-    # Initialize the CLI argument parser for running the ingestion script
-    parser = argparse.ArgumentParser(description="Run one ingestion.")
+    parser = argparse.ArgumentParser(description="Run one ingestion with LLM enrichment.")
 
-    # Optional argument to override the execution date (useful for backfilling historical data)
     parser.add_argument(
         "--run-date",
         default=None,
         help="the day this run belongs to, YYYY-MM-DD. Defaults to today.",
     )
 
-    # Optional flag to save files locally for inspection instead of uploading to Azure ADLS
     parser.add_argument(
         "--local",
         nargs="?",
@@ -161,20 +157,15 @@ if __name__ == "__main__":
         type=Path,
         metavar="DIR",
         help=(
-            "write the file to this machine instead of the landing zone, for looking at "
-            f"a new source before you wire it up. Defaults to {LOCAL_LANDING_DIR}/. "
-            "dbt cannot read it: the warehouse has no access to your disk."
+            "write the file to this machine instead of the landing zone. "
+            f"Defaults to {LOCAL_LANDING_DIR}/."
         ),
     )
 
-    # Parse command line inputs into python variables
     args = parser.parse_args()
 
-    # Execute the pipeline and exit with code 1 if any unhandled error occurs
     try:
         run(args.run_date, args.local)
     except Exception:
-        # Log the full exception stack trace so it appears in Azure Container Logs
         logger.exception("Pipeline failed")
-        # Exit with a failure status code so orchestrators (like ACA Jobs) register the failure
         sys.exit(1)

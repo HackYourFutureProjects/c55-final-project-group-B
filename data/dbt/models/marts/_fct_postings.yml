@@ -1,5 +1,16 @@
 version: 2
 
+# Column groups, top to bottom:
+#   Core         : job_id, title, company_name, description
+#   Location     : location_city, location_province, latitude, longitude
+#   Dates & URLs : created, redirect_url
+#   Category     : category_label, is_category_known, category_tag
+#   Title-derived: contract_type_from_title, employment_type   (from int_postings_title_company)
+#   Salary       : salary_min, salary_max, salary_display, salary_note
+#   LLM enrichment: contract_type_from_desc, seniority_level, posting_language,
+#                   required_language, salary_per_hour, weekly_hours, skills, tasks
+#   Audit        : ingested_at
+
 models:
   - name: fct_postings
     description: >
@@ -36,14 +47,37 @@ models:
         description: >
           (string) The category label from the source. This is a string, not a stable
           identifier. Use it for display purposes only, and it's written in dutch for example: "Administratieve".
-      - name: is_category_known
-        description: >
-          (boolean) Whether the category is known or not. This is a boolean, not a stable
-          identifier. Use it for display purposes only.
       - name: category_tag
         description: >
           (string) The category tag from the source. This is a string, not a stable
           identifier. Use it for display purposes only, and it's written in english for example: "admin-jobs".
+      - name: is_category_known
+        description: >
+          (boolean) Whether the category is known or not. This is a boolean, not a stable
+          identifier. Use it for display purposes only.
+      #- name: contract_type_from_title
+        #description: >
+          #(string) Contract type extracted from the raw title before cleaning,
+          #based on Dutch/English keyword matches (e.g. "parttime", "voltijd").
+          #One of 'part_time', 'full_time', or null if no keyword was found in
+          #the title. Display-only — map to a translated label on the
+          #frontend rather than storing separate language columns here.
+        #tests:
+         # - accepted_values:
+          #    values: ['part_time', 'full_time']
+           #   config:
+            #    where: "contract_type_from_title is not null"
+      - name: employment_type
+        description: >
+          (string) Employment type extracted from the raw title before
+          cleaning, based on Dutch/English keyword matches (e.g. "stage",
+          "internship", "traineeship"). One of 'graduation_internship',
+          'internship', or 'regular_job' (default when no keyword matches).
+          Display-only — map to a translated label on the frontend rather
+          than storing separate language columns here.
+        tests:
+          - accepted_values:
+              values: ['graduation_internship', 'internship', 'regular_job']
       - name: salary_min
         description: >
           (float / double) The minimum salary from the source. This is a float, not a stable
@@ -60,9 +94,41 @@ models:
         description: >
           (string) Notes on salary reliability/source, e.g. whether it was stated by the
           employer or estimated.
+      #- name: contract_type_from_desc
+      #  description: >
+       #   (string) Contract type (full_time / part_time / unknown) inferred by the LLM
+        #  from the job description text. Use it for display/filtering purposes only,
+         # it is not a stable identifier.
+      - name: seniority_level
+        description: >
+          (string) Seniority level (junior / mid / senior / unknown) inferred by the
+          LLM from the job description text.
+      - name: posting_language
+        description: >
+          (string) The language the job posting itself is written in, as detected by
+          the LLM, e.g. "Dutch", "English".
+      - name: required_language
+        description: >
+          (string) The language explicitly required of applicants according to the
+          posting, as detected by the LLM: "Dutch", "English", "Both", or "Not Specified".
+      - name: salary_per_hour
+        description: >
+          (float / double) Hourly salary figure extracted by the LLM from the job
+          description, if one was stated. Null when no hourly figure could be parsed.
+      - name: weekly_hours
+        description: >
+          (string) Weekly working hours as stated or inferred by the LLM from the job
+          description. Use it for display purposes only.
+      - name: skills
+        description: >
+          (array<string>) Technical, domain, or professional skills extracted by the
+          LLM from the job description. Empty array when none were found.
+      - name: tasks
+        description: >
+          (array<string>) Core tasks, duties, or physical responsibilities extracted
+          by the LLM from the job description. Empty array when none were found.
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
 
-
-        #review under tags
+        
