@@ -1,6 +1,7 @@
 .card {
   display: flex;
   flex-direction: row;
+  z-index: 1;
   padding: 16px;
   background-color: var(--surface);
   border-radius: var(--radius);
