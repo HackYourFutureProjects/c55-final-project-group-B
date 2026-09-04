@@ -5,7 +5,27 @@ with
             *,
             _metadata.file_path as source_file,
             _metadata.file_modification_time as ingested_at
-        from read_files('{{ var("landing_path") }}', format => 'json')
+        from
+            read_files(
+                '{{ var("landing_path") }}',
+                format => 'json',
+                schemahints
+                => '
+                location STRUCT<__CLASS__: STRING, display_name: STRING, area: ARRAY<STRING>>,
+                company STRUCT<__CLASS__: STRING, display_name: STRING>,
+                category STRUCT<__CLASS__: STRING, label: STRING, tag: STRING>,
+                llm_enrichment STRUCT<
+                    contract_type_from_desc: STRING,
+                    seniority_level: STRING,
+                    posting_language: STRING,
+                    required_language: STRING,
+                    salary_per_hour: DOUBLE,
+                    weekly_hours: STRING,
+                    skills: ARRAY<STRING>,
+                    tasks: ARRAY<STRING>
+                >
+            '
+            )
 
     ),
 
@@ -18,6 +38,7 @@ with
             coalesce(
                 nullif(trim(location.display_name), ''), 'Unknown'
             ) as location_display_name,
+            -- location.area is the full country/province/city hierarchy array
             location.area as location_area,
             trim(description) as description,
             cast(
