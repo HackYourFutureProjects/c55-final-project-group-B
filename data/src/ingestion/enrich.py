@@ -2,8 +2,9 @@ import json
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from litellm import completion
+
 import litellm
+from litellm import completion
 
 litellm.num_retries = 3
 
@@ -55,7 +56,7 @@ def process_single_batch(batch_tuple):
         )
         raw_text = response.choices[0].message.content
         return batch_index, json.loads(raw_text)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 -- intentional: one bad batch shouldn't kill the whole run
         logger.error("LLM Batch %d failed: %s", batch_index, e)
         return batch_index, {}
 

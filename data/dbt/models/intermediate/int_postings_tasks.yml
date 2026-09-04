@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: int_postings_tasks
+    description: >
+      One row per distinct task mentioned in a job posting, exploded from the
+      `tasks` array column on stg_postings. Task names are lowercased and
+      trimmed, and blank/null values are dropped.
+    columns:
+      - name: job_id
+        description: Foreign key to the job posting this task belongs to.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_postings')
+              field: job_id
+
+      - name: task_name
+        description: A single task or duty extracted from the posting, lowercased and trimmed.
