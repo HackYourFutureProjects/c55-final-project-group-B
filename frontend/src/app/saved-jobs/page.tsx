@@ -1,5 +1,5 @@
-import { SearchBar } from "@/components/search-bar";
 import SavedJobResults from "@/components/saved-jobs-results";
+import { SearchBar } from "@/components/search-bar";
 import styles from "./page.module.css";
 
 export default async function SavedJobsPage({
