@@ -34,11 +34,9 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
   let ariaLabel = "";
   if (loggedOut) {
     ariaLabel = "Sign up or log in to save jobs.";
-  }
-  if (saved) {
+  } else if (saved) {
     ariaLabel = "Unsave job";
-  }
-  if (!saved) {
+  } else if (!saved) {
     ariaLabel = "Save job";
   }
 
