@@ -15,6 +15,17 @@ BATCH_SIZE = 5
 MAX_WORKERS = 2
 MODEL_NAME = "openrouter/openai/gpt-4o-mini"  # openrouter/openai/gpt-4o-mini
 
+DEFAULT_ATTRIBUTES = {
+    "contract_type_from_desc": "unknown",
+    "seniority_level": "unknown",
+    "posting_language": "Not Specified",
+    "required_language": "Not Specified",
+    "salary_per_hour": None,
+    "weekly_hours": None,
+    "skills": [],
+    "tasks": [],
+}
+
 
 def build_batch_prompt(descriptions: list[str]) -> str:
     formatted_items = []
@@ -39,29 +50,35 @@ def build_batch_prompt(descriptions: list[str]) -> str:
     )
 
 
-def process_single_batch(batch_tuple):
+def default_llm_call(prompt: str, api_key: str) -> str:
+    """The real call to the model. Kept to one small function on purpose:
+    tests inject a fake in its place instead of calling this."""
+    response = completion(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1000,
+        response_format={"type": "json_object"},
+        api_key=api_key,
+        timeout=30,
+    )
+    return response.choices[0].message.content
+
+
+def process_single_batch(batch_tuple, llm_call=default_llm_call):
     batch_index, batch_descriptions, api_key = batch_tuple
     if not batch_descriptions:
         return batch_index, {}
 
     prompt = build_batch_prompt(batch_descriptions)
     try:
-        response = completion(
-            model=MODEL_NAME,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=1000,
-            response_format={"type": "json_object"},
-            api_key=api_key,
-            timeout=30,
-        )
-        raw_text = response.choices[0].message.content
+        raw_text = llm_call(prompt, api_key)
         return batch_index, json.loads(raw_text)
     except Exception as e:  # noqa: BLE001
         logger.error("LLM Batch %d failed: %s", batch_index, e)
         return batch_index, {}
 
 
-def enrich_records(records: list[dict]) -> list[dict]:
+def enrich_records(records: list[dict], llm_call=default_llm_call) -> list[dict]:
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
         logger.warning("OPENROUTER_API_KEY is not set. Skipping LLM enrichment.")
@@ -78,24 +95,14 @@ def enrich_records(records: list[dict]) -> list[dict]:
 
     logger.info("Processing %d batches concurrently with %d workers...", len(batches), MAX_WORKERS)
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(process_single_batch, b) for b in batches]
+        futures = [executor.submit(process_single_batch, b, llm_call) for b in batches]
         for future in as_completed(futures):
             start_idx, batch_parsed = future.result()
             batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
 
             for idx in range(batch_desc_len):
                 global_index = start_idx + idx
-                default_data = {
-                    "contract_type_from_desc": "unknown",
-                    "seniority_level": "unknown",
-                    "posting_language": "Not Specified",
-                    "required_language": "Not Specified",
-                    "salary_per_hour": None,
-                    "weekly_hours": None,
-                    "skills": [],
-                    "tasks": [],
-                }
-                res = batch_parsed.get(str(idx), default_data)
+                res = batch_parsed.get(str(idx), DEFAULT_ATTRIBUTES)
                 enriched_results[global_index] = res
 
     for idx, record in enumerate(records):
