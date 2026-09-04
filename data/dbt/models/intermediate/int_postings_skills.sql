@@ -1,6 +1,6 @@
 with
     staging as (select job_id, skills from {{ ref("stg_postings") }}),
-
+    #Skills
     exploded as (
         select job_id, lower(trim(skill.element)) as skill_name
         from staging
