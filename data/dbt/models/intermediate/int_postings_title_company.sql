@@ -32,7 +32,8 @@ with
                 then 'graduation_internship'
                 when
                     lower(title)
-                    rlike '\\b(stage|stageplek|stageplaats|traineeship|trainee|werkervaringsplek|internship)\\b'
+                    --rlike '\\b(stage|stageplek|stageplaats|traineeship|trainee|werkervaringsplek|internship)\\b'
+                    rlike '\\b(stage|stageplek|stageplaats|stagiair|stagiaire|traineeship|trainee|werkervaringsplek|internship)\\b'
                 then 'internship'
                 else 'regular_job'
             end as employment_type

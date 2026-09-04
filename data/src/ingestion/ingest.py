@@ -1,4 +1,5 @@
 """Fetch records from the Adzuna API, handle pagination, and validate them using Pydantic."""
+
 # In case we dont have company_name: Rejected or We can extract the name from description or to put the name with unkowun.
 
 import logging
@@ -89,8 +90,8 @@ def fetch_raw(url: str, params: dict, max_retries: int = 3) -> list[Any]:
 
 
 def fetch_all_pages(
-    country_code: str ,
-    max_pages: int ,
+    country_code: str,
+    max_pages: int,
     results_per_page: int,
 ) -> list[Any]:
     """Paginate through Adzuna endpoints to collect raw records across multiple pages."""
@@ -100,7 +101,7 @@ def fetch_all_pages(
     base_url = os.environ.get(
         "SOURCE_API_URL",
         "https://api.adzuna.com/v1/api/jobs/{country_code}/search/{page}",
-    ) 
+    )
 
     # Make sure we actually have keys before trying to hit the API
     if not app_id or not app_key:
@@ -137,6 +138,7 @@ def fetch_all_pages(
 
     logger.info("Total raw records collected: %d", len(all_raw_records))
     return all_raw_records
+
 
 # This is the old parse_records function, which is now replaced by the new one that includes more detailed logging and error handling.
 """def parse_records(records: list[Any]) -> tuple[list[Posting], int]:
@@ -187,5 +189,3 @@ def parse_records(records: list[Any]) -> tuple[list[Posting], int]:
 
     logger.info("Parsed %d record(s), rejected %d", len(parsed), rejected)
     return parsed, rejected
-
-
