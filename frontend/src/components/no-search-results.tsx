@@ -33,8 +33,8 @@ export function NoSearchResults({
         )}
       </h2>
       <p className={styles.body}>
-        Try searching for a different role or clear the search to browse every
-        open job.
+        Try searching for a different role or clear the search to browse open
+        jobs.
       </p>
       <Link href={clearHref} className="button">
         Clear search

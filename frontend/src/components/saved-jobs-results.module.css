@@ -1,0 +1,12 @@
+.notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.noticeText {
+  color: var(--subtle);
+}
