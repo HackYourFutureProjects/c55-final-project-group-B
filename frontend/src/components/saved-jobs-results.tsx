@@ -63,6 +63,20 @@ export default function SavedJobsResults({
     );
   }
 
+  if (state.status === "loading") {
+    return <Loading />;
+  }
+
+  if (state.status === "error") {
+    return (
+      <div className={styles.notice}>
+        <p className={styles.noticeText}>
+          Could not load your saved jobs. Please try again later.
+        </p>
+      </div>
+    );
+  }
+
   if (state.jobs.length === 0) {
     return <NoSavedJobs />;
   }
@@ -72,7 +86,14 @@ export default function SavedJobsResults({
   const place = city || province;
 
   if (filtered.length === 0) {
-    return <NoSearchResults q={q} place={place} clearHref="/saved-jobs" />;
+    return (
+      <NoSearchResults
+        q={q}
+        place={place}
+        clearHref="/saved-jobs"
+        body="Try a different search or clear it to see all your saved jobs."
+      />
+    );
   }
 
   const selectedJob = filtered.find((j) => j.jobId === jobId) ?? filtered[0];
