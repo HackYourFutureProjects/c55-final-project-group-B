@@ -1,7 +1,26 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.hint {
+  z-index: 5;
+  position: absolute;
+  left: 50%;
+  translate: -50%;
+  bottom: 100%;
+  white-space: nowrap;
+  padding: 4px;
+  font-size: 14px;
+  color: var(--base);
+  background-color: var(--love);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard-sm);
+  animation: shake 400ms ease-in-out;
+}
+
 .like {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   color: var(--muted);
   width: 24px;
   height: 24px;
@@ -67,5 +86,29 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: scale(0.6) translateX(0);
+  }
+  20% {
+    transform: scale(1) translateX(0);
+  } /* pop done, now shake */
+  35% {
+    transform: scale(1) translateX(-8px);
+  }
+  50% {
+    transform: scale(1) translateX(7px);
+  }
+  65% {
+    transform: scale(1) translateX(-5px);
+  }
+  80% {
+    transform: scale(1) translateX(3px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
   }
 }
