@@ -13,7 +13,7 @@ logger = logging.getLogger("pipeline.enrich")
 
 BATCH_SIZE = 5
 MAX_WORKERS = 2
-MODEL_NAME = "openrouter/openai/gpt-4o-mini"  #openrouter/openai/gpt-4o-mini
+MODEL_NAME = "openrouter/openai/gpt-4o-mini"  # openrouter/openai/gpt-4o-mini
 
 
 def build_batch_prompt(descriptions: list[str]) -> str:
@@ -56,7 +56,9 @@ def process_single_batch(batch_tuple):
         )
         raw_text = response.choices[0].message.content
         return batch_index, json.loads(raw_text)
-    except Exception as e:  # noqa: BLE001 -- intentional: one bad batch shouldn't kill the whole run
+    except (
+        Exception
+    ) as e:  # noqa: BLE001 -- intentional: one bad batch shouldn't kill the whole run
         logger.error("LLM Batch %d failed: %s", batch_index, e)
         return batch_index, {}
 
