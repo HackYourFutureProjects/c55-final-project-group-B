@@ -1,6 +1,6 @@
+import { CheckIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { passwordRules } from "@/lib/validation";
 import styles from "./password-checklist.module.css";
-import { CheckIcon, XIcon } from "@phosphor-icons/react/ssr";
 
 export default function PasswordChecklist({ password }: { password: string }) {
   return (

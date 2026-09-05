@@ -20,6 +20,15 @@
   scale: 0.9;
 }
 
+.like[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--highlight-high);
+}
+
+.like[aria-disabled="true"]:hover {
+  scale: none;
+}
+
 /* Applied from shared state: every button for this job fills in. */
 .save {
   color: var(--love);

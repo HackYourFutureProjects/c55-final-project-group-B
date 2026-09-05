@@ -1,11 +1,11 @@
 "use client";
 
+import { LockIcon, MailboxIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
-import { ApiError, login } from "@/lib/auth";
 import { useCurrentUser } from "@/context/current-user-provider";
-import { MailboxIcon, LockIcon } from "@phosphor-icons/react";
+import { ApiError, login } from "@/lib/auth";
 import { isValidEmail } from "@/lib/validation";
 import FieldError from "./field-error";
 import styles from "./login-form.module.css";

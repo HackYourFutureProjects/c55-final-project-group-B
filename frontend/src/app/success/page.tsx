@@ -1,6 +1,6 @@
+import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
-import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import styles from "./page.module.css";
 
 export default function SuccessPage() {

@@ -1,4 +1,4 @@
-import { ExclamationMarkIcon } from "@phosphor-icons/react/dist/ssr";
+import { ExclamationMarkIcon } from "@phosphor-icons/react";
 import styles from "./field-error.module.css";
 
 export default function FieldError({ message }: { message?: string }) {
