@@ -49,7 +49,7 @@ export default function PasswordInput({
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
-      ></input>
+      />
       <button
         type="button"
         className={styles.toggle}

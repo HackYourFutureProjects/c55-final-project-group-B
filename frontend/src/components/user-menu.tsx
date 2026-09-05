@@ -41,7 +41,7 @@ export default function UserMenu() {
     };
   }, [isOpen]);
 
-  // While the stored user is being read, render an invisible copy of the
+  // While the current session is being checked, render an invisible copy of the
   // logged-out links so the header keeps its size instead of jumping.
   if (isLoading) {
     return (
