@@ -6,10 +6,12 @@ export function NoSearchResults({
   q,
   place,
   clearHref = "/jobs",
+  body = "Try searching for a different role or clear the search to browse open jobs.",
 }: {
   q?: string;
   place?: string;
   clearHref?: string;
+  body?: string;
 }) {
   return (
     <div className={styles.layout}>
@@ -32,10 +34,7 @@ export function NoSearchResults({
           </>
         )}
       </h2>
-      <p className={styles.body}>
-        Try searching for a different role or clear the search to browse every
-        open job.
-      </p>
+      <p className={styles.body}>{body}</p>
       <Link href={clearHref} className="button">
         Clear search
       </Link>
