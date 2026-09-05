@@ -67,6 +67,14 @@ export async function login(email: string, password: string): Promise<User> {
   return res.json();
 }
 
+// Ends the server session. The backend answers 204 and expires the cookie.
+export async function logout(): Promise<void> {
+  const res = await postJson("/api/auth/logout");
+  if (!res.ok) {
+    throw await readError(res);
+  }
+}
+
 export async function register(
   name: string,
   email: string,

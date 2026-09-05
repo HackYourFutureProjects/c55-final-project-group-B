@@ -28,10 +28,3 @@
 .link:hover {
   color: var(--pine);
 }
-
-.auth {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-left: auto;
-}

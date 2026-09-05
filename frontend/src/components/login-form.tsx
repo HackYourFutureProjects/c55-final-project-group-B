@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login } from "@/lib/auth";
+import { useCurrentUser } from "../context/current-user-provider";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { setUser } = useCurrentUser();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,7 +23,8 @@ export default function LoginForm() {
     const password = String(formData.get("password"));
 
     try {
-      await login(email, password);
+      const user = await login(email, password);
+      setUser(user);
       router.push("/success");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
