@@ -13,8 +13,8 @@ import { useCurrentUser } from "@/context/current-user-provider";
 import { ApiError, register } from "@/lib/auth";
 import { validate } from "@/lib/validation";
 import FieldError from "./field-error";
-import PasswordInput from "./password-input";
 import PasswordChecklist from "./password-checklist";
+import PasswordInput from "./password-input";
 import styles from "./signup-form.module.css";
 
 export default function SignupForm() {

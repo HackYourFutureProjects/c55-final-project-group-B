@@ -1,9 +1,8 @@
-import JobCard from "@/components/job-card";
-import JobDetails from "@/components/job-details";
+import JobResults from "@/components/job-results";
 import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
-import { SavedJobsProvider } from "@/context/saved-jobs-provider";
 import { BACKEND_API_URL } from "@/lib/config";
+import { parseLocation } from "@/lib/job-filters";
 import type { Job } from "@/lib/types";
 import styles from "./page.module.css";
 
@@ -12,22 +11,6 @@ type JobFilters = {
   city?: string;
   province?: string;
 };
-
-function parseLocation(location?: string): {
-  city?: string;
-  province?: string;
-} {
-  if (!location) {
-    return {};
-  }
-  if (location.startsWith("city:")) {
-    return { city: location.slice("city:".length) };
-  }
-  if (location.startsWith("province:")) {
-    return { province: location.slice("province:".length) };
-  }
-  return {};
-}
 
 async function getJobs(filters: JobFilters): Promise<Job[]> {
   const params = new URLSearchParams();
@@ -79,6 +62,13 @@ export default async function JobsPage({
   const count = jobs.length;
   const hasResults = count > 0;
 
+  const subtitle = (
+    <>
+      {count} {count === 1 ? "job" : "jobs"} available {q && `for ${q}`}{" "}
+      {place && ` in ${place}`}
+    </>
+  );
+
   return (
     <>
       <section className={styles.hero}>
@@ -91,28 +81,12 @@ export default async function JobsPage({
       <section className={styles.results}>
         <div className="container">
           {hasResults ? (
-            <SavedJobsProvider>
-              <div className={styles.layout}>
-                <div className={styles.list}>
-                  <p className={styles.subtitle}>
-                    {count} {count === 1 ? "job" : "jobs"} available{" "}
-                    {q && `for ${q}`}
-                    {place && ` in ${place}`}
-                  </p>
-                  {jobs.map((job) => (
-                    <JobCard
-                      key={job.jobId}
-                      job={job}
-                      isSelected={job.jobId === selectedJob.jobId}
-                      href={hrefFor(job.jobId)}
-                    />
-                  ))}
-                </div>
-                <div className={styles.details}>
-                  <JobDetails job={selectedJob} />
-                </div>
-              </div>
-            </SavedJobsProvider>
+            <JobResults
+              jobs={jobs}
+              selectedJob={selectedJob}
+              hrefFor={hrefFor}
+              subtitle={subtitle}
+            />
           ) : (
             <NoSearchResults q={q} place={place} />
           )}

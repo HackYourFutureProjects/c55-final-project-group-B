@@ -26,16 +26,18 @@ async function getLocations(): Promise<Locations> {
 }
 
 export async function SearchBar({
+  action = "/jobs",
   defaultQuery,
   defaultLocation,
 }: {
+  action?: string;
   defaultQuery?: string;
   defaultLocation?: string;
 }) {
   const { cities, provinces } = await getLocations();
 
   return (
-    <form action="/jobs" method="get" className={styles.form}>
+    <form action={action} method="get" className={styles.form}>
       <MagnifyingGlassIcon size="18" weight="duotone" className={styles.icon} />
       <input
         type="search"
