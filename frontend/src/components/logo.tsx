@@ -3,8 +3,8 @@ import styles from "./logo.module.css";
 
 export function Logo() {
   return (
-    <Link href="/" className={styles.logo} aria-label="Flint — home">
-      <span aria-hidden className={styles.mark} />
+    <Link href="/" className={styles.title} aria-label="Flint — home">
+      <img src="/logo.svg" alt="" className={styles.logo} />
       flint
     </Link>
   );
