@@ -59,6 +59,18 @@ async function readError(res: Response): Promise<ApiError> {
   }
 }
 
+// 401 response means no session running, which is not an error.
+export async function getCurrentUser(): Promise<User | null> {
+  const res = await fetch("/api/auth/me");
+  if (res.status === 401) {
+    return null;
+  }
+  if (!res.ok) {
+    throw await readError(res);
+  }
+  return res.json();
+}
+
 export async function login(email: string, password: string): Promise<User> {
   const res = await postJson("/api/auth/login", { email, password });
   if (!res.ok) {
