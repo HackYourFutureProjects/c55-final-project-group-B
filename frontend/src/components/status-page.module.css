@@ -25,12 +25,35 @@
   border-bottom: 1px solid var(--subtle);
 }
 
+.heading {
+  font-weight: 800;
+}
+
 .message {
+  width: 75%;
   padding: 24px;
 }
 
-.icon {
+.iconSuccess {
   color: var(--pine);
+}
+
+.iconWarning {
+  color: var(--love);
+}
+
+.iconError {
+  color: var(--rose);
+}
+
+.iconInfo {
+  color: var(--gold);
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 16px;
 }
 
 .pane p {
