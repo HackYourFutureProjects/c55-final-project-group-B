@@ -9,19 +9,19 @@ const FEATURES = [
   {
     title: "For job seekers",
     body: "Your next dream job is waiting for you, so what are you waiting for?",
-    icon: <BriefcaseIcon size={32} />,
+    icon: <BriefcaseIcon size={32} weight="duotone" />,
     color: styles.swatchPine,
   },
   {
     title: "For employers",
     body: "Your next great hire is already browsing Flint. Post a role and start reviewing today.",
-    icon: <BuildingOfficeIcon size={32} />,
+    icon: <BuildingOfficeIcon size={32} weight="duotone" />,
     color: styles.swatchIris,
   },
   {
     title: "Search your region",
     body: "Filter by city or province and search roles across the country.",
-    icon: <CompassIcon size={32} />,
+    icon: <CompassIcon size={32} weight="duotone" />,
     color: styles.swatchRose,
   },
 ];

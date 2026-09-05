@@ -2,6 +2,7 @@ import { formatPostedDate } from "@/lib/formatPostedDate";
 import type { Job } from "@/lib/types";
 import styles from "./job-details.module.css";
 import SaveJobButton from "./save-job-button";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react/ssr";
 
 export default function JobDetails({ job }: { job: Job }) {
   const posted = formatPostedDate(job.created);
@@ -22,9 +23,9 @@ export default function JobDetails({ job }: { job: Job }) {
                 href={job.redirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="button"
+                className={`button ${styles.apply}`}
               >
-                Apply now
+                Apply now <ArrowSquareOutIcon size={18} weight="duotone" />
               </a>
             )}
           </div>

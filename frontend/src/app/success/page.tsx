@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import styles from "./page.module.css";
@@ -21,7 +22,9 @@ export default function SuccessPage() {
                 Your account has been created successfully. You can now save
                 jobs and come back to them anytime. Good luck!
               </p>
-              <button className="button">Browse jobs</button>
+              <Link className="button" href={"/jobs"}>
+                Browse jobs
+              </Link>
             </div>
           </section>
         </div>

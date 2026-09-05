@@ -11,6 +11,9 @@
 }
 
 .label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 15px;
   font-weight: 600;
 }
@@ -44,12 +47,6 @@
 .hint {
   color: var(--subtle);
   font-size: 14px;
-}
-
-.error {
-  font-weight: bold;
-  color: var(--love);
-  font-size: 15px;
 }
 
 .form :global(.button) {

@@ -1,51 +1,82 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { SubmitEvent } from "react";
+import type { ChangeEvent, SubmitEvent, FocusEvent } from "react";
 import { useState } from "react";
-import { ApiError, login, register } from "@/lib/auth";
-import { useCurrentUser } from "../context/current-user-provider";
+import { ApiError, register } from "@/lib/auth";
+import { useCurrentUser } from "@/context/current-user-provider";
+import {
+  IdentificationCardIcon,
+  MailboxIcon,
+  LockOpenIcon,
+  LockIcon,
+} from "@phosphor-icons/react";
 import styles from "./signup-form.module.css";
+import { validate } from "@/lib/validation";
+import PasswordChecklist from "./password-checklist";
+import FieldError from "./field-error";
 
 export default function SignupForm() {
   const router = useRouter();
   const { setUser } = useCurrentUser();
+
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const clientErrors = validate(values);
+
+  function errorFor(field: keyof typeof values): string | undefined {
+    return touched[field]
+      ? (clientErrors[field] ?? serverErrors[field])
+      : undefined;
+  }
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function markTouched(e: FocusEvent<HTMLInputElement>) {
+    setTouched((prev) => ({ ...prev, [e.target.name]: true }));
+  }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setFieldErrors({});
-
-    const formData = new FormData(event.currentTarget);
-    const name = String(formData.get("name"));
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-    const confirmPassword = String(formData.get("confirmPassword"));
-
-    if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match." });
-      return;
-    }
+    setServerErrors({});
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    });
+    if (Object.keys(clientErrors).length > 0) return;
     setIsSubmitting(true);
 
     try {
-      await register(name, email, password);
-      // Registration does not create a session, so log in right after and
-      // cache the returned user; the header reads it to show the account menu.
-      const user = await login(email, password);
+      const user = await register(values.name, values.email, values.password);
       setUser(user);
       router.push("/success");
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setFieldErrors({ email: err.message }); // "Email is already registered"
+        setServerErrors({ email: err.message }); // "Email is already registered"
       } else if (
         err instanceof ApiError &&
         Object.keys(err.fieldErrors).length > 0
       ) {
-        setFieldErrors(err.fieldErrors); // 400 validation messages per field
+        setServerErrors(err.fieldErrors); // 400 validation messages per field
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -57,80 +88,80 @@ export default function SignupForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label htmlFor="name" className={styles.label}>
-          Name
-        </label>
+        <div className={styles.label}>
+          <IdentificationCardIcon size={18} weight="duotone" />
+          <label htmlFor="name">Name</label>
+        </div>
         <input
           type="text"
           name="name"
           id="name"
           autoComplete="name"
           placeholder="Jane Smith"
-          minLength={2}
           maxLength={100}
-          required
           className={styles.input}
+          value={values.name}
+          onChange={handleChange}
+          onBlur={markTouched}
         />
-        {fieldErrors.name && <p className={styles.error}>{fieldErrors.name}</p>}
+        <FieldError message={errorFor("name")} />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          E-mail
-        </label>
+        <div className={styles.label}>
+          <MailboxIcon size={18} weight="duotone" />
+          <label htmlFor="email">E-mail</label>
+        </div>
         <input
           type="email"
           name="email"
           id="email"
           placeholder="user@example.com"
-          required
           className={styles.input}
+          value={values.email}
+          onChange={handleChange}
+          onBlur={markTouched}
         />
-        {fieldErrors.email && (
-          <p className={styles.error}>{fieldErrors.email}</p>
-        )}
+        <FieldError message={errorFor("email")} />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          Password
-        </label>
+        <div className={styles.label}>
+          <LockOpenIcon size={18} weight="duotone" />
+          <label htmlFor="password">Password</label>
+        </div>
         <input
           type="password"
           name="password"
           id="password"
-          placeholder="**********"
-          minLength={8}
-          required
+          placeholder="••••••••••"
           className={styles.input}
+          value={values.password}
+          onChange={handleChange}
+          onFocus={markTouched}
         />
-        <p className={styles.hint}>
-          Must contain at least an uppercase letter, a lowercase letter and a
-          number.
-        </p>
-        {fieldErrors.password && (
-          <p className={styles.error}>{fieldErrors.password}</p>
-        )}
+        {touched.password && <PasswordChecklist password={values.password} />}
+        <FieldError message={serverErrors.password} />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="confirmPassword" className={styles.label}>
-          Confirm password
-        </label>
+        <div className={styles.label}>
+          <LockIcon size={18} weight="duotone" />
+          <label htmlFor="confirmPassword">Confirm password</label>
+        </div>
         <input
           type="password"
           name="confirmPassword"
           id="confirmPassword"
-          placeholder="**********"
-          minLength={8}
-          required
+          placeholder="••••••••••"
           className={styles.input}
+          value={values.confirmPassword}
+          onChange={handleChange}
+          onBlur={markTouched}
         />
-        {fieldErrors.confirmPassword && (
-          <p className={styles.error}>{fieldErrors.confirmPassword}</p>
-        )}
+        <FieldError message={errorFor("confirmPassword")} />
       </div>
 
       {error && (

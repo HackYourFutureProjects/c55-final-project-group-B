@@ -90,7 +90,7 @@ export default function UserMenu() {
         aria-controls={menuId}
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <UserCircleIcon size={28} weight={isOpen ? "fill" : "regular"} />
+        <UserCircleIcon size={28} weight={isOpen ? "fill" : "duotone"} />
       </button>
 
       {isOpen && (
@@ -104,7 +104,7 @@ export default function UserMenu() {
             className={styles.item}
             onClick={() => setIsOpen(false)}
           >
-            <HeartIcon size={18} weight="bold" aria-hidden="true" />
+            <HeartIcon size={18} weight="duotone" aria-hidden="true" />
             Saved jobs
           </Link>
           <button
@@ -113,7 +113,7 @@ export default function UserMenu() {
             onClick={handleLogout}
             disabled={isLoggingOut}
           >
-            <SignOutIcon size={18} weight="bold" aria-hidden="true" />
+            <SignOutIcon size={18} weight="duotone" aria-hidden="true" />
             {isLoggingOut ? "Logging out…" : "Log out"}
           </button>
         </div>

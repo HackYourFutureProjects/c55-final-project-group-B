@@ -4,28 +4,45 @@ import { useRouter } from "next/navigation";
 import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { ApiError, login } from "@/lib/auth";
-import { useCurrentUser } from "../context/current-user-provider";
+import { useCurrentUser } from "@/context/current-user-provider";
+import { MailboxIcon, LockIcon } from "@phosphor-icons/react";
+import { isValidEmail } from "@/lib/validation";
+import FieldError from "./field-error";
 import styles from "./login-form.module.css";
 
 export default function LoginForm() {
   const router = useRouter();
   const { setUser } = useCurrentUser();
-  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validEmail = isValidEmail(email);
+  const emailError =
+    emailTouched && !validEmail
+      ? "Please enter a valid e-mail address."
+      : undefined;
+  const passwordEmpty = password.length === 0;
+  const passwordError =
+    passwordTouched && passwordEmpty
+      ? "Please enter your password."
+      : undefined;
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
+    setEmailTouched(true);
+    setPasswordTouched(true);
+    if (!validEmail || passwordEmpty) return;
+    setError(undefined);
     setIsSubmitting(true);
-
-    const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
 
     try {
       const user = await login(email, password);
       setUser(user);
-      router.push("/success");
+      router.push("/");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setError("Invalid email or password.");
@@ -40,40 +57,44 @@ export default function LoginForm() {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          E-mail
-        </label>
+        <div className={styles.label}>
+          <MailboxIcon size={18} weight="duotone" />
+          <label htmlFor="email">E-mail</label>
+        </div>
         <input
           type="email"
           name="email"
           id="email"
           placeholder="user@example.com"
-          required
           className={styles.input}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => setEmailTouched(true)}
         />
+        <FieldError message={emailError} />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          Password
-        </label>
+        <div className={styles.label}>
+          <LockIcon size={18} weight="duotone" />
+          <label htmlFor="password">Password</label>
+        </div>
         <input
           type="password"
           name="password"
           id="password"
-          placeholder="**********"
-          required
+          placeholder="••••••••••"
           className={styles.input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => setPasswordTouched(true)}
         />
+        <FieldError message={passwordError} />
       </div>
 
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
+      <FieldError message={error} />
 
       <button type="submit" className="button" disabled={isSubmitting}>
         {isSubmitting ? "Logging in…" : "Log in"}
