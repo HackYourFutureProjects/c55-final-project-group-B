@@ -1,4 +1,5 @@
 """The parts of enrich.py worth testing: batching, defaults, and failure isolation.
+
 No key and no network. `process_single_batch` and `enrich_records` both take
 `llm_call` as a parameter (default: the real one), so these tests hand in a
 fake that answers from a script instead of calling OpenRouter.
@@ -9,6 +10,7 @@ import json
 from src.ingestion.enrich import (
     BATCH_SIZE,
     DEFAULT_ATTRIBUTES,
+    MODEL_CANDIDATES,
     build_batch_prompt,
     enrich_records,
     process_single_batch,
@@ -29,7 +31,7 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
         }
     )
 
-    def fake_call(prompt, api_key):
+    def fake_call(prompt, api_key, model):
         return answer
 
     batch_index, parsed = process_single_batch((0, descriptions, "fake-key"), fake_call)
@@ -42,7 +44,7 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
 def test_an_empty_batch_short_circuits_without_calling_the_model():
     calls = []
 
-    def fake_call(prompt, api_key):
+    def fake_call(prompt, api_key, model):
         calls.append(prompt)
         return "{}"
 
@@ -52,10 +54,40 @@ def test_an_empty_batch_short_circuits_without_calling_the_model():
     assert calls == [], "an empty batch must not spend a request"
 
 
-def test_a_batch_that_raises_returns_empty_rather_than_crashing():
-    """The failure-isolation behavior: one bad batch must not kill the run."""
+def test_the_second_model_is_tried_when_the_first_raises():
+    """The fallback behavior: one bad model must not fail the batch outright."""
+    calls = []
 
-    def fake_call(prompt, api_key):
+    def fake_call(prompt, api_key, model):
+        calls.append(model)
+        if model == MODEL_CANDIDATES[0]:
+            raise TimeoutError("upstream took too long")
+        return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"}})
+
+    batch_index, parsed = process_single_batch((1, ["some description"], "fake-key"), fake_call)
+
+    assert calls == list(MODEL_CANDIDATES)
+    assert parsed["0"]["seniority_level"] == "senior"
+
+
+def test_the_second_model_is_tried_when_the_first_returns_no_usable_items():
+    """An empty/unusable parse (not just an exception) must also trigger fallback."""
+    calls = []
+
+    def fake_call(prompt, api_key, model):
+        calls.append(model)
+        if model == MODEL_CANDIDATES[0]:
+            return "{}"  # valid JSON, but nothing usable in it
+        return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "junior"}})
+
+    batch_index, parsed = process_single_batch((0, ["a description"], "fake-key"), fake_call)
+
+    assert calls == list(MODEL_CANDIDATES)
+    assert parsed["0"]["seniority_level"] == "junior"
+
+
+def test_all_models_failing_returns_empty_rather_than_crashing():
+    def fake_call(prompt, api_key, model):
         raise TimeoutError("upstream took too long")
 
     batch_index, parsed = process_single_batch((1, ["some description"], "fake-key"), fake_call)
@@ -63,13 +95,15 @@ def test_a_batch_that_raises_returns_empty_rather_than_crashing():
     assert (batch_index, parsed) == (1, {})
 
 
-def test_a_response_that_is_not_json_returns_empty_rather_than_crashing():
-    def fake_call(prompt, api_key):
-        return "Sure, here is your answer: not actually JSON"
+def test_a_response_that_is_not_json_falls_back_rather_than_crashing():
+    def fake_call(prompt, api_key, model):
+        if model == MODEL_CANDIDATES[0]:
+            return "Sure, here is your answer: not actually JSON"
+        return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "mid"}})
 
     batch_index, parsed = process_single_batch((0, ["a description"], "fake-key"), fake_call)
 
-    assert (batch_index, parsed) == (0, {})
+    assert parsed["0"]["seniority_level"] == "mid"
 
 
 def test_the_prompt_lists_all_eight_required_keys():
@@ -99,7 +133,7 @@ def test_enrich_records_attaches_llm_enrichment_per_record(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")
     records = [{"description": "Backend role"}, {"description": "Frontend role"}]
 
-    def fake_call(prompt, api_key):
+    def fake_call(prompt, api_key, model):
         return canned_response(
             {
                 0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"},
@@ -118,7 +152,7 @@ def test_a_missing_index_in_the_answer_falls_back_to_defaults(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")
     records = [{"description": "A"}, {"description": "B"}]
 
-    def fake_call(prompt, api_key):
+    def fake_call(prompt, api_key, model):
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"}})
 
     result = enrich_records(records, llm_call=fake_call)
@@ -133,8 +167,8 @@ def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
     records = [{"description": "Backend role"}]
     calls = []
 
-    def fake_call(prompt, api_key):
-        calls.append(prompt)
+    def fake_call(prompt, api_key, model):
+        calls.append(model)
         return "{}"
 
     result = enrich_records(records, llm_call=fake_call)

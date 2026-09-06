@@ -1,0 +1,76 @@
+version: 2
+models:
+  - name: stg_jobspy_postings
+    description: Cleaned JobSpy postings, one row per posting with LLM enrichment and native source attributes.
+    columns:
+
+      - name: job_id
+        description: "(string) Stable unique identifier from JobSpy. Use this as the API resource id."
+        tests: [unique, not_null]
+      - name: title
+        description: "(string) Job title as advertised."
+        tests: [not_null]
+      - name: company_name
+        description: "(string) Hiring company name."
+      - name: company_url
+        description: "(string) Direct URL to the company profile/site."
+      - name: redirect_url
+        description: "(string / text) URL to the original posting on the source website."
+        tests: [not_null]
+      - name: description
+        description: "(text) Explanation of the job, as advertised. This is a long text field."
+
+      - name: location_display_name
+        description: >
+          (string) Raw display name for the location as sent by JobSpy, often 'City, State/Province'.
+        tests: [not_null]
+      - name: is_remote
+        description: "(boolean) Flag indicating if the job allows full remote work."
+
+      - name: source_site
+        description: "(string) Underlying job board platform (e.g., linkedin, indeed, glassdoor, zip_recruiter)."
+      - name: job_type
+        description: "(string) Employment contract type specified by job board (e.g., fulltime, parttime, contract, internship)."
+      - name: job_level
+        description: "(string) Seniority level as stated on the source platform."
+      - name: company_industry
+        description: "(string) Industry sector of the hiring company."
+      - name: emails
+        description: "(array<string>) Contact emails extracted directly from the posting."
+
+      - name: salary_min
+        description: "(float / double) Minimum salary for the job, if available."
+      - name: salary_max
+        description: "(float / double) Maximum salary for the job, if available."
+      - name: salary_currency
+        description: "(string) Currency code for stated salary (e.g., EUR, USD)."
+      - name: salary_interval
+        description: "(string) Pay frequency specified by source (e.g., yearly, monthly, hourly)."
+
+      - name: contract_type_from_desc
+        description: "(string) Contract type extracted by LLM ('full_time', 'part_time', 'unknown')."
+      - name: seniority_level
+        description: "(string) Seniority level extracted by LLM ('junior', 'mid', 'senior', 'unknown')."
+      - name: posting_language
+        description: "(string) Language the job posting is written in."
+      - name: required_language
+        description: "(string) Primary language required for applicants."
+      - name: salary_per_hour
+        description: "(float / double) Pure numeric hourly salary rate extracted from description by LLM (dot-decimal), if available."
+      - name: weekly_hours
+        description: "(string) Weekly working hours or range extracted by LLM (e.g., '16-18', '32-40', '38')."
+      - name: skills
+        description: "(array<string>) List of technical skills extracted by LLM."
+      - name: tasks
+        description: "(array<string>) List of core responsibilities extracted by LLM."
+
+      - name: created
+        description: "(timestamp) Timestamp the posting was created at the source."
+        tests: [not_null]
+      - name: source_file
+        description: "(string) File path in storage this record was ingested from."
+      - name: ingest_date
+        description: "(date) Partition date this record was ingested under."
+      - name: ingested_at
+        description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
+        tests: [not_null]

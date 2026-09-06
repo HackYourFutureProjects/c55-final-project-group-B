@@ -1,84 +1,109 @@
 with
-    source as (
+    adzuna as (
 
         select
-            *,
-            _metadata.file_path as source_file,
-            _metadata.file_modification_time as ingested_at
-        from
-            read_files(
-                '{{ var("landing_path") }}',
-                format => 'json',
-                schemahints
-                => '
-                location STRUCT<__CLASS__: STRING, display_name: STRING, area: ARRAY<STRING>>,
-                company STRUCT<__CLASS__: STRING, display_name: STRING>,
-                category STRUCT<__CLASS__: STRING, label: STRING, tag: STRING>,
-                llm_enrichment STRUCT<
-                    contract_type_from_desc: STRING,
-                    seniority_level: STRING,
-                    posting_language: STRING,
-                    required_language: STRING,
-                    salary_per_hour: DOUBLE,
-                    weekly_hours: STRING,
-                    skills: ARRAY<STRING>,
-                    tasks: ARRAY<STRING>
-                >
-            '
-            )
+            concat('adzuna_', job_id) as job_id,
+            job_id as original_job_id,
+            'adzuna' as source_system,
+            title,
+            company_name,
+            location_display_name,
+            location_area,
+            description,
 
-    ),
+            -- Contract & Seniority
+            contract_type_from_desc,
+            seniority_level,
+            posting_language,
+            required_language,
 
-    renamed as (
+            -- Financials & Hours
+            salary_min,
+            salary_max,
+            salary_per_hour,
+            weekly_hours,
+            null as salary_currency,  -- adzuna does not provide a currency field, so we set it to null
+            null as salary_interval,  -- adzuna does not provide a salary interval field, so we set it to null
 
-        select
-            cast(id as string) as job_id,
-            trim(title) as title,
-            nullif(trim(company.display_name), '') as company_name,
-            coalesce(
-                nullif(trim(location.display_name), ''), 'Unknown'
-            ) as location_display_name,
-            -- location.area is the full country/province/city hierarchy array
-            location.area as location_area,
-            trim(description) as description,
-            cast(
-                llm_enrichment.contract_type_from_desc as string
-            ) as contract_type_from_desc,
-            cast(llm_enrichment.seniority_level as string) as seniority_level,
-            cast(llm_enrichment.posting_language as string) as posting_language,
-            cast(llm_enrichment.required_language as string) as required_language,
-            try_cast(
-                replace(
-                    cast(llm_enrichment.salary_per_hour as string), ',', '.'
-                ) as double
-            ) as salary_per_hour,
-            cast(llm_enrichment.weekly_hours as string) as weekly_hours,
-            cast(llm_enrichment.skills as array<string>) as skills,
-            cast(llm_enrichment.tasks as array<string>) as tasks,
-            cast(latitude as double) as latitude,
-            cast(longitude as double) as longitude,
-            cast(salary_min as double) as salary_min,
-            cast(salary_max as double) as salary_max,
-            cast(salary_is_predicted as boolean) as salary_is_predicted,
-            to_timestamp(created) as created,
-            category.label as category_label,
-            category.tag as category_tag,
+            -- Location Coordinates & Remote
+            latitude,
+            longitude,
+            null as is_remote,  -- -adzuna does not provide a remote field, so we set it to null  
+
+            -- Skills & Metadata
+            skills,
+            tasks,
+            category_label,
+            category_tag,
+            null as source_site,  -- -adzuna does not provide a source site field, so we set it to null
             redirect_url,
-            source_file,
-            to_date(ingested_at) as ingest_date,
+            null as company_url,
+
+            -- Audit
+            created,
+            ingest_date,
             ingested_at
-        from source
-        where id is not null and created is not null and redirect_url is not null
+        from {{ ref("stg_adzuna_postings") }}
 
     ),
 
-    deduplicated as (
+    jobspy as (
+
+        select
+            concat('jobspy_', job_id) as job_id,
+            job_id as original_job_id,
+            'jobspy' as source_system,
+            title,
+            company_name,
+            location_display_name,
+            cast(null as array<string>) as location_area,  -- --jobspy does not provide a location area field, so we set it to null  
+            description,
+
+            -- Contract & Seniority
+            contract_type_from_desc,
+            seniority_level,
+            posting_language,
+            required_language,
+
+            -- Financials & Hours
+            salary_min,
+            salary_max,
+            salary_per_hour,
+            weekly_hours,
+            salary_currency,
+            salary_interval,
+
+            -- Location Coordinates & Remote
+            null as latitude,  -- jobspy does not provide a latitude field, so we set it to null
+            null as longitude,  -- jobspy does not provide a longitude field, so we set it to null
+            is_remote,
+
+            -- Skills & Metadata
+            skills,
+            tasks,
+            null as category_label,  -- -jobspy does not provide a category label field, so we set it to null
+            cast(null as string) as category_tag,  -- --jobspy does not provide a category tag field, so we set it to null
+            source_site,
+            redirect_url,
+            company_url,
+
+            -- Audit
+            created,
+            ingest_date,
+            ingested_at
+        from {{ ref("stg_jobspy_postings") }}
+
+    ),
+
+    combined_postings as (
 
         select *
-        from renamed
-        qualify row_number() over (partition by job_id order by ingested_at desc) = 1
+        from adzuna
+        union all
+        select *
+        from jobspy
 
     )
 
 select *
-from deduplicated
+from combined_postings

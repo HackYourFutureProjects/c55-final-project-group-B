@@ -11,6 +11,8 @@ version: 2
 #                   required_language, salary_per_hour, weekly_hours, skills, tasks
 #   Audit        : ingested_at
 
+
+
 models:
   - name: fct_postings
     description: >
@@ -55,7 +57,7 @@ models:
         description: >
           (boolean) Whether the category is known or not. This is a boolean, not a stable
           identifier. Use it for display purposes only.
-      #- name: contract_type_from_title
+      #- name: contract_type_from_title 
         #description: >
           #(string) Contract type extracted from the raw title before cleaning,
           #based on Dutch/English keyword matches (e.g. "parttime", "voltijd").

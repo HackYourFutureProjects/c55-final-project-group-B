@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from src.ingestion import storage
+from src.ingestion.adzuna import storage
 
 
 def test_explicit_run_date_wins():

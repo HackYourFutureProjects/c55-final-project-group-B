@@ -1,75 +1,121 @@
 version: 2
+
 models:
   - name: stg_postings
-    description: Cleaned postings, one row per posting.
+    description: >
+      Unified staging model combining Adzuna and JobSpy postings via UNION ALL.
+      Maintains standardized fields across both sources while preserving source-specific metadata.
     columns:
+      # --- Primary Identifiers ---
       - name: job_id
-        description: "(string) Stable unique identifier. Use this as the API resource id."
-        tests: [unique, not_null]
+        description: >
+          (string) Compound unique identifier prefixed with source system (e.g. 'adzuna_123', 'jobspy_456').
+          Guarantees primary key uniqueness across pipeline sources.
+        tests:
+          - unique
+          - not_null
+
+      - name: original_job_id
+        description: "(string) The raw, unmodified identifier directly from the source system."
+        tests:
+          - not_null
+
+      - name: source_system
+        description: "(string) Pipeline ingestion source identifier ('adzuna' or 'jobspy')."
+        tests:
+          - not_null
+
+      # --- Core Job Attributes ---
       - name: title
         description: "(string) Job title as advertised."
-        tests: [not_null]
+        tests:
+          - not_null
+
       - name: company_name
         description: "(string) Hiring company name."
+
       - name: location_display_name
-        description: >
-          (string) Raw display name for the location as sent by source, often 'City, Province'.
-          Coalesced to 'Unknown' when missing or empty.
-        tests: [not_null]
+        description: "(string) Raw display name for the location as provided by source."
+        tests:
+          - not_null
+
       - name: location_area
-        description: >
-          (array<string>) includes the raw area hierarchy array as sent by Adzuna (e.g. country, province, city).
+        description: "(array<string>) Hierarchy array for location (country, province, city). Available for Adzuna."
+
       - name: description
-        description: "(text) Explanation of the job, as advertised. This is a long text field."
-        tests: [not_null]
+        description: "(text) Full job description text."
+        tests:
+          - not_null
 
       # --- LLM Enriched Fields ---
       - name: contract_type_from_desc
-        description: "(string) Contract type extracted by LLM ('full_time', 'part_time', 'unknown')."
+        description: "(string) Contract type inferred by LLM ('full_time', 'part_time', 'unknown')."
+
       - name: seniority_level
-        description: "(string) Seniority level extracted by LLM ('junior', 'mid', 'senior', 'unknown')."
+        description: "(string) Seniority level inferred by LLM ('junior', 'mid', 'senior', 'unknown')."
+
       - name: posting_language
-        description: "(string) Language the job posting is written in."
+        description: "(string) Language the job posting is written in, detected by LLM."
+
       - name: required_language
-        description: "(string) Primary language required for applicants."
+        description: "(string) Primary applicant language required, detected by LLM."
+
       - name: salary_per_hour
-        description: "(float / double) Pure numeric hourly salary rate extracted from description by LLM (dot-decimal), if available."
+        description: "(float / double) Pure numeric hourly salary rate extracted by LLM, if available."
+
       - name: weekly_hours
-        description: "(string) Weekly working hours or range extracted by LLM (e.g., '16-18', '32-40', '38')."
+        description: "(string) Weekly working hours range extracted by LLM (e.g. '32-40')."
+
       - name: skills
         description: "(array<string>) List of technical skills extracted by LLM."
+
       - name: tasks
         description: "(array<string>) List of core responsibilities extracted by LLM."
 
-      # --- Standard Fields ---
-      - name: latitude
-        description: "(float / double) Latitude of the job location, if available."
-      - name: longitude
-        description: "(float / double) Longitude of the job location, if available."
-      - name: created
-        description: "(timestamp) Timestamp the posting was created at the source."
-        tests: [not_null]
-      - name: redirect_url
-        description: "(string / text) URL to the original posting on the source website."
-        tests: [not_null]
-      - name: category_label
-        description: >
-          (string) The category label from the source. Use it for display purposes only.
-          Example: "Administratieve vacatures".
-      - name: category_tag
-        description: >
-          (string) The category tag from the source. Use it for display purposes only.
-          Example: "admin-jobs".
+      # --- Financials & Work Setup ---
       - name: salary_min
         description: "(float / double) Minimum salary for the job, if available."
+
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
-      - name: salary_is_predicted
-        description: "(boolean) Whether the salary is predicted by the source."
-      - name: ingested_at
-        description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
-        tests: [not_null]
-      - name: source_file
-        description: "(string) File path in the Volume this record was ingested from."
+
+      - name: salary_currency
+        description: "(string) Currency code for salary (e.g. EUR, USD). Primarily from JobSpy."
+
+      - name: salary_interval
+        description: "(string) Salary payout period (yearly, monthly, hourly). Primarily from JobSpy."
+
+      - name: latitude
+        description: "(float / double) Geographical latitude. Available for Adzuna."
+
+      - name: longitude
+        description: "(float / double) Geographical longitude. Available for Adzuna."
+
+      - name: is_remote
+        description: "(boolean) Boolean flag indicating if job is remote. Available for JobSpy."
+
+      # --- Metadata & Source Details ---
+      - name: category_label
+        description: "(string) Source category label (e.g. Adzuna taxonomy)."
+
+      - name: source_site
+        description: "(string) Specific job board scraped (e.g. linkedin, indeed, glassdoor). Available for JobSpy."
+
+      - name: redirect_url
+        description: "(string) URL to original job posting."
+        tests:
+          - not_null
+
+      # --- Audit Timestamps ---
+      - name: created
+        description: "(timestamp) Creation timestamp at the source."
+        tests:
+          - not_null
+
       - name: ingest_date
         description: "(date) Partition date this record was ingested under."
+
+      - name: ingested_at
+        description: "(timestamp) Timestamp when the pipeline last saw this record."
+        tests:
+          - not_null

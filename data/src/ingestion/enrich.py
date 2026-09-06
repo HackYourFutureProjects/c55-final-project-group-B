@@ -10,10 +10,17 @@ litellm.num_retries = 3
 
 logger = logging.getLogger("pipeline.enrich")
 
-
 BATCH_SIZE = 5
 MAX_WORKERS = 2
-MODEL_NAME = "openrouter/openai/gpt-4o-mini"  # openrouter/openai/gpt-4o-mini
+
+# Fixed, chosen models -- not "openrouter/auto" (may route to a paid model)
+# and not "openrouter/free" (rotates randomly, so quality isn't consistent
+# batch to batch). Tried in order: if the first fails or returns unusable
+# JSON, the second is tried before falling back to DEFAULT_ATTRIBUTES.
+MODEL_CANDIDATES = [
+    "openrouter/z-ai/glm-5.2:free",
+    "openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+]
 
 DEFAULT_ATTRIBUTES = {
     "contract_type_from_desc": "unknown",
@@ -50,35 +57,63 @@ def build_batch_prompt(descriptions: list[str]) -> str:
     )
 
 
-def default_llm_call(prompt: str, api_key: str) -> str:
-    """The real call to the model. Kept to one small function on purpose:
-    tests inject a fake in its place instead of calling this."""
+def default_llm_call(prompt: str, api_key: str, model: str) -> str:
+    """The real call to the model. `model` is required (no MODEL_NAME default
+    anymore) since callers now try more than one model in order."""
     response = completion(
-        model=MODEL_NAME,
+        model=model,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1000,
         response_format={"type": "json_object"},
         api_key=api_key,
         timeout=30,
+        extra_body={"provider": {"allow_fallbacks": False}},
     )
     return response.choices[0].message.content
 
 
-def process_single_batch(batch_tuple, llm_call=default_llm_call):
+def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CANDIDATES):
     batch_index, batch_descriptions, api_key = batch_tuple
     if not batch_descriptions:
         return batch_index, {}
 
     prompt = build_batch_prompt(batch_descriptions)
-    try:
-        raw_text = llm_call(prompt, api_key)
-        return batch_index, json.loads(raw_text)
-    except Exception as e:  # noqa: BLE001
-        logger.error("LLM Batch %d failed: %s", batch_index, e)
-        return batch_index, {}
+
+    for attempt_model in models:
+        try:
+            raw_text = llm_call(prompt, api_key, attempt_model)
+            parsed = json.loads(raw_text)
+
+            # Fill in any missing keys per item with DEFAULT_ATTRIBUTES,
+            # rather than trusting the model returned every key.
+            validated_batch = {}
+            if isinstance(parsed, dict):
+                for idx, item in parsed.items():
+                    full_item = DEFAULT_ATTRIBUTES.copy()
+                    if isinstance(item, dict):
+                        full_item.update(item)
+                    validated_batch[str(idx)] = full_item
+
+            if validated_batch:
+                return batch_index, validated_batch
+            # Parsed to an empty/unusable shape -- try the next model.
+            logger.warning(
+                "LLM Batch %d: %s returned no usable items, trying next model",
+                batch_index,
+                attempt_model,
+            )
+        except (
+            Exception
+        ) as e:  # noqa: BLE001 -- intentional: one bad batch/model shouldn't kill the whole run
+            logger.error("LLM Batch %d failed on %s: %s", batch_index, attempt_model, e)
+
+    logger.error("LLM Batch %d failed on all candidate models: %s", batch_index, models)
+    return batch_index, {}
 
 
-def enrich_records(records: list[dict], llm_call=default_llm_call) -> list[dict]:
+def enrich_records(
+    records: list[dict], llm_call=default_llm_call, models=MODEL_CANDIDATES
+) -> list[dict]:
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
         logger.warning("OPENROUTER_API_KEY is not set. Skipping LLM enrichment.")
@@ -95,7 +130,7 @@ def enrich_records(records: list[dict], llm_call=default_llm_call) -> list[dict]
 
     logger.info("Processing %d batches concurrently with %d workers...", len(batches), MAX_WORKERS)
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(process_single_batch, b, llm_call) for b in batches]
+        futures = [executor.submit(process_single_batch, b, llm_call, models) for b in batches]
         for future in as_completed(futures):
             start_idx, batch_parsed = future.result()
             batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
@@ -106,6 +141,6 @@ def enrich_records(records: list[dict], llm_call=default_llm_call) -> list[dict]
                 enriched_results[global_index] = res
 
     for idx, record in enumerate(records):
-        record["llm_enrichment"] = enriched_results.get(idx, {})
+        record["llm_enrichment"] = enriched_results.get(idx, DEFAULT_ATTRIBUTES)
 
     return records
