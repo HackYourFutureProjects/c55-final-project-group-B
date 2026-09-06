@@ -38,6 +38,8 @@ _CONTAINER_LOG_LINE = re.compile(
 _EXCEPTION_LINE = re.compile(
     r"^(?:[A-Za-z_][\w.]*(?:Error|Exception|Warning|Exit|Interrupt)|ExceptionGroup): "
 )
+# Python may exit before logging.basicConfig runs (e.g. `python -m` with no __main__.py).
+_INTERPRETER_LINE = re.compile(r"^(?:/.+/)?python(?:\d+(?:\.\d+)*)?: .+")
 
 
 def filter_application_log_lines(lines: list[str]) -> list[str]:
@@ -46,7 +48,9 @@ def filter_application_log_lines(lines: list[str]) -> list[str]:
     Structured lines come from logging.basicConfig. After an application ERROR,
     Python prints a Traceback (and the final Exception:) as plain stdout lines —
     those must reach the Airflow task log or Mode 2/3/4 ingest failures only say
-    "Pipeline failed" with no cause.
+    "Pipeline failed" with no cause. Interpreter stderr (``python: No module
+    named …``) is kept too — it is the only output when the container exits
+    before application loggers run.
 
     After the exception line, indented Azure SDK leftovers (e.g. Metadata) must
     not stay attached; only chaining headers may reopen the traceback body.
@@ -67,6 +71,11 @@ def filter_application_log_lines(lines: list[str]) -> list[str]:
                 in_traceback = level == "ERROR"
             else:
                 in_traceback = False
+            after_exception = False
+            continue
+        if _INTERPRETER_LINE.match(line):
+            kept.append(line)
+            in_traceback = False
             after_exception = False
             continue
         if not in_traceback:
