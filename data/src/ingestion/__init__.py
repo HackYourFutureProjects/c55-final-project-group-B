@@ -1,7 +1,6 @@
-"""Fetch from the source, validate, land the raw file. Runs as a container job."""
+"""Fetch from both Adzuna and JobSpy sources sequentially."""
 
 import logging
-import os
 import sys
 
 from .adzuna import pipeline as adzuna_pipeline
@@ -11,24 +10,31 @@ logger = logging.getLogger(__name__)
 
 
 def run() -> int:
-    source = os.environ.get("INGEST_SOURCE", "adzuna").strip().lower()
+    """Run both sources, one after another. Returns total records landed.
 
-    try:
-        if source == "adzuna":
-            count = adzuna_pipeline.run()
-            logger.info("Adzuna ingestion completed. Landed %s records.", count)
-            return 0
-        elif source == "jobspy":
-            count = jobspy_pipeline.run()
-            logger.info("JobSpy ingestion completed. Landed %s records.", count)
-            return 0
-        else:
-            logger.error("Unknown INGEST_SOURCE='%s'. Expected 'adzuna' or 'jobspy'.", source)
-            return 1
-    except Exception:
-        logger.exception("Ingestion failed for source '%s'", source)
-        return 1
+    Each source is isolated: if one fails, its count is 0 (contributing
+    nothing to the total) but the other source still runs and still lands
+    its data. The caller finds out something failed via the log, not by
+    losing the other source's successful run.
+    """
+    total = 0
+
+    for name, pipeline in (("Adzuna", adzuna_pipeline), ("JobSpy", jobspy_pipeline)):
+        logger.info("Starting %s ingestion...", name)
+        try:
+            count = pipeline.run()
+            logger.info("%s ingestion landed %d records.", name, count)
+            total += count
+        except Exception:
+            logger.exception("%s ingestion failed", name)
+
+    logger.info("Ingestion complete. Total landed records: %d", total)
+    return total
 
 
 if __name__ == "__main__":
-    sys.exit(run())
+    # CLI contract (exit code) is separate from the library contract (record
+    # count) -- run() always returns a count; only here do we translate "ran
+    # without an uncaught exception" into 0/1 for the shell.
+    landed = run()
+    sys.exit(0)
