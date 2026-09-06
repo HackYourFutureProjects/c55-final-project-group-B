@@ -786,6 +786,7 @@ dependencies = [
     { name = "python-jobspy", version = "1.1.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "python-jobspy", version = "1.1.82", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "requests" },
+    { name = "ruff" },
     { name = "sqlalchemy" },
     { name = "tenacity" },
 ]
@@ -832,6 +833,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-jobspy", specifier = ">=1.1.13" },
     { name = "requests", specifier = ">=2.32.0" },
+    { name = "ruff", specifier = ">=0.16.5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.0" },
     { name = "shandy-sqlfmt", marker = "extra == 'dev'", specifier = ">=0.23.0" },
     { name = "sqlalchemy", specifier = ">=2.0.52" },

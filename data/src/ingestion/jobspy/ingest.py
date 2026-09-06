@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import Any
+
 import pandas as pd
 from jobspy import scrape_jobs
 from pydantic import ValidationError
@@ -37,7 +38,7 @@ def fetch_jobspy_raw(
                 results_wanted=results_wanted_per_role,
                 hours_old=hours_old,
                 country_indeed="Netherlands",
-                linkedin_fetch_description=True,  #
+                linkedin_fetch_description=True,
             )
 
             if not jobs_df.empty:
@@ -49,7 +50,7 @@ def fetch_jobspy_raw(
 
             time.sleep(1)
 
-        except Exception as exc:
+        except (ConnectionError, TimeoutError, ValueError) as exc:
             logger.error("Failed to fetch jobs for role '%s': %s", role, exc)
 
     logger.info("Total raw JobSpy records collected: %d", len(all_raw_records))

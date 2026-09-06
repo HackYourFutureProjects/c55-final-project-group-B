@@ -14,10 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 from ..enrich import enrich_records
-
-
 from .ingest import fetch_jobspy_raw, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,

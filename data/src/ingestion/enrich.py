@@ -102,9 +102,7 @@ def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CA
                 batch_index,
                 attempt_model,
             )
-        except (
-            Exception
-        ) as e:  # noqa: BLE001 -- intentional: one bad batch/model shouldn't kill the whole run
+        except Exception as e:  # noqa: BLE001
             logger.error("LLM Batch %d failed on %s: %s", batch_index, attempt_model, e)
 
     logger.error("LLM Batch %d failed on all candidate models: %s", batch_index, models)
