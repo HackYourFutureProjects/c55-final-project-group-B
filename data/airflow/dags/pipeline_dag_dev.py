@@ -64,33 +64,17 @@ def databricks_environment_dev() -> dict[str, str]:
 )
 def final_project_pipeline_dev():
     @task
-    def ingest_adzuna() -> str:
-        """Fetch Adzuna jobs in dev environment."""
-        from pipeline_dag import setting, start_job
+    def ingest() -> str:
+        """Fetch from both Adzuna and JobSpy, land raw files."""
+        mode = ingest_mode(profile)
+        if mode == "local":
+            from src.ingestion import run
 
-        job_name = setting(
-            "ACA_INGEST_ADZUNA_JOB_DEV",
-            setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev"),
-        )
-        return start_job(
-            job_name,
-            env_vars=[{"name": "INGEST_SOURCE", "value": "adzuna"}],
-        )
+            landed = run()
+            return f"local ingest landed {landed} records"
 
-    @task
-    def ingest_jobspy() -> str:
-        """Fetch JobSpy jobs in dev environment."""
-        from pipeline_dag import setting, start_job
-
-        # Fallback to job-fp-ingest-dev instead of nonexistent resource
-        job_name = setting(
-            "ACA_INGEST_JOBSPY_JOB_DEV",
-            setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev"),
-        )
-        return start_job(
-            job_name,
-            env_vars=[{"name": "INGEST_SOURCE", "value": "jobspy"}],
-        )
+        job_name = setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default)
+        return start_job(job_name)
 
     @task
     def list_landing_files() -> int:
@@ -162,13 +146,7 @@ def final_project_pipeline_dev():
 
         return sync.run()
 
-    # Executing both ingestion steps concurrently for dev pipeline
-    (
-        [ingest_adzuna(), ingest_jobspy()]
-        >> list_landing_files()
-        >> dbt_build()
-        >> publish_to_backend()
-    )
+    (ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend())
 
 
 if not os.environ.get("DATABRICKS_TOKEN"):

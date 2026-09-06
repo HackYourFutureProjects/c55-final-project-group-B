@@ -235,45 +235,17 @@ def make_pipeline(profile: PipelineProfile):
     )
     def pipeline():
         @task
-        def ingest_adzuna() -> str:
-            """Fetch Adzuna jobs and land raw files."""
+        def ingest() -> str:
+            """Fetch from both Adzuna and JobSpy, land raw files."""
             mode = ingest_mode(profile)
             if mode == "local":
-                from src.ingestion.adzuna import pipeline
+                from src.ingestion import run
 
-                landed = pipeline.run()
-                return f"local adzuna ingest landed {landed} records"
+                landed = run()
+                return f"local ingest landed {landed} records"
 
-            job_name = setting(
-                "ACA_INGEST_ADZUNA_JOB",
-                setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default),
-            )
-            # Pass INGEST_SOURCE=adzuna to the ACA container
-            return start_job(
-                job_name,
-                env_vars=[{"name": "INGEST_SOURCE", "value": "adzuna"}],
-            )
-
-        @task
-        def ingest_jobspy() -> str:
-            """Fetch JobSpy jobs and land raw files."""
-            mode = ingest_mode(profile)
-            if mode == "local":
-                from src.ingestion.jobspy import pipeline
-
-                landed = pipeline.run()
-                return f"local jobspy ingest landed {landed} records"
-
-            # Reuses the same ACA job resource (e.g. job-fp-ingest)
-            job_name = setting(
-                "ACA_INGEST_JOBSPY_JOB",
-                setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default),
-            )
-            # Pass INGEST_SOURCE=jobspy to the ACA container
-            return start_job(
-                job_name,
-                env_vars=[{"name": "INGEST_SOURCE", "value": "jobspy"}],
-            )
+            job_name = setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default)
+            return start_job(job_name)
 
         @task
         def list_landing_files() -> int:
@@ -355,21 +327,9 @@ def make_pipeline(profile: PipelineProfile):
 
             return sync.run()
 
-        # Parallel ingestion flow: execute both tasks concurrently, then proceed downstream
-        (
-            [ingest_adzuna(), ingest_jobspy()]
-            >> list_landing_files()
-            >> dbt_build()
-            >> publish_to_backend()
-        )
-        # if not parallel, it would be:
-        # (
-        #    ingest_adzuna()
-        #    >> ingest_jobspy()
-        #    >> list_landing_files()
-        #    >> dbt_build()
-        #    >> publish_to_backend()
-        # )
+        # Execute the ingestion tasks concurrently, then dbt, then publish
+        (ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend())
+        # ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend()
 
     return pipeline()
 
