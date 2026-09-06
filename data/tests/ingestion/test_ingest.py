@@ -9,8 +9,8 @@ from datetime import UTC, datetime
 import pytest
 from pydantic import ValidationError
 
-from src.ingestion.ingest import parse_records
-from src.ingestion.models import Posting
+from src.ingestion.adzuna.ingest import parse_records
+from src.ingestion.adzuna.models import Posting
 
 # Adzuna job payload fixture
 GOOD = {

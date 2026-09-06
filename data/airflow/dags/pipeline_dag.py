@@ -1,6 +1,6 @@
 """Daily orchestration for the final project pipeline.
 
-    ingest -> list_landing_files (SPIKE) -> dbt_build -> publish_to_backend
+    ingest_adzuna & ingest_jobspy -> list_landing_files (SPIKE) -> dbt_build -> publish_to_backend
 
 Each step is separate so that when dbt fails you re-run dbt, not the fetch, and
 so the publish cannot run on a mart that failed its own tests. Enrichment is
@@ -234,20 +234,40 @@ def make_pipeline(profile: PipelineProfile):
     )
     def pipeline():
         @task
-        def ingest() -> str:
-            """Fetch the source and land raw files.
+        def ingest_adzuna() -> str:
+            """Fetch Adzuna jobs and land raw files.
 
-            Mode `local`: run src.ingestion.pipeline in this Airflow worker.
-            Mode `aca`: trigger the Container Apps ingest job and wait for it.
+            Mode `local`: run src.ingestion.adzuna.pipeline in this Airflow worker.
+            Mode `aca`: trigger the Container Apps ingest job for Adzuna and wait for it.
             """
             mode = ingest_mode(profile)
             if mode == "local":
-                from src.ingestion import pipeline
+                from src.ingestion.adzuna import pipeline
 
                 landed = pipeline.run()
-                return f"local ingest landed {landed} records"
+                return f"local adzuna ingest landed {landed} records"
 
-            job_name = setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default)
+            job_name = setting(
+                "ACA_INGEST_ADZUNA_JOB",
+                setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default),
+            )
+            return start_job(job_name)
+
+        @task
+        def ingest_jobspy() -> str:
+            """Fetch JobSpy jobs and land raw files.
+
+            Mode `local`: run src.ingestion.jobspy.pipeline in this Airflow worker.
+            Mode `aca`: trigger the Container Apps ingest job for JobSpy and wait for it.
+            """
+            mode = ingest_mode(profile)
+            if mode == "local":
+                from src.ingestion.jobspy import pipeline
+
+                landed = pipeline.run()
+                return f"local jobspy ingest landed {landed} records"
+
+            job_name = setting("ACA_INGEST_JOBSPY_JOB", "job-fp-ingest-jobspy")
             return start_job(job_name)
 
         @task
@@ -330,7 +350,21 @@ def make_pipeline(profile: PipelineProfile):
 
             return sync.run()
 
-        ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend()
+        # Parallel ingestion flow: execute both tasks concurrently, then proceed downstream
+        (
+            [ingest_adzuna(), ingest_jobspy()]
+            >> list_landing_files()
+            >> dbt_build()
+            >> publish_to_backend()
+        )
+        # if not parallel, it would be:
+        # (
+        #    ingest_adzuna()
+        #    >> ingest_jobspy()
+        #    >> list_landing_files()
+        #    >> dbt_build()
+        #    >> publish_to_backend()
+        # )
 
     return pipeline()
 
