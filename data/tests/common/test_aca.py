@@ -187,6 +187,15 @@ def test_filter_does_not_open_traceback_on_warning_or_info():
     ]
 
 
+def test_filter_keeps_python_interpreter_startup_errors():
+    """Container exits before logging is configured — only interpreter stderr."""
+    line = (
+        "/usr/local/bin/python: No module named src.ingestion.__main__; "
+        "'src.ingestion' is a package and cannot be directly executed"
+    )
+    assert filter_application_log_lines([line]) == [line]
+
+
 def test_filter_keeps_chained_exception_headers():
     lines = [
         "2026-08-31 07:00:28,525 ERROR pipeline Pipeline failed",
