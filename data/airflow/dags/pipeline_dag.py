@@ -191,7 +191,7 @@ def landing_path(profile: PipelineProfile) -> str:
     return setting(profile.landing_path_var, default)
 
 
-def start_job(job_name: str, env_vars: list[dict[str, str]] | None = None) -> str:
+def start_job(job_name: str) -> str:
     """Start one Container Apps job and wait for it."""
     from src.common.aca import azure_token, start_and_wait
 
@@ -201,7 +201,6 @@ def start_job(job_name: str, env_vars: list[dict[str, str]] | None = None) -> st
         job_name=job_name,
         token=azure_token(),
         team=team_slug(),
-        env_vars=env_vars,
     )
 
 
