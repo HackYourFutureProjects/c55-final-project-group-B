@@ -25,4 +25,5 @@ RUN uv pip install --system --no-cache -r pyproject.toml
 
 COPY src/ ./src/
 
-CMD ["python", "-m", "src.ingestion.pipeline"]
+#CMD ["python", "-m", "src.ingestion.pipeline"]
+CMD ["python", "-m", "src.ingestion"]

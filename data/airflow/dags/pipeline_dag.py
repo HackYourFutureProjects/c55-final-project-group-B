@@ -191,7 +191,7 @@ def landing_path(profile: PipelineProfile) -> str:
     return setting(profile.landing_path_var, default)
 
 
-def start_job(job_name: str) -> str:
+def start_job(job_name: str, env_vars: list[dict[str, str]] | None = None) -> str:
     """Start one Container Apps job and wait for it."""
     from src.common.aca import azure_token, start_and_wait
 
@@ -201,6 +201,7 @@ def start_job(job_name: str) -> str:
         job_name=job_name,
         token=azure_token(),
         team=team_slug(),
+        env_vars=env_vars,
     )
 
 
@@ -235,11 +236,7 @@ def make_pipeline(profile: PipelineProfile):
     def pipeline():
         @task
         def ingest_adzuna() -> str:
-            """Fetch Adzuna jobs and land raw files.
-
-            Mode `local`: run src.ingestion.adzuna.pipeline in this Airflow worker.
-            Mode `aca`: trigger the Container Apps ingest job for Adzuna and wait for it.
-            """
+            """Fetch Adzuna jobs and land raw files."""
             mode = ingest_mode(profile)
             if mode == "local":
                 from src.ingestion.adzuna import pipeline
@@ -251,15 +248,15 @@ def make_pipeline(profile: PipelineProfile):
                 "ACA_INGEST_ADZUNA_JOB",
                 setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default),
             )
-            return start_job(job_name)
+            # Pass INGEST_SOURCE=adzuna to the ACA container
+            return start_job(
+                job_name,
+                env_vars=[{"name": "INGEST_SOURCE", "value": "adzuna"}],
+            )
 
         @task
         def ingest_jobspy() -> str:
-            """Fetch JobSpy jobs and land raw files.
-
-            Mode `local`: run src.ingestion.jobspy.pipeline in this Airflow worker.
-            Mode `aca`: trigger the Container Apps ingest job for JobSpy and wait for it.
-            """
+            """Fetch JobSpy jobs and land raw files."""
             mode = ingest_mode(profile)
             if mode == "local":
                 from src.ingestion.jobspy import pipeline
@@ -267,8 +264,16 @@ def make_pipeline(profile: PipelineProfile):
                 landed = pipeline.run()
                 return f"local jobspy ingest landed {landed} records"
 
-            job_name = setting("ACA_INGEST_JOBSPY_JOB", "job-fp-ingest-jobspy")
-            return start_job(job_name)
+            # Reuses the same ACA job resource (e.g. job-fp-ingest)
+            job_name = setting(
+                "ACA_INGEST_JOBSPY_JOB",
+                setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default),
+            )
+            # Pass INGEST_SOURCE=jobspy to the ACA container
+            return start_job(
+                job_name,
+                env_vars=[{"name": "INGEST_SOURCE", "value": "jobspy"}],
+            )
 
         @task
         def list_landing_files() -> int:
