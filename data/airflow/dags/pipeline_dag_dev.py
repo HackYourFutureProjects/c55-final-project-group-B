@@ -64,10 +64,21 @@ def databricks_environment_dev() -> dict[str, str]:
 )
 def final_project_pipeline_dev():
     @task
-    def ingest() -> str:
+    def ingest_adzuna() -> str:
+        """Fetch Adzuna jobs in dev environment."""
         from pipeline_dag import setting, start_job
 
-        job_name = setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev")
+        job_name = setting(
+            "ACA_INGEST_ADZUNA_JOB_DEV", setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev")
+        )
+        return start_job(job_name)
+
+    @task
+    def ingest_jobspy() -> str:
+        """Fetch JobSpy jobs in dev environment."""
+        from pipeline_dag import setting, start_job
+
+        job_name = setting("ACA_INGEST_JOBSPY_JOB_DEV", "job-fp-ingest-jobspy-dev")
         return start_job(job_name)
 
     @task
@@ -140,7 +151,13 @@ def final_project_pipeline_dev():
 
         return sync.run()
 
-    ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend()
+    # Executing both ingestion steps in parallel for dev pipeline
+    (
+        [ingest_adzuna(), ingest_jobspy()]
+        >> list_landing_files()
+        >> dbt_build()
+        >> publish_to_backend()
+    )
 
 
 if not os.environ.get("DATABRICKS_TOKEN"):
