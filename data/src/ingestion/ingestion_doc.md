@@ -127,8 +127,46 @@ Two free candidate models are tried sequentially instead of relying on a single 
 | **7** | `skills` | List of tools/skills mentioned, translated to English |
 | **8** | `tasks` | List of core responsibilities, translated to English |
 
-> **Note:** If a batch fails across all candidate models, all records in that batch automatically fall back to `DEFAULT_ATTRIBUTES` (`unknown` / `null` / `[]`) to ensure the entire ingestion run completes without throwing fatal errors.
+
+> **Note:** If a batch fails across all candidate models, all records in that batch automatically fall back to `DEFAULT_ATTRIBUTES` (`unknown` &#47; `null` &#47; `[]`) to ensure the entire ingestion run completes without throwing fatal errors.
 
 
-
-
+#TECH_ROLES = [
+    # Data & AI / ML
+    "data engineer",
+    "data analyst",
+    "data scientist",
+    "machine learning engineer",
+    "analytics engineer",
+    "ai engineer",
+    "business intelligence developer",
+    
+    # Software Engineering & Development
+    "software engineer",
+    "backend developer",
+    "frontend developer",
+    "full stack developer",
+    "python developer",
+    "java developer",
+    "mobile app developer",
+    
+    # Cloud, DevOps & Infrastructure
+    "devops engineer",
+    "cloud engineer",
+    "cloud architect",
+    "site reliability engineer",  # SRE
+    "platform engineer",
+    "systems administrator",
+    
+    # Cybersecurity & Networks
+    "cyber security engineer",
+    "security analyst",
+    "network engineer",
+    
+    # Quality, Agile & Product Management
+    "qa engineer",
+    "test automation engineer",
+    "scrum master",
+    "product owner",
+    "solution architect"
+]
