@@ -1,7 +1,6 @@
 """Fetch from both Adzuna and JobSpy sources sequentially."""
 
 import logging
-import sys
 
 from .adzuna import pipeline as adzuna_pipeline
 from .jobspy import pipeline as jobspy_pipeline
@@ -30,11 +29,3 @@ def run() -> int:
 
     logger.info("Ingestion complete. Total landed records: %d", total)
     return total
-
-
-if __name__ == "__main__":
-    # CLI contract (exit code) is separate from the library contract (record
-    # count) -- run() always returns a count; only here do we translate "ran
-    # without an uncaught exception" into 0/1 for the shell.
-    landed = run()
-    sys.exit(0)
