@@ -65,15 +65,9 @@ def databricks_environment_dev() -> dict[str, str]:
 def final_project_pipeline_dev():
     @task
     def ingest() -> str:
-        """Fetch from both Adzuna and JobSpy, land raw files."""
-        mode = ingest_mode(profile)
-        if mode == "local":
-            from src.ingestion import run
+        from pipeline_dag import setting, start_job
 
-            landed = run()
-            return f"local ingest landed {landed} records"
-
-        job_name = setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default)
+        job_name = setting("ACA_INGEST_JOB_DEV", "job-fp-ingest-dev")
         return start_job(job_name)
 
     @task
