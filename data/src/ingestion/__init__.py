@@ -25,8 +25,8 @@ def run() -> int:
         else:
             logger.error("Unknown INGEST_SOURCE='%s'. Expected 'adzuna' or 'jobspy'.", source)
             return 1
-    except Exception as err:
-        logger.exception("Ingestion failed for source '%s': %s", source, err)
+    except Exception:
+        logger.exception("Ingestion failed for source '%s'", source)
         return 1
 
 
