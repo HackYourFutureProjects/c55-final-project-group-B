@@ -139,7 +139,7 @@ def final_project_pipeline_dev():
             os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
             return sync.run(
-                marts=[
+                mart=[
                     ("fct_postings", "fct_postings"),
                     ("fct_postings_skills", "fct_postings_skills"),
                 ]
