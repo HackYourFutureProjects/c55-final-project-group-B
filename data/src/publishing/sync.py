@@ -202,7 +202,9 @@ def run(
     ``mart`` / ``table`` (CLI, tests, one-off scripts).
     """
     if marts:
-        return sum(run(mart=mart_name, table=table_name, schema=schema) for mart_name, table_name in marts)
+        return sum(
+            run(mart=mart_name, table=table_name, schema=schema) for mart_name, table_name in marts
+        )
 
     warehouse_schema = os.environ["DBT_SCHEMA"]
     columns, rows = read_mart(Warehouse.from_env(), warehouse_schema, mart)
