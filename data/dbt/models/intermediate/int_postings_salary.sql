@@ -87,8 +87,14 @@ with
                 when salary_min is not null
                 then concat('From €', format_number(salary_min, 0))
                 else concat('Up to €', format_number(salary_max, 0))
-            end as salary_display,
+            end as salary_display
 
+        from cleaned
+    ),
+
+    final_transformed as (
+        select
+            *,
             -- Note reflecting trust/availability of the salary data
             case
                 when has_salary_info = false
@@ -97,11 +103,12 @@ with
                 then 'Unreliable value'
                 when salary_is_predicted = true
                 then 'Estimated'
-                else 'Stated by employer'
+                when salary_is_predicted = false
+                then 'Stated by employer'
+                else 'Reported'
             end as salary_note
-
-        from cleaned
+        from transformed
     )
 
 select *
-from transformed
+from final_transformed

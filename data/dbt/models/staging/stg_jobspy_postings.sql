@@ -46,7 +46,7 @@ with
             trim(description) as description,
 
             -- Location & Remote
-            nullif(trim(location), '') as location_display_name,
+            coalesce(nullif(trim(location), ''), 'Unknown') as location_display_name,
             cast(is_remote as boolean) as is_remote,
 
             -- Metadata & Job Details
