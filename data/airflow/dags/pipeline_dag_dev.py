@@ -138,12 +138,12 @@ def final_project_pipeline_dev():
             secret_name = setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
             os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
-            return sync.run(
-                marts=[
-                    ("fct_postings", "fct_postings"),
-                    ("fct_postings_skills", "fct_postings_skills"),
-                ]
-            )
+        return sync.run(
+            marts=[
+                ("fct_postings", "fct_postings"),
+                ("fct_postings_skills", "fct_postings_skills"),
+            ]
+        )
 
     (ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend())
 
