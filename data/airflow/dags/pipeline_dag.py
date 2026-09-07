@@ -324,7 +324,12 @@ def make_pipeline(profile: PipelineProfile):
                 ) or profile.backend_pg_secret_fallback(team)
                 os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
-            return sync.run()
+            return sync.run(
+                marts=[
+                    ("fct_postings", "fct_postings"),
+                    ("fct_postings_skills", "fct_postings_skills"),
+                ]
+            )
 
         # Execute the ingestion tasks concurrently, then dbt, then publish
         (ingest() >> list_landing_files() >> dbt_build() >> publish_to_backend())
