@@ -31,7 +31,7 @@ models:
       - name: description
         description: "(string) Full job description text from the source."
       - name: location_city
-        description: "(string) Primary city string." #here we still need to split the city and province from the location string, but we can do that in a later step.
+        description: "(string) Primary city string." 
         tests: [not_null]
       - name: location_province
         description: "(string) Province/region string for the job location."

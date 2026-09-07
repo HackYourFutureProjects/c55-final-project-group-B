@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fct_posting_skills
+    description: >
+      Junction table mapping job postings to their individual normalized skills. 
+      Used by the backend API to enable efficient filtering, skill searching, 
+      and populating skill dropdowns without processing raw arrays.
+    columns:
+      - name: job_id
+        description: "Foreign key referencing fct_postings.job_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_postings')
+              field: job_id
+
+      - name: skill_name
+        description: "Cleaned, lowercased skill name associated with the posting."
+        tests:
+          - not_null
