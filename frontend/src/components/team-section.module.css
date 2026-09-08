@@ -1,0 +1,10 @@
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}

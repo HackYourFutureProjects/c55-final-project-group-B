@@ -10,11 +10,6 @@
   border-radius: var(--radius);
   overflow: hidden;
 }
-/* 
-.card:hover {
-  translate: -1px -1px;
-  box-shadow: var(--shadow-hard);
-} */
 
 .photo {
   display: block;

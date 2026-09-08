@@ -27,13 +27,11 @@ export default function TeamProfile({
       <Image
         src={photo}
         placeholder="blur"
-        height={256}
-        width={256}
         alt={`${name} profile photo`}
         className={styles.photo}
       ></Image>
       <div className={styles.details}>
-        <h2 className={styles.name}>{name}</h2>
+        <h3 className={styles.name}>{name}</h3>
         <p className={styles.role}>{role}</p>
         <div className={styles.links}>
           <Link className={`${styles.button} ${styles.github}`} href={github}>
