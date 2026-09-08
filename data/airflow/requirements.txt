@@ -32,5 +32,9 @@ azure-storage-blob>=12.23.0
 # Keep them listed so a deploy does not drop a dependency the default path needs.
 pydantic>=2.9.0
 requests>=2.32.0
-litellm>=1.99.0
-python-jobspy>=1.1.13
+#
+# Do NOT add litellm, python-jobspy, or other ACA-ingest deps here. The VM
+# pip-installs this file on every container start; heavy packages (litellm pulls
+# numpy, tokenizers, …) can exceed the healthcheck window and crash-loop the
+# apiserver (502 in the UI). Scheduled ingest runs in ACA (`data/Dockerfile` /
+# `data/pyproject.toml`), not in the Airflow worker.
