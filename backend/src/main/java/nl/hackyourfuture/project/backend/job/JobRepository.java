@@ -21,7 +21,7 @@ public class JobRepository {
 
         String sql = """
             SELECT job_id, title, company_name, location_city, location_province,
-                   description, latitude, longitude, created, redirect_url, ingested_at
+                   description, latitude, longitude, created, redirect_url, ingested_at, salary_min, salary_max, salary_display
             FROM analytics.fct_postings
             WHERE (:jobTitle::text IS NULL OR title ILIKE '%' || :jobTitle || '%')
               AND (:city::text IS NULL OR location_city ILIKE :city)
@@ -48,7 +48,10 @@ public class JobRepository {
                         rs.getObject("longitude", Double.class),
                         rs.getString("created"),
                         rs.getString("redirect_url"),
-                        rs.getString("ingested_at")
+                        rs.getString("ingested_at"),
+                        rs.getBigDecimal("salary_min"),
+                        rs.getBigDecimal("salary_max"),
+                        rs.getString("salary_display")
                 ))
                 .list();
     }
