@@ -23,8 +23,7 @@ with
             salary_per_hour,
             weekly_hours,
             salary_is_predicted,
-            null as salary_currency,  -- adzuna does not provide a currency field, so we set it to null
-            null as salary_interval,  -- adzuna does not provide a salary interval field, so we set it to null
+            
 
             -- Location Coordinates & Remote
             latitude,
@@ -71,8 +70,6 @@ with
             salary_max,
             salary_per_hour,
             weekly_hours,
-            salary_currency,
-            salary_interval,
             cast(null as boolean) as salary_is_predicted,
             -- Location Coordinates & Remote
             null as latitude,  -- jobspy does not provide a latitude field, so we set it to null

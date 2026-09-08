@@ -25,8 +25,6 @@ with
                     emails ARRAY<STRING>,
                     min_amount DOUBLE,
                     max_amount DOUBLE,
-                    currency STRING,
-                    `interval` STRING,
                     date_posted STRING,
                     llm_enrichment STRING
                 '
