@@ -190,13 +190,22 @@ def dsn_from_env() -> str:
 
 
 def run(
-    marts: list[tuple[str, str]] | None = None,
     mart: str = DEFAULT_MART,
     table: str = DEFAULT_TABLE,
     schema: str | None = None,
+    marts: list[tuple[str, str]] | None = None,
 ) -> int:
-    # def run(mart: str = DEFAULT_MART, table: str = DEFAULT_TABLE, schema: str | None = None) -> int:
-    """Read one mart out of the warehouse and replace the backend's copy."""
+    """Read one or more marts from the warehouse and replace the backend copies.
+
+    Pass ``marts`` as ``(warehouse_table, postgres_table)`` pairs when the DAG
+    publishes more than one mart in a single task. Single-mart callers keep using
+    ``mart`` / ``table`` (CLI, tests, one-off scripts).
+    """
+    if marts:
+        return sum(
+            run(mart=mart_name, table=table_name, schema=schema) for mart_name, table_name in marts
+        )
+
     warehouse_schema = os.environ["DBT_SCHEMA"]
     columns, rows = read_mart(Warehouse.from_env(), warehouse_schema, mart)
     target_schema = schema or os.environ.get("BACKEND_PG_PUBLISH_SCHEMA", "analytics")

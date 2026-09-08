@@ -1,6 +1,7 @@
 package nl.hackyourfuture.project.backend.job.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
 
 @Schema(description = "Summary of a job posting displayed on the homepage")
 public record JobSummaryDto(
@@ -35,6 +36,22 @@ public record JobSummaryDto(
         String redirectUrl,
 
         @Schema(description = "When the pipeline last ingested this record")
-        String ingestedAt
+        String ingestedAt,
+
+        @Schema(description = "Minimum advertised salary, when provided")
+        BigDecimal salaryMin,
+
+        @Schema(description = "Maximum advertised salary, when provided")
+        BigDecimal salaryMax,
+
+        @Schema(description = "Formatted salary information, when provided")
+        String salaryDisplay,
+        
+
+        @Schema(description = "Hourly salary, when provided")
+        BigDecimal salaryPerHour,
+
+        @Schema(description = "Employment type, such as regular job or internship")
+        String employmentType
 ) {
 }

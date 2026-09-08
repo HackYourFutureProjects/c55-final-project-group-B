@@ -175,3 +175,29 @@ def test_the_stamp_lands_after_the_swap(connection):
 def test_no_source_means_no_comment(connection):
     sync.publish("dsn", "analytics", "fct_postings", COLUMNS, ROWS)
     assert not any("comment on table" in statement for statement in connection.log)
+
+
+def test_run_publishes_each_mart_in_order(monkeypatch, connection):
+    read_calls: list[str] = []
+
+    def fake_read_mart(warehouse, schema, table):
+        read_calls.append(table)
+        return COLUMNS, ROWS
+
+    monkeypatch.setattr(sync, "read_mart", fake_read_mart)
+    monkeypatch.setattr(sync.Warehouse, "from_env", staticmethod(lambda: object()))
+    monkeypatch.setenv("DBT_SCHEMA", "analytics")
+    monkeypatch.setenv("BACKEND_PG_HOST", "localhost")
+    monkeypatch.setenv("BACKEND_PG_DB", "project_db")
+    monkeypatch.setenv("BACKEND_PG_PASSWORD", "secret")
+    monkeypatch.setenv("BACKEND_PG_PUBLISH_SCHEMA", "analytics")
+
+    total = sync.run(
+        marts=[
+            ("fct_postings", "fct_postings"),
+            ("fct_postings_skills", "fct_postings_skills"),
+        ]
+    )
+
+    assert total == 2
+    assert read_calls == ["fct_postings", "fct_postings_skills"]
