@@ -189,7 +189,13 @@ def dsn_from_env() -> str:
     )
 
 
-def run(mart: str = DEFAULT_MART, table: str = DEFAULT_TABLE, schema: str | None = None) -> int:
+def run(
+    marts: list[tuple[str, str]] | None = None,
+    mart: str = DEFAULT_MART,
+    table: str = DEFAULT_TABLE,
+    schema: str | None = None,
+) -> int:
+    # def run(mart: str = DEFAULT_MART, table: str = DEFAULT_TABLE, schema: str | None = None) -> int:
     """Read one mart out of the warehouse and replace the backend's copy."""
     warehouse_schema = os.environ["DBT_SCHEMA"]
     columns, rows = read_mart(Warehouse.from_env(), warehouse_schema, mart)

@@ -10,34 +10,76 @@ from .models import JobSpyPosting
 
 logger = logging.getLogger(__name__)
 
-TECH_ROLES = [
+"""TECH_ROLES = [
     "data engineer",
     "software engineer",
     "data analyst",
     "data scientist",
     "devops engineer",
+]"""
+
+TECH_ROLES = [
+    # Data & AI / ML
+    "data engineer",
+    "data analyst",
+    "data scientist",
+    "machine learning engineer",
+    "analytics engineer",
+    "ai engineer",
+    "business intelligence developer",
+    # Software Engineering & Development
+    "software engineer",
+    "backend developer",
+    "frontend developer",
+    "full stack developer",
+    "python developer",
+    "java developer",
+    "mobile app developer",
+    # Cloud, DevOps & Infrastructure
+    "devops engineer",
+    "cloud engineer",
+    "cloud architect",
+    "site reliability engineer",  # SRE
+    "platform engineer",
+    "systems administrator",
+    # Cybersecurity & Networks
+    "cyber security engineer",
+    "security analyst",
+    "network engineer",
+    # Quality, Agile & Product Management
+    "qa engineer",
+    "test automation engineer",
+    "scrum master",
+    "product owner",
+    "solution architect",
 ]
 
 
 def fetch_jobspy_raw(
     roles: list[str] = TECH_ROLES,
     location: str = "Netherlands",
-    results_wanted_per_role: int = 15,
+    country_indeed="Netherlands",
+    results_wanted_per_role: int = 2,
     hours_old: int = 72,
 ) -> list[dict[str, Any]]:
     """Scrape tech jobs using JobSpy and convert the output into raw dictionaries."""
     all_raw_records: list[dict[str, Any]] = []
 
     for role in roles:
-        logger.info("Fetching JobSpy jobs for role: '%s' in %s", role, location)
+        logger.info(
+            "Fetching JobSpy jobs for role: '%s' in %s (Indeed Country: %s)",
+            role,
+            location,
+            country_indeed,
+        )
         try:
             jobs_df: pd.DataFrame = scrape_jobs(
-                site_name=["linkedin", "indeed", "glassdoor"],
+                site_name=["linkedin", "indeed"],
                 search_term=role,
                 location=location,
+                country_indeed=country_indeed,
                 results_wanted=results_wanted_per_role,
                 hours_old=hours_old,
-                country_indeed="Netherlands",
                 linkedin_fetch_description=True,
             )
 
