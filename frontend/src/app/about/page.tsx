@@ -6,12 +6,13 @@ import jawad from "@/assets/profiles/jawad.jpg";
 import marah from "@/assets/profiles/marah.png";
 import salem from "@/assets/profiles/salem.jpg";
 import styles from "./page.module.css";
+import TechStack from "@/components/tech-stack";
 
 export default function AboutPage() {
   return (
     <div className="container">
       <section className={styles.team}>
-        <h1>Meet The Team</h1>
+        <h2>Meet The Team</h2>
         <div className={styles.users}>
           <TeamProfile
             photo={jawad}
@@ -56,6 +57,9 @@ export default function AboutPage() {
             linkedin="https://www.linkedin.com/in/jana-gombitova-42b08394/"
           />
         </div>
+      </section>
+      <section>
+        <TechStack />
       </section>
     </div>
   );
