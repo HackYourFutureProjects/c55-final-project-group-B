@@ -8,10 +8,12 @@ import salem from "@/assets/profiles/salem.jpg";
 import TechStack from "@/components/tech-stack";
 import styles from "./page.module.css";
 import TeamSection from "@/components/team-section";
+import FeatureHighlights from "@/components/feature-highlights";
 
 export default function AboutPage() {
   return (
     <div className="container">
+      <FeatureHighlights />
       <TeamSection />
       <TechStack />
     </div>

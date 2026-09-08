@@ -46,7 +46,7 @@
   color: var(--base);
   border: 1px solid var(--text);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-soft-sm);
 }
 
 .name {
