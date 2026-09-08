@@ -49,7 +49,7 @@ const TRACKS: Track[] = [
       },
       {
         name: "CSS",
-        description: "Styles the site using modules",
+        description: "Styles every page on the site",
         icon: <PaintBrushBroadIcon size={24} weight="duotone" />,
       },
     ],
@@ -131,8 +131,12 @@ function TrackCard({ track, color, technology }: Track) {
 
 export default function TechStack() {
   return (
-    <section>
+    <section className={styles.section}>
       <h2 className={styles.heading}>Tech Stack</h2>
+      <p>
+        Three tracks, one app: the site you're reading, the API behind it all,
+        and the pipeline that keeps the job listings coming.
+      </p>
       <div className={styles.grid}>
         {TRACKS.map((track) => (
           <TrackCard key={track.track} {...track} />

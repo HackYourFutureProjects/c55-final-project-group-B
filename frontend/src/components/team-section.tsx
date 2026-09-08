@@ -63,8 +63,15 @@ const MEMBERS: Member[] = [
 
 export default function TeamSection() {
   return (
-    <section>
+    <section className={styles.section}>
       <h2 className={styles.heading}>Meet the Team</h2>
+      <p className={styles.intro}>
+        Five trainees across frontend, backend, and data, guided throughout by
+        Jana, our volunteer project manager and the reason any of it shipped on
+        time. We all come from different backgrounds and careers, and Flint is
+        what happened when we put all our ideas together.Say hello on LinkedIn,
+        we're all job hunting too.
+      </p>
       <div className={styles.grid}>
         {MEMBERS.map((member) => (
           <TeamProfile key={member.name} {...member} />

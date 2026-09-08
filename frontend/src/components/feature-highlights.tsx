@@ -63,8 +63,12 @@ const FEATURES: Feature[] = [
 
 export default function FeatureHighlights() {
   return (
-    <section>
+    <section className={styles.section}>
       <h2 className={styles.heading}>Feature Set</h2>
+      <p>
+        Everything Flint can do, in one place. Search for roles, save the good
+        ones, and let your profile do some of the looking for you.
+      </p>
       <ul className={styles.list}>
         {FEATURES.map((feature) => (
           <li key={feature.title} className={styles.item}>
