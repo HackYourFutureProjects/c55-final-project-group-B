@@ -13,6 +13,11 @@
   padding: 24px;
 }
 
+.track:hover {
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-shadow);
+}
+
 .trackName {
   font-family: var(--font-display);
   font-size: 1.25rem;

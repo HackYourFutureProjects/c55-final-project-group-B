@@ -11,6 +11,11 @@
   overflow: hidden;
 }
 
+.card:hover {
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-shadow);
+}
+
 .photo {
   display: block;
   width: 100%;

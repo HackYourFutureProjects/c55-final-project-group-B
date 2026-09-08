@@ -22,7 +22,7 @@
 
 .feature:hover {
   transition: var(--transition-shadow);
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--shadow-soft);
 }
 
 .icon {

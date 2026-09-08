@@ -20,6 +20,7 @@
   --radius: 6px;
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
+  --shadow-soft: 4px 4px 0 0 var(--muted);
   --transition-shadow: box-shadow 250ms ease;
   --transition-shadow-sm: box-shadow 150ms ease;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
