@@ -13,22 +13,30 @@ public class JobRepository {
 
     private final JdbcClient jdbcClient;
 
-    public List<JobSummaryDto> findJobs(String jobTitle, String city, String province) {
+    public List<JobSummaryDto> findJobs(String jobTitle,
+                                        String city,
+                                        String province,
+                                        int page,
+                                        int size) {
 
         String sql = """
             SELECT job_id, title, company_name, location_city, location_province,
-                   description, latitude, longitude, created, redirect_url, ingested_at
+                   description, latitude, longitude, created, redirect_url, ingested_at, salary_min, salary_max, salary_display
             FROM analytics.fct_postings
             WHERE (:jobTitle::text IS NULL OR title ILIKE '%' || :jobTitle || '%')
               AND (:city::text IS NULL OR location_city ILIKE :city)
               AND (:province::text IS NULL OR location_province ILIKE :province)
             ORDER BY created DESC
+            LIMIT :size
+            OFFSET :offset
         """;
 
         return jdbcClient.sql(sql)
                 .param("jobTitle", jobTitle)
                 .param("city", city)
                 .param("province", province)
+                .param("size", size)
+                .param("offset", (long) page * size)
                 .query((rs, rn) -> new JobSummaryDto(
                         rs.getString("job_id"),
                         rs.getString("title"),
@@ -40,10 +48,39 @@ public class JobRepository {
                         rs.getObject("longitude", Double.class),
                         rs.getString("created"),
                         rs.getString("redirect_url"),
-                        rs.getString("ingested_at")
+                        rs.getString("ingested_at"),
+                        rs.getBigDecimal("salary_min"),
+                        rs.getBigDecimal("salary_max"),
+                        rs.getString("salary_display")
                 ))
                 .list();
     }
+    public long countJobs(
+            String jobTitle,
+            String city,
+            String province
+    ) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM analytics.fct_postings
+                WHERE (CAST(:jobTitle AS text) IS NULL
+                       OR title ILIKE '%' || CAST(:jobTitle AS text) || '%')
+                  AND (CAST(:city AS text) IS NULL
+                       OR location_city ILIKE CAST(:city AS text))
+                  AND (CAST(:province AS text) IS NULL
+                       OR location_province ILIKE CAST(:province AS text))
+                """;
+
+        Long result = jdbcClient.sql(sql)
+                .param("jobTitle", jobTitle)
+                .param("city", city)
+                .param("province", province)
+                .query(Long.class)
+                .single();
+
+        return result == null ? 0 : result;
+    }
+
 
     public List<String> findAllJobTitles() {
         // INITCAP(title) converts the first letter of each word in the title to uppercase and the rest to lowercase.
