@@ -28,8 +28,8 @@ public class JobController {
     @ApiResponse(responseCode = "200", description = "Jobs retrieved successfully")
     public JobPageResponse getJobs(
             @RequestParam(required = false)
-            @Parameter(description = "Filter by job title (partial, case-insensitive match)")
-            String jobTitle,
+            @Parameter(description = "Search across job title, description, company name, and skill (partial, case-insensitive match)")
+            String search,
 
             @RequestParam(required = false)
             @Parameter(description = "Filter by exact city name")
@@ -47,7 +47,7 @@ public class JobController {
             @Parameter(description = "Number of jobs per page, from 1 to 100")
             int size
     ) {
-        return jobService.findJobs(jobTitle, city, province, page, size);
+        return jobService.findJobs(search, city, province, page, size);
     }
 
 }
