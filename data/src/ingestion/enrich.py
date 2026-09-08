@@ -1,25 +1,33 @@
 import json
 import logging
 import os
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import litellm
+from dotenv import load_dotenv
 from litellm import completion
 
-litellm.num_retries = 3
+# Suppress excessive debug logs from LiteLLM
+litellm.suppress_debug_info = True
+litellm.num_retries = 2
+
+# Force loading .env from the project root directory
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 logger = logging.getLogger("pipeline.enrich")
 
-BATCH_SIZE = 5
-MAX_WORKERS = 2
+BATCH_SIZE = 15
+MAX_WORKERS = 4  # زيادة التوازي لأنك على الباقة المدفوعة
 
-# Fixed, chosen models -- not "openrouter/auto" (may route to a paid model)
-# and not "openrouter/free" (rotates randomly, so quality isn't consistent
-# batch to batch). Tried in order: if the first fails or returns unusable
-# JSON, the second is tried before falling back to DEFAULT_ATTRIBUTES.
+# استخدام أسماء الموديلات المباشرة والدقيقة لـ OpenRouter عبر LiteLLM
+# نضع أسرع وأرخص الموديلات المدفوعة في البداية
 MODEL_CANDIDATES = [
-    "openrouter/z-ai/glm-5.2:free",
-    "openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "openrouter/google/gemini-2.0-flash-001",
+    "openrouter/openai/gpt-4o-mini",
 ]
 
 DEFAULT_ATTRIBUTES = {
@@ -32,6 +40,26 @@ DEFAULT_ATTRIBUTES = {
     "skills": [],
     "tasks": [],
 }
+
+
+def check_openrouter_quota_status(api_key: str) -> None:
+    """Pre-flight sanity check for OpenRouter API Key."""
+    request = urllib.request.Request(
+        "https://openrouter.ai/api/v1/key",
+        headers={"Authorization": f"Bearer {api_key}"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        data = payload.get("data", {})
+        logger.info(
+            "OpenRouter Key Check OK. Limit: %s, Remaining: %s, Is Free Tier: %s",
+            data.get("limit"),
+            data.get("limit_remaining"),
+            data.get("is_free_tier"),
+        )
+    except Exception as e:  # noqa: BLE001
+        logger.warning("OpenRouter key check failed: %s", e)
 
 
 def build_batch_prompt(descriptions: list[str]) -> str:
@@ -58,16 +86,13 @@ def build_batch_prompt(descriptions: list[str]) -> str:
 
 
 def default_llm_call(prompt: str, api_key: str, model: str) -> str:
-    """The real call to the model. `model` is required (no MODEL_NAME default
-    anymore) since callers now try more than one model in order."""
     response = completion(
         model=model,
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000,
+        max_tokens=1500,
         response_format={"type": "json_object"},
         api_key=api_key,
         timeout=30,
-        extra_body={"provider": {"allow_fallbacks": False}},
     )
     return response.choices[0].message.content
 
@@ -82,10 +107,15 @@ def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CA
     for attempt_model in models:
         try:
             raw_text = llm_call(prompt, api_key, attempt_model)
+
+            # تنظيف رد الـ LLM في حال تم إرجاع Markdown Code Block
+            if "```json" in raw_text:
+                raw_text = raw_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in raw_text:
+                raw_text = raw_text.split("```")[1].split("```")[0].strip()
+
             parsed = json.loads(raw_text)
 
-            # Fill in any missing keys per item with DEFAULT_ATTRIBUTES,
-            # rather than trusting the model returned every key.
             validated_batch = {}
             if isinstance(parsed, dict):
                 for idx, item in parsed.items():
@@ -96,26 +126,57 @@ def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CA
 
             if validated_batch:
                 return batch_index, validated_batch
-            # Parsed to an empty/unusable shape -- try the next model.
-            logger.warning(
-                "LLM Batch %d: %s returned no usable items, trying next model",
-                batch_index,
-                attempt_model,
-            )
-        except Exception as e:  # noqa: BLE001
-            logger.error("LLM Batch %d failed on %s: %s", batch_index, attempt_model, e)
 
-    logger.error("LLM Batch %d failed on all candidate models: %s", batch_index, models)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e)
+
     return batch_index, {}
+
+
+def calculate_and_log_metrics(records: list[dict]):
+    total_records = len(records)
+    if total_records == 0:
+        logger.info("No records provided for metric calculation.")
+        return
+
+    successful_extractions = 0
+    fallback_extractions = 0
+
+    for record in records:
+        enrichment = record.get("llm_enrichment", {})
+        if (
+            enrichment.get("skills")
+            or enrichment.get("tasks")
+            or enrichment.get("seniority_level") != "unknown"
+            or enrichment.get("contract_type_from_desc") != "unknown"
+        ):
+            successful_extractions += 1
+        else:
+            fallback_extractions += 1
+
+    success_rate = (successful_extractions / total_records) * 100
+
+    logger.info("=== LLM Enrichment Summary Metrics ===")
+    logger.info("Total Records Processed: %d", total_records)
+    logger.info("Successfully Enriched: %d", successful_extractions)
+    logger.info("Fallback (Defaults Used): %d", fallback_extractions)
+    logger.info("Enrichment Success Rate: %.2f%%", success_rate)
+    logger.info("=======================================")
 
 
 def enrich_records(
     records: list[dict], llm_call=default_llm_call, models=MODEL_CANDIDATES
 ) -> list[dict]:
     api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        logger.warning("OPENROUTER_API_KEY is not set. Skipping LLM enrichment.")
+    if api_key:
+        logger.info("OPENROUTER_API_KEY loaded successfully (starts with: %s...)", api_key[:8])
+    else:
+        logger.error("OPENROUTER_API_KEY is missing! Skipping LLM enrichment.")
+        for record in records:
+            record["llm_enrichment"] = DEFAULT_ATTRIBUTES.copy()
         return records
+
+    check_openrouter_quota_status(api_key)
 
     descriptions = [r.get("description", "") for r in records]
     batches = []
@@ -127,18 +188,24 @@ def enrich_records(
     enriched_results = {}
 
     logger.info("Processing %d batches concurrently with %d workers...", len(batches), MAX_WORKERS)
+
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = [executor.submit(process_single_batch, b, llm_call, models) for b in batches]
         for future in as_completed(futures):
-            start_idx, batch_parsed = future.result()
-            batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
+            try:
+                start_idx, batch_parsed = future.result()
+                batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
 
-            for idx in range(batch_desc_len):
-                global_index = start_idx + idx
-                res = batch_parsed.get(str(idx), DEFAULT_ATTRIBUTES)
-                enriched_results[global_index] = res
+                for idx in range(batch_desc_len):
+                    global_index = start_idx + idx
+                    res = batch_parsed.get(str(idx), DEFAULT_ATTRIBUTES)
+                    enriched_results[global_index] = res
+            except Exception as e:  # noqa: BLE001
+                logger.error("Unexpected failure in batch execution worker: %s", e)
 
     for idx, record in enumerate(records):
         record["llm_enrichment"] = enriched_results.get(idx, DEFAULT_ATTRIBUTES)
 
+    calculate_and_log_metrics(records)
+    logger.info("LLM enrichment process completed safely for %d records.", len(records))
     return records

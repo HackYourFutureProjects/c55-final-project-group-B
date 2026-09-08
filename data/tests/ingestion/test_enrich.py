@@ -174,7 +174,7 @@ def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
     result = enrich_records(records, llm_call=fake_call)
 
     assert calls == []
-    assert "llm_enrichment" not in result[0]
+    assert result[0]["llm_enrichment"] == DEFAULT_ATTRIBUTES
 
 
 def test_batches_split_on_batch_size():

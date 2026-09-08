@@ -79,11 +79,8 @@ models:
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
 
-      - name: salary_currency
-        description: "(string) Currency code for salary (e.g. EUR, USD). Primarily from JobSpy."
-
-      - name: salary_interval
-        description: "(string) Salary payout period (yearly, monthly, hourly). Primarily from JobSpy."
+      - name: salary_is_predicted
+        description: "(boolean) Flag indicating if salary is estimated by Api rather than explicitly stated."
 
       - name: latitude
         description: "(float / double) Geographical latitude. Available for Adzuna."
