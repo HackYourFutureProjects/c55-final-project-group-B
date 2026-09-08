@@ -48,9 +48,6 @@ public record JobSummaryDto(
         String salaryDisplay,
 
 
-        @Schema(description = "Contract type, such as full-time or part-time")
-        String contractType,
-
         @Schema(description = "Hourly salary, when provided")
         BigDecimal salaryPerHour
 ) {
