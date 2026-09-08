@@ -176,6 +176,7 @@ def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
     assert calls == []
     assert result[0]["llm_enrichment"] == DEFAULT_ATTRIBUTES
 
+
 def test_batches_split_on_batch_size():
     descriptions = [f"description {i}" for i in range(BATCH_SIZE * 2 + 1)]
     starts = [i for i in range(0, len(descriptions), BATCH_SIZE)]
