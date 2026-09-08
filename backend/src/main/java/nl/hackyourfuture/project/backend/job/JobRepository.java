@@ -13,7 +13,16 @@ public class JobRepository {
 
     private final JdbcClient jdbcClient;
 
-    public List<JobSummaryDto> findJobs(String jobTitle,
+    // Shared WHERE conditions for search/city/province filters.
+    // Kept in one place so findJobs() and countJobs() always stay in sync.
+    private static final String JOB_FILTER_CONDITIONS = """
+        WHERE (:search::text IS NULL OR title ILIKE '%' || :search || '%' OR description ILIKE '%' || :search || '%'
+              OR company_name ILIKE '%' || :search || '%' OR skills ILIKE '%' || :search || '%' )
+          AND (:city::text IS NULL OR location_city ILIKE :city::text)
+          AND (:province::text IS NULL OR location_province ILIKE :province::text)
+        """;
+
+    public List<JobSummaryDto> findJobs(String search,
                                         String city,
                                         String province,
                                         int page,
@@ -25,16 +34,14 @@ public class JobRepository {
                    salary_min, salary_max, salary_display, salary_per_hour,
                    employment_type
             FROM analytics.fct_postings
-            WHERE (:jobTitle::text IS NULL OR title ILIKE '%' || :jobTitle || '%')
-              AND (:city::text IS NULL OR location_city ILIKE :city)
-              AND (:province::text IS NULL OR location_province ILIKE :province)
+            " + JOB_FILTER_CONDITIONS + "
             ORDER BY created DESC
             LIMIT :size
             OFFSET :offset
         """;
 
         return jdbcClient.sql(sql)
-                .param("jobTitle", jobTitle)
+                .param("search", search)
                 .param("city", city)
                 .param("province", province)
                 .param("size", size)
@@ -60,23 +67,14 @@ public class JobRepository {
                 .list();
     }
     public long countJobs(
-            String jobTitle,
+            String search,
             String city,
             String province
     ) {
-        String sql = """
-                SELECT COUNT(*)
-                FROM analytics.fct_postings
-                WHERE (CAST(:jobTitle AS text) IS NULL
-                       OR title ILIKE '%' || CAST(:jobTitle AS text) || '%')
-                  AND (CAST(:city AS text) IS NULL
-                       OR location_city ILIKE CAST(:city AS text))
-                  AND (CAST(:province AS text) IS NULL
-                       OR location_province ILIKE CAST(:province AS text))
-                """;
+        String sql = "SELECT COUNT(*) FROM analytics.fct_postings " + JOB_FILTER_CONDITIONS;
 
         Long result = jdbcClient.sql(sql)
-                .param("jobTitle", jobTitle)
+                .param("search", search)
                 .param("city", city)
                 .param("province", province)
                 .query(Long.class)
