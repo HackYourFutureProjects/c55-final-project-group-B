@@ -1,24 +1,62 @@
-import { InfoIcon } from "@phosphor-icons/react/ssr";
-import Link from "next/link";
-import { StatusPage } from "@/components/status-page";
+import TeamProfile from "@/components/team-profile";
+import dagim from "@/assets/profiles/dagim.png";
+import hannah from "@/assets/profiles/hannah.jpg";
+import jana from "@/assets/profiles/jana.png";
+import jawad from "@/assets/profiles/jawad.jpg";
+import marah from "@/assets/profiles/marah.png";
+import salem from "@/assets/profiles/salem.jpg";
+import styles from "./page.module.css";
 
 export default function AboutPage() {
   return (
-    <StatusPage
-      icon={InfoIcon}
-      variant="info"
-      heading="Under construction"
-      actions={
-        <Link className="button" href="/">
-          Back to home
-        </Link>
-      }
-    >
-      <p>
-        This page hasn't been built yet. We're a student team building the
-        project one sprint at a time, so it should appear before long.
-      </p>
-      <p>Thanks for your patience!</p>
-    </StatusPage>
+    <div className="container">
+      <section className={styles.team}>
+        <h1>Meet The Team</h1>
+        <div className={styles.users}>
+          <TeamProfile
+            photo={jawad}
+            name="Jawad Al Bdiwi"
+            role="Frontend"
+            github="https://github.com/jivvyjams"
+            linkedin="https://www.linkedin.com/in/dagim-h-selassie-7aa9ab1b4/"
+          />
+          <TeamProfile
+            photo={salem}
+            name="Salem Ba-Rabuod"
+            role="Backend"
+            github="https://github.com/Barboud"
+            linkedin="https://www.linkedin.com/in/salem-ba-rabuod/"
+          />
+          <TeamProfile
+            photo={dagim}
+            name="Dagim H.Selassie"
+            role="Backend"
+            github="https://github.com/Unlock7"
+            linkedin="https://www.linkedin.com/in/dagim-h-selassie-7aa9ab1b4/"
+          />
+          <TeamProfile
+            photo={marah}
+            name="Marah Aboghanem"
+            role="Data"
+            github="https://github.com/mareh-aboghanem"
+            linkedin="https://github.com/mareh-aboghanem"
+          />
+          <TeamProfile
+            photo={hannah}
+            name="Hannah Nyongo"
+            role="Data"
+            github="https://github.com/hannahwn"
+            linkedin="https://www.linkedin.com/in/hannah-nyongo-a0b1872a8/"
+          />
+          <TeamProfile
+            photo={jana}
+            name="Jana Gombitová"
+            role="Project Manager"
+            github="https://github.com/janagombitova"
+            linkedin="https://www.linkedin.com/in/jana-gombitova-42b08394/"
+          />
+        </div>
+      </section>
+    </div>
   );
 }
