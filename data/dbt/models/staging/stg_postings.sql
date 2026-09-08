@@ -28,14 +28,14 @@ with
             -- Location Coordinates & Remote
             latitude,
             longitude,
-            null as is_remote,  -- -adzuna does not provide a remote field, so we set it to null  
+            null as is_remote,  -- adzuna does not provide a remote field, so we set it to null  
 
             -- Skills & Metadata
             skills,
             tasks,
             category_label,
             category_tag,
-            null as source_site,  -- -adzuna does not provide a source site field, so we set it to null
+            null as source_site,  -- adzuna does not provide a source site field, so we set it to null
             redirect_url,
             null as company_url,
 
@@ -56,7 +56,7 @@ with
             title,
             company_name,
             location_display_name,
-            cast(null as array<string>) as location_area,  -- --jobspy does not provide a location area field, so we set it to null  
+            cast(null as array<string>) as location_area,  -- jobspy does not provide a location area field, so we set it to null  
             description,
 
             -- Contract & Seniority
@@ -79,8 +79,8 @@ with
             -- Skills & Metadata
             skills,
             tasks,
-            null as category_label,  -- -jobspy does not provide a category label field, so we set it to null
-            cast(null as string) as category_tag,  -- --jobspy does not provide a category tag field, so we set it to null
+            null as category_label,  -- jobspy does not provide a category label field, so we set it to null
+            cast(null as string) as category_tag,  -- jobspy does not provide a category tag field, so we set it to null
             source_site,
             redirect_url,
             company_url,
