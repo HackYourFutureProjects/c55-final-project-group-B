@@ -2,9 +2,8 @@
 
 No key and no network. `process_single_batch` and `enrich_records` both take
 `llm_call` as a parameter (default: the real one), so these tests hand in a
-fake that answers from a script instead of calling OpenRouter.
+fake that answers from a script instead of calling LiteLLM.
 """
-
 import json
 
 from src.ingestion.enrich import (
@@ -14,9 +13,7 @@ from src.ingestion.enrich import (
     build_batch_prompt,
     enrich_records,
     process_single_batch,
-    resolve_llm_config,
 )
-
 
 def canned_response(overrides_by_index):
     """One canned model answer: {"0": {...}, "1": {...}, ...}."""
@@ -165,9 +162,8 @@ def test_a_missing_index_in_the_answer_falls_back_to_defaults(monkeypatch):
 def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
     """No key, no calls, and records come back untouched -- not half-enriched."""
     monkeypatch.delenv("LITELLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(
-        "src.ingestion.enrich._load_litellm_key_from_keyvault",
+        "src.ingestion.litellm_client.load_litellm_key_from_keyvault",
         lambda: None,
     )
     records = [{"description": "Backend role"}]
@@ -181,15 +177,6 @@ def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
 
     assert calls == []
     assert result[0]["llm_enrichment"] == DEFAULT_ATTRIBUTES
-
-
-def test_litellm_is_preferred_over_openrouter(monkeypatch):
-    monkeypatch.setenv("LITELLM_API_KEY", "litellm-key")
-    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
-    config = resolve_llm_config()
-    assert config is not None
-    assert config.provider == "litellm"
-    assert config.api_key == "litellm-key"
 
 
 def test_batches_split_on_batch_size():

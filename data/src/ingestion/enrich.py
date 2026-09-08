@@ -1,41 +1,16 @@
 import json
 import logging
-import os
-import urllib.error
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
-from pathlib import Path
 
-import litellm
-from dotenv import load_dotenv
-from litellm import completion
-
-litellm.suppress_debug_info = True
-litellm.num_retries = 2
-
-env_path = Path(__file__).resolve().parent.parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
+from src.ingestion.litellm_client import DEFAULT_MODELS, completion_json, resolve_llm_config
 
 logger = logging.getLogger("pipeline.enrich")
 
 BATCH_SIZE = 15
 MAX_WORKERS = 4
 
-# Shared HYF LiteLLM gateway (hosted on team-d; all teams use virtual keys).
-LITELLM_GATEWAY_DEFAULT = (
-    "https://app-litellm-team-d.blacksky-9263d113.westeurope.azurecontainerapps.io"
-)
-LITELLM_MODELS = ["cheap", "medium"]
-
-# Optional local fallback when the class gateway is unavailable.
-OPENROUTER_MODELS = [
-    "openrouter/z-ai/glm-5.2:free",
-    "openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-]
-
-# Backwards-compatible export for tests that patch model fallback order.
-MODEL_CANDIDATES = LITELLM_MODELS
+# Re-export for tests that patch model fallback order.
+MODEL_CANDIDATES = DEFAULT_MODELS
 
 DEFAULT_ATTRIBUTES = {
     "contract_type_from_desc": "unknown",
@@ -47,87 +22,6 @@ DEFAULT_ATTRIBUTES = {
     "skills": [],
     "tasks": [],
 }
-
-VAULT_SCOPE = "https://vault.azure.net/.default"
-
-
-@dataclass(frozen=True)
-class LlmConfig:
-    api_key: str
-    models: list[str]
-    provider: str  # "litellm" | "openrouter"
-    api_base: str | None = None
-
-
-def _team_letter() -> str:
-    if letter := os.getenv("TEAM_LETTER"):
-        return letter
-    catalog = os.getenv("DATABRICKS_CATALOG", "team_b")
-    if catalog.startswith("team_") and len(catalog) > len("team_"):
-        return catalog.split("_", 1)[1]
-    return "b"
-
-
-def _litellm_gateway() -> str:
-    return os.getenv("LITELLM_API_BASE", LITELLM_GATEWAY_DEFAULT).rstrip("/")
-
-
-def _load_litellm_key_from_keyvault() -> str | None:
-    vault = os.getenv("KV_VAULT", "kv-hyf-data")
-    secret_name = f"litellm-key-team-{_team_letter()}"
-    url = f"https://{vault}.vault.azure.net/secrets/{secret_name}/?api-version=7.4"
-    try:
-        from azure.identity import DefaultAzureCredential
-
-        token = DefaultAzureCredential().get_token(VAULT_SCOPE).token
-        request = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-        with urllib.request.urlopen(request, timeout=15) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-        return payload.get("value")
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("Key Vault secret %s unavailable: %s", secret_name, exc)
-        return None
-
-
-def resolve_llm_config() -> LlmConfig | None:
-    """Prefer the class LiteLLM gateway; fall back to a personal OpenRouter key."""
-    api_key = os.getenv("LITELLM_API_KEY") or _load_litellm_key_from_keyvault()
-    if api_key:
-        return LlmConfig(
-            api_key=api_key,
-            models=list(LITELLM_MODELS),
-            provider="litellm",
-            api_base=f"{_litellm_gateway()}/v1",
-        )
-
-    openrouter_key = os.getenv("OPENROUTER_API_KEY")
-    if openrouter_key:
-        return LlmConfig(
-            api_key=openrouter_key,
-            models=list(OPENROUTER_MODELS),
-            provider="openrouter",
-        )
-    return None
-
-
-def check_openrouter_quota_status(api_key: str) -> None:
-    """Pre-flight sanity check for OpenRouter API Key."""
-    request = urllib.request.Request(
-        "https://openrouter.ai/api/v1/key",
-        headers={"Authorization": f"Bearer {api_key}"},
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-        data = payload.get("data", {})
-        logger.info(
-            "OpenRouter Key Check OK. Limit: %s, Remaining: %s, Is Free Tier: %s",
-            data.get("limit"),
-            data.get("limit_remaining"),
-            data.get("is_free_tier"),
-        )
-    except Exception as e:  # noqa: BLE001
-        logger.warning("OpenRouter key check failed: %s", e)
 
 
 def build_batch_prompt(descriptions: list[str]) -> str:
@@ -153,33 +47,10 @@ def build_batch_prompt(descriptions: list[str]) -> str:
     )
 
 
-def default_llm_call(
-    prompt: str,
-    api_key: str,
-    model: str,
-    *,
-    provider: str = "litellm",
-    api_base: str | None = None,
-) -> str:
-    kwargs = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 1500,
-        "response_format": {"type": "json_object"},
-        "api_key": api_key,
-        "timeout": 60,
-    }
-    if provider == "litellm" and api_base:
-        kwargs["api_base"] = api_base
-    response = completion(**kwargs)
-    return response.choices[0].message.content
-
-
 def process_single_batch(
     batch_tuple,
-    llm_call=default_llm_call,
+    llm_call=completion_json,
     models=MODEL_CANDIDATES,
-    provider: str = "litellm",
     api_base: str | None = None,
 ):
     batch_index, batch_descriptions, api_key = batch_tuple
@@ -194,7 +65,6 @@ def process_single_batch(
                 prompt,
                 api_key,
                 attempt_model,
-                provider=provider,
                 api_base=api_base,
             )
 
@@ -254,27 +124,22 @@ def calculate_and_log_metrics(records: list[dict]):
 
 
 def enrich_records(
-    records: list[dict], llm_call=default_llm_call, models: list[str] | None = None
+    records: list[dict], llm_call=completion_json, models: list[str] | None = None
 ) -> list[dict]:
     config = resolve_llm_config()
     if not config:
-        logger.error("No LiteLLM or OpenRouter API key available. Skipping LLM enrichment.")
+        logger.error("No LiteLLM API key available. Skipping LLM enrichment.")
         for record in records:
             record["llm_enrichment"] = DEFAULT_ATTRIBUTES.copy()
         return records
 
-    if config.provider == "litellm":
-        logger.info(
-            "LiteLLM gateway configured (%s, models: %s)",
-            config.api_base,
-            ", ".join(config.models),
-        )
-    else:
-        logger.info("OPENROUTER_API_KEY loaded (starts with: %s...)", config.api_key[:8])
-        check_openrouter_quota_status(config.api_key)
+    logger.info(
+        "LiteLLM gateway configured (%s, models: %s)",
+        config.api_base,
+        ", ".join(config.models),
+    )
 
     model_list = models or config.models
-
     descriptions = [r.get("description", "") for r in records]
     batches = []
 
@@ -293,7 +158,6 @@ def enrich_records(
                 batch,
                 llm_call,
                 model_list,
-                config.provider,
                 config.api_base,
             )
             for batch in batches
