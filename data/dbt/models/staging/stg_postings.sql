@@ -23,7 +23,6 @@ with
             salary_per_hour,
             weekly_hours,
             salary_is_predicted,
-            
 
             -- Location Coordinates & Remote
             latitude,
