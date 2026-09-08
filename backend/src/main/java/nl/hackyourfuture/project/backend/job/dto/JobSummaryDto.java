@@ -45,6 +45,13 @@ public record JobSummaryDto(
         BigDecimal salaryMax,
 
         @Schema(description = "Formatted salary information, when provided")
-        String salaryDisplay
+        String salaryDisplay,
+        
+
+        @Schema(description = "Hourly salary, when provided")
+        BigDecimal salaryPerHour,
+
+        @Schema(description = "Employment type, such as regular job or internship")
+        String employmentType
 ) {
 }
