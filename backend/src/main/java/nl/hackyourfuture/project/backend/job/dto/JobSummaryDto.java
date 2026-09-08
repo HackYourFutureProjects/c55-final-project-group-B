@@ -52,6 +52,9 @@ public record JobSummaryDto(
         String contractType,
 
         @Schema(description = "Hourly salary, when provided")
-        BigDecimal salaryPerHour
+        BigDecimal salaryPerHour,
+
+        @Schema(description = "Employment type, such as regular job or internship")
+        String employmentType
 ) {
 }
