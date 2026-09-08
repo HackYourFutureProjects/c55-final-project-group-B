@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useCurrentUser } from "@/context/current-user-provider";
 import { useSavedJobs } from "@/context/saved-jobs-provider";
 import styles from "./save-job-button.module.css";
-import Link from "next/link";
 
 export default function SaveJobButton({ jobId }: { jobId: string }) {
   const { savedJobIds, toggleSaved } = useSavedJobs();
@@ -86,9 +85,7 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
         <HeartIcon size={20} weight={saved ? "fill" : "duotone"} />
       </button>
       {showLoginHint && (
-        <span className={styles.hint} role="status">
-          Log in to save jobs
-        </span>
+        <output className={styles.hint}>Log in to save jobs</output>
       )}
     </span>
   );

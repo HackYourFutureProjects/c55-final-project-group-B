@@ -1,11 +1,11 @@
-import { StaticImageData } from "next/image";
-import TeamProfile from "@/components/team-profile";
+import type { StaticImageData } from "next/image";
 import dagim from "@/assets/profiles/dagim.png";
 import hannah from "@/assets/profiles/hannah.jpg";
 import jana from "@/assets/profiles/jana.png";
 import jawad from "@/assets/profiles/jawad.jpg";
 import marah from "@/assets/profiles/marah.png";
 import salem from "@/assets/profiles/salem.jpg";
+import TeamProfile from "@/components/team-profile";
 import styles from "./team-section.module.css";
 
 type Member = {

@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-import styles from "./tech-stack.module.css";
 import {
   AtomIcon,
   CoffeeIcon,
@@ -14,6 +12,8 @@ import {
   StackIcon,
   TriangleIcon,
 } from "@phosphor-icons/react/ssr";
+import type { ReactNode } from "react";
+import styles from "./tech-stack.module.css";
 
 type Technology = {
   name: string;

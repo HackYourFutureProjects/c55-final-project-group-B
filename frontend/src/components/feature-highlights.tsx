@@ -6,7 +6,7 @@ import {
   PlantIcon,
   UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "./feature-highlights.module.css";
 
 type Feature = {
