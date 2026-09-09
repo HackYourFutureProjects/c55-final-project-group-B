@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: int_postings_contract_type
+    description: >
+      Resolves a single contract_type per job posting by combining the
+      structured title-derived value (`int_postings_title_company`) with the
+      LLM-extracted value from the description
+      (`int_postings_extracted_attributes`). The title-derived value takes
+      precedence; the LLM value is used as a fallback when the title gives no
+      signal. Falls back to "unknown" when neither source has a value.
+    columns:
+      - name: job_id
+        description: Unique identifier for the job posting.
+        tests:
+          - not_null
+          - unique
+
+      - name: contract_type_from_title
+        description: >
+          Contract type parsed from the job title text (e.g. "full_time",
+          "part_time"). Null when the title gives no signal.
+
+      - name: contract_type_from_desc
+        description: >
+          Contract type inferred by the LLM from the job description. Null
+          when not stated or not confidently extracted.
+
+      - name: contract_type
+        description: >
+          Final resolved contract type: contract_type_from_title if present,
+          otherwise contract_type_from_desc, otherwise "unknown".
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["full_time", "part_time", "unknown"]

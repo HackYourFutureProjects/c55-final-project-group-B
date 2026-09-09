@@ -11,12 +11,13 @@
 -- _fct_postings.yml saying what one row means. If you cannot write that
 -- sentence, the mart is not ready.
 with
-    postings as (select * from {{ ref("stg_postings") }}),
-
-    job_title_company as (select * from {{ ref("int_postings_title_company") }}),
+    postings as (select * from {{ ref("stg_postings") }}), --job_id ingatse col 
+    llm_postings as (select * from {{ ref("int_postings_extracted_attributes") }}), -- 8 
+    job_title_company as (select * from {{ ref("int_postings_title_company") }}), -- title, company_name, employment_type
+    contract_col as (select * from {{ ref("int_postings_contract_type") }}), -- contract_type_from_title, contract_type_from_desc
     locations as (select * from {{ ref("int_postings_locations") }}),
     salary as (select * from {{ ref("int_postings_salary") }}),
-    category as (select * from {{ ref("int_postings_category") }}),
+    category as (select * from {{ ref("int_postings_category") }}), 
     geographic as (select * from {{ ref("int_postings_coordinates") }})
 
 select
@@ -25,6 +26,14 @@ select
     job_title_company.title as title,
     job_title_company.company_name as company_name,
     postings.description as description,
+    llm_postings.seniority_level,
+    llm_postings.posting_language,
+    llm_postings.required_language,
+    llm_postings.salary_per_hour,
+    llm_postings.weekly_hours,
+    llm_postings.skills,
+    llm_postings.tasks,
+    contract_col.contract_type,
     -- Job_title_company.contract_type_from_title as contract_type_from_title,
     -- job_title_company.employment_type as employment_type,
     -- job_title_company.contract_type_from_title,
