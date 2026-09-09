@@ -2,9 +2,8 @@
 
 No key and no network. `process_single_batch` and `enrich_records` both take
 `llm_call` as a parameter (default: the real one), so these tests hand in a
-fake that answers from a script instead of calling OpenRouter.
+fake that answers from a script instead of calling LiteLLM.
 """
-
 import json
 
 from src.ingestion.enrich import (
@@ -15,7 +14,6 @@ from src.ingestion.enrich import (
     enrich_records,
     process_single_batch,
 )
-
 
 def canned_response(overrides_by_index):
     """One canned model answer: {"0": {...}, "1": {...}, ...}."""
@@ -31,7 +29,7 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
         }
     )
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         return answer
 
     batch_index, parsed = process_single_batch((0, descriptions, "fake-key"), fake_call)
@@ -44,7 +42,7 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
 def test_an_empty_batch_short_circuits_without_calling_the_model():
     calls = []
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         calls.append(prompt)
         return "{}"
 
@@ -58,7 +56,7 @@ def test_the_second_model_is_tried_when_the_first_raises():
     """The fallback behavior: one bad model must not fail the batch outright."""
     calls = []
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         calls.append(model)
         if model == MODEL_CANDIDATES[0]:
             raise TimeoutError("upstream took too long")
@@ -74,7 +72,7 @@ def test_the_second_model_is_tried_when_the_first_returns_no_usable_items():
     """An empty/unusable parse (not just an exception) must also trigger fallback."""
     calls = []
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         calls.append(model)
         if model == MODEL_CANDIDATES[0]:
             return "{}"  # valid JSON, but nothing usable in it
@@ -87,7 +85,7 @@ def test_the_second_model_is_tried_when_the_first_returns_no_usable_items():
 
 
 def test_all_models_failing_returns_empty_rather_than_crashing():
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         raise TimeoutError("upstream took too long")
 
     batch_index, parsed = process_single_batch((1, ["some description"], "fake-key"), fake_call)
@@ -96,7 +94,7 @@ def test_all_models_failing_returns_empty_rather_than_crashing():
 
 
 def test_a_response_that_is_not_json_falls_back_rather_than_crashing():
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         if model == MODEL_CANDIDATES[0]:
             return "Sure, here is your answer: not actually JSON"
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "mid"}})
@@ -130,10 +128,10 @@ def test_the_prompt_truncates_long_descriptions():
 
 
 def test_enrich_records_attaches_llm_enrichment_per_record(monkeypatch):
-    monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")
+    monkeypatch.setenv("LITELLM_API_KEY", "fake-key")
     records = [{"description": "Backend role"}, {"description": "Frontend role"}]
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         return canned_response(
             {
                 0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"},
@@ -149,10 +147,10 @@ def test_enrich_records_attaches_llm_enrichment_per_record(monkeypatch):
 
 def test_a_missing_index_in_the_answer_falls_back_to_defaults(monkeypatch):
     """A short answer must not leave a record with no llm_enrichment key at all."""
-    monkeypatch.setenv("OPENROUTER_API_KEY", "fake-key")
+    monkeypatch.setenv("LITELLM_API_KEY", "fake-key")
     records = [{"description": "A"}, {"description": "B"}]
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"}})
 
     result = enrich_records(records, llm_call=fake_call)
@@ -163,11 +161,15 @@ def test_a_missing_index_in_the_answer_falls_back_to_defaults(monkeypatch):
 
 def test_missing_api_key_skips_enrichment_entirely(monkeypatch):
     """No key, no calls, and records come back untouched -- not half-enriched."""
-    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("LITELLM_API_KEY", raising=False)
+    monkeypatch.setattr(
+        "src.ingestion.litellm_client.load_litellm_key_from_keyvault",
+        lambda: None,
+    )
     records = [{"description": "Backend role"}]
     calls = []
 
-    def fake_call(prompt, api_key, model):
+    def fake_call(prompt, api_key, model, **kwargs):
         calls.append(model)
         return "{}"
 

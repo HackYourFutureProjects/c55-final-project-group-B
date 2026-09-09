@@ -77,8 +77,11 @@ models:
       # who never asked for it would be worse than useless. Set `enabled: true`
       # and your own `secret_scope` when your team wants it. Disabled models are
       # parsed and then ignored: it costs nothing to leave this here.
-      # See ../optional/README.md.
+      # See ../optional/python_model/README.md.
       fct_title_discipline:
-        +enabled: false
+        # Off until you turn it on. Key is already in Databricks scope team_b.
+        +enabled: true
         +secret_scope: team_b
+        # LiteLLM aliases: cheap | medium | strong. Start on cheap.
+        +llm_model: cheap
 
