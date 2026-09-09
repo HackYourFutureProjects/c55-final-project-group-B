@@ -1,7 +1,9 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  padding-block: var(--section-padding);
+  background-color: var(--base);
+  border-bottom: 1px solid var(--highlight-high);
 }
 
 .heading {

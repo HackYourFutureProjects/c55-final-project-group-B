@@ -2,8 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background-color: var(--surface);
+  background-color: var(--base);
   border-bottom: 1px solid var(--highlight-high);
+  padding-block: var(--section-padding);
 }
 
 .intro h1 {

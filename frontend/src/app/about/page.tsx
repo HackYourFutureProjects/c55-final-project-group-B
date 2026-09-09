@@ -6,7 +6,7 @@ import AboutIntro from "@/components/about-intro";
 
 export default function AboutPage() {
   return (
-    <div className={`container ${styles.page}`}>
+    <>
       <AboutIntro />
       <FeatureHighlights />
       <TeamSection />
@@ -18,6 +18,6 @@ export default function AboutPage() {
         instructors and volunteer mentors who guided us along the way. Shout out
         to the rest of the Cohort 55!
       </p>
-    </div>
+    </>
   );
 }
