@@ -26,6 +26,7 @@
 }
 
 .heading {
+  font-family: var(--font-display);
   font-weight: 800;
 }
 
