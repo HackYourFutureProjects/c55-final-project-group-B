@@ -39,13 +39,14 @@
   color: var(--pine);
   background-color: var(--surface);
   border: 1px solid var(--text);
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--shadow-hard-sm);
   border-radius: var(--radius);
   transition: all 150ms ease-in-out;
 }
 
 .primary:hover {
   translate: -1px -1px;
+  box-shadow: var(--shadow-hard);
   transition: all 150ms ease-in-out;
 }
 
