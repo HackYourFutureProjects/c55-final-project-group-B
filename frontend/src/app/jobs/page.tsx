@@ -3,7 +3,7 @@ import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
-import type { Job, JobPage } from "@/lib/types";
+import type { JobPage } from "@/lib/types";
 import styles from "./page.module.css";
 
 type JobFilters = {

@@ -1,5 +1,10 @@
-.input {
+.wrapper {
   flex: 1;
+  position: relative;
+}
+
+.input {
+  width: 100%;
   background-color: transparent;
   color: var(--text);
   font-family: var(--font-body);
@@ -14,4 +19,41 @@
 
 .input:focus {
   outline: none;
+}
+
+.list {
+  position: absolute;
+  top: calc(100% + 32px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--highlight-high);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding: 11px 16px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: var(--overlay);
+  color: var(--pine);
+  border-top: 1px solid var(--highlight-high);
+  border-bottom: 1px solid var(--highlight-high);
 }

@@ -1,7 +1,6 @@
 .hero {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
   border-bottom: 1px solid var(--highlight-high);
   padding-block: 72px 48px;
   text-align: center;
