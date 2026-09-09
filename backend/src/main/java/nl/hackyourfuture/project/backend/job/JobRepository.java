@@ -93,9 +93,12 @@ public class JobRepository {
                 .list();
     }
 
-    public List<String> findAllDistinctCities() {
-        String sql = "SELECT DISTINCT INITCAP(location_city) location_city FROM analytics.fct_postings ORDER BY location_city";
+    public List<String> findAllDistinctCities(String province) {
+        String sql = "SELECT DISTINCT INITCAP(location_city) location_city FROM analytics.fct_postings "
+                + "WHERE (:province::text IS NULL OR location_province ILIKE :province::text) "
+                + "ORDER BY location_city";
         return jdbcClient.sql(sql)
+                .param("province", province)
                 .query(String.class)
                 .list();
     }

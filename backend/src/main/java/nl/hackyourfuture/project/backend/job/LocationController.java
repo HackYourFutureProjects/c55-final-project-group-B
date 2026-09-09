@@ -2,10 +2,12 @@ package nl.hackyourfuture.project.backend.job;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,10 +20,12 @@ public class LocationController {
 
     private final JobService jobService;
 
-    @Operation(summary = "Get all distinct cities")
+    @Operation(summary = "Get all distinct cities, optionally filtered by province")
     @GetMapping("/cities")
-    public List<String> getCities() {
-        return jobService.getDistinctCities();
+    public List<String> getCities(
+            @Parameter(description = "Filter cities by province")
+            @RequestParam(required = false) String province) {
+        return jobService.getDistinctCities(province);
     }
 
     @Operation(summary = "Get all distinct provinces")

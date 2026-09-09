@@ -43,8 +43,8 @@ public class JobService {
         return new JobPageResponse(items, page, size, totalItems, totalPages);
     }
 
-    public List<String> getDistinctCities() {
-        return jobRepository.findAllDistinctCities();
+    public List<String> getDistinctCities(String province) {
+        return jobRepository.findAllDistinctCities(province);
     }
 
     public List<String> getDistinctProvinces() {
