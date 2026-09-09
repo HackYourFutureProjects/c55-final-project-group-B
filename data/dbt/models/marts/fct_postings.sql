@@ -11,20 +11,23 @@
 -- _fct_postings.yml saying what one row means. If you cannot write that
 -- sentence, the mart is not ready.
 with
-    postings as (select * from {{ ref("stg_postings") }}), --job_id ingatse col 
-    llm_postings as (select * from {{ ref("int_postings_extracted_attributes") }}), -- 8 
-    job_title_company as (select * from {{ ref("int_postings_title_company") }}), -- title, company_name, employment_type
-    contract_col as (select * from {{ ref("int_postings_contract_type") }}), -- contract_type_from_title, contract_type_from_desc
+    postings as (select * from {{ ref("stg_postings") }}),  -- job_id, description, ingest metadata
+    llm_postings as (select * from {{ ref("int_postings_extracted_attributes") }}),  -- 7 LLM-extracted fields
+    job_title_company as (select * from {{ ref("int_postings_title_company") }}),  -- title, company_name, employment_type
+    contract_col as (select * from {{ ref("int_postings_contract_type") }}),  -- resolved contract_type
     locations as (select * from {{ ref("int_postings_locations") }}),
     salary as (select * from {{ ref("int_postings_salary") }}),
-    category as (select * from {{ ref("int_postings_category") }}), 
+    category as (select * from {{ ref("int_postings_category") }}),
     geographic as (select * from {{ ref("int_postings_coordinates") }})
 
 select
     -- Primary Keys & Core Details
     postings.job_id,
+    postings.original_job_id,
+    postings.source_system,
     job_title_company.title as title,
     job_title_company.company_name as company_name,
+    postings.company_url as company_url,
     postings.description as description,
     llm_postings.seniority_level,
     llm_postings.posting_language,
@@ -34,18 +37,7 @@ select
     llm_postings.skills,
     llm_postings.tasks,
     contract_col.contract_type,
-    -- Job_title_company.contract_type_from_title as contract_type_from_title,
-    -- job_title_company.employment_type as employment_type,
-    -- job_title_company.contract_type_from_title,
     job_title_company.employment_type,
-    -- postings.contract_type_from_desc,
-    postings.seniority_level,
-    postings.posting_language,
-    postings.required_language,
-    postings.salary_per_hour,
-    postings.weekly_hours,
-    postings.skills,
-    postings.tasks,
 
     -- Location Details
     locations.city as location_city,
@@ -77,3 +69,5 @@ left join locations on postings.job_id = locations.job_id
 left join salary on postings.job_id = salary.job_id
 left join category on postings.job_id = category.job_id
 left join geographic on postings.job_id = geographic.job_id
+left join llm_postings on postings.job_id = llm_postings.job_id
+left join contract_col on postings.job_id = contract_col.job_id

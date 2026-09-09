@@ -31,7 +31,7 @@ ENDPOINT = (
     "https://app-litellm-team-d.blacksky-9263d113.westeurope.azurecontainerapps.io"
     "/v1/chat/completions"
 )
-MODEL = "cheap"
+MODEL = "medium"
 BATCH_SIZE = 15
 DESC_MAX_CHARS = 800
 HTTP_TIMEOUT = 300
@@ -159,7 +159,11 @@ def extract_descriptions(
     results: list[dict] = []
     for start in range(0, len(descriptions), BATCH_SIZE):
         batch = descriptions[start : start + BATCH_SIZE]
-        results.extend(extract_batch(batch, api_key, model, call=call))
+        try:
+            results.extend(extract_batch(batch, api_key, model, call=call))
+        except RuntimeError as error:
+            print(f"Stopping early after rate limit: {error}")
+            break  # keep whatever succeeded, stop instead of crashing
     return results
 
 
@@ -225,7 +229,7 @@ def model(dbt, session):
     extracted = extract_descriptions(descriptions, api_key, model_name)
 
     output_rows = [
-        _to_output_row(job_ids[index], extracted[index]) for index in range(len(job_ids))
+        _to_output_row(job_ids[index], extracted[index]) for index in range(len(extracted))
     ]
 
     return session.createDataFrame(output_rows, OUTPUT_SCHEMA)

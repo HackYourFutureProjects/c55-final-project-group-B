@@ -17,7 +17,7 @@ with
                 then 'full_time'
                 else null
             end as contract_type_from_title
-        from source    
+        from source
     ),
 
     extract_employment_type as (
@@ -201,27 +201,42 @@ with
 
     step11 as (
         select
-            job_id, company_name, source_system, contract_type_from_title, employment_type,
-         -- Step 11: Collapse internal whitespace (title never got this, unlike company_name)
+            job_id,
+            company_name,
+            source_system,
+            contract_type_from_title,
+            employment_type,
+            -- Step 11: Collapse internal whitespace (title never got this, unlike
+            -- company_name)
             regexp_replace(title, '\\s+', ' ') as title
         from step10
     ),
 
     step12 as (
         select
-            job_id, company_name, source_system, contract_type_from_title, employment_type,
+            job_id,
+            company_name,
+            source_system,
+            contract_type_from_title,
+            employment_type,
             -- Step 12: Remove trailing lone punctuation with nothing after it
             -- Example: "Full Stack Developer ." -> "Full Stack Developer"
             regexp_replace(trim(title), '\\s*[.\\-–]+\\s*$', '') as title
         from step11
     ),
-    
+
     step13 as (
         select
-            job_id, company_name, source_system, contract_type_from_title, employment_type,
+            job_id,
+            company_name,
+            source_system,
+            contract_type_from_title,
+            employment_type,
             -- Step 13: Remove embedded salary/currency ranges
             -- Example: "... - Zorg en IT - €4900-€7400" -> "... - Zorg en IT"
-            regexp_replace(title, '\\s*[–-]?\\s*€\\s*\\d[\\d.,]*\\s*[–-]\\s*€?\\s*\\d[\\d.,]*', '') as title
+            regexp_replace(
+                title, '\\s*[–-]?\\s*€\\s*\\d[\\d.,]*\\s*[–-]\\s*€?\\s*\\d[\\d.,]*', ''
+            ) as title
         from step12
     ),
 
@@ -258,8 +273,13 @@ with
         from step13
     )
 
-select job_id, title, contract_type_from_title, employment_type, company_name, source_system
+select
+    job_id,
+    title,
+    contract_type_from_title,
+    employment_type,
+    company_name,
+    source_system
 from cleaned
 where title is not null
 ;
-
