@@ -6,6 +6,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             trim(title) as title,
             -- Extract contract type from title before cleaning it
             -- Example: "Parttime Chauffeur" -> "part_time"
@@ -16,13 +17,14 @@ with
                 then 'full_time'
                 else null
             end as contract_type_from_title
-        from source
+        from source    
     ),
 
     extract_employment_type as (
         select
             job_id,
             company_name,
+            source_system,
             title,
             contract_type_from_title,
             -- Extract employment type from title before cleaning it
@@ -45,6 +47,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 1: Remove contract type words from title
@@ -61,6 +64,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 2: Remove "voor X dagdeel/dagdelen" and optional location after it
@@ -78,6 +82,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 3: Standardize shift work format to "N-ploegen"
@@ -93,6 +98,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 4: Fix spacing around slashes
@@ -106,6 +112,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 5: Remove text inside parentheses
@@ -118,6 +125,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 6: Remove special symbols and everything after them (*, ?, |, •)
@@ -130,6 +138,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 7: Remove recruitment agency noise ("via Zorgwerk...")
@@ -142,6 +151,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 8: Remove city names or regions at the end of the title
@@ -159,6 +169,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 9: Remove sentences after a period and clean trailing dashes
@@ -173,6 +184,7 @@ with
         select
             job_id,
             company_name,
+            source_system,
             contract_type_from_title,
             employment_type,
             -- Step 10: Remove leading internship/traineeship keywords and trailing
@@ -187,11 +199,38 @@ with
         from step9
     ),
 
+    step11 as (
+        select
+            job_id, company_name, source_system, contract_type_from_title, employment_type,
+         -- Step 11: Collapse internal whitespace (title never got this, unlike company_name)
+            regexp_replace(title, '\\s+', ' ') as title
+        from step10
+    ),
+
+    step12 as (
+        select
+            job_id, company_name, source_system, contract_type_from_title, employment_type,
+            -- Step 12: Remove trailing lone punctuation with nothing after it
+            -- Example: "Full Stack Developer ." -> "Full Stack Developer"
+            regexp_replace(trim(title), '\\s*[.\\-–]+\\s*$', '') as title
+        from step11
+    ),
+    
+    step13 as (
+        select
+            job_id, company_name, source_system, contract_type_from_title, employment_type,
+            -- Step 13: Remove embedded salary/currency ranges
+            -- Example: "... - Zorg en IT - €4900-€7400" -> "... - Zorg en IT"
+            regexp_replace(title, '\\s*[–-]?\\s*€\\s*\\d[\\d.,]*\\s*[–-]\\s*€?\\s*\\d[\\d.,]*', '') as title
+        from step12
+    ),
+
     cleaned as (
         select
             job_id,
             contract_type_from_title,
             employment_type,
+            source_system,
             -- Remove extra empty spaces and convert empty titles to NULL
             nullif(trim(title), '') as title,
             case
@@ -216,10 +255,11 @@ with
                         ''
                     )
             end as company_name
-        from step10
+        from step13
     )
 
-select job_id, title, contract_type_from_title, employment_type, company_name
+select job_id, title, contract_type_from_title, employment_type, company_name, source_system
 from cleaned
 where title is not null
 ;
+
