@@ -1,26 +1,16 @@
 import json
 import logging
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import litellm
-from litellm import completion
-
-litellm.num_retries = 3
+from src.ingestion.litellm_client import DEFAULT_MODELS, completion_json, resolve_llm_config
 
 logger = logging.getLogger("pipeline.enrich")
 
-BATCH_SIZE = 5
-MAX_WORKERS = 2
+BATCH_SIZE = 15
+MAX_WORKERS = 4
 
-# Fixed, chosen models -- not "openrouter/auto" (may route to a paid model)
-# and not "openrouter/free" (rotates randomly, so quality isn't consistent
-# batch to batch). Tried in order: if the first fails or returns unusable
-# JSON, the second is tried before falling back to DEFAULT_ATTRIBUTES.
-MODEL_CANDIDATES = [
-    "openrouter/z-ai/glm-5.2:free",
-    "openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-]
+# Re-export for tests that patch model fallback order.
+MODEL_CANDIDATES = DEFAULT_MODELS
 
 DEFAULT_ATTRIBUTES = {
     "contract_type_from_desc": "unknown",
@@ -57,22 +47,12 @@ def build_batch_prompt(descriptions: list[str]) -> str:
     )
 
 
-def default_llm_call(prompt: str, api_key: str, model: str) -> str:
-    """The real call to the model. `model` is required (no MODEL_NAME default
-    anymore) since callers now try more than one model in order."""
-    response = completion(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000,
-        response_format={"type": "json_object"},
-        api_key=api_key,
-        timeout=30,
-        extra_body={"provider": {"allow_fallbacks": False}},
-    )
-    return response.choices[0].message.content
-
-
-def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CANDIDATES):
+def process_single_batch(
+    batch_tuple,
+    llm_call=completion_json,
+    models=MODEL_CANDIDATES,
+    api_base: str | None = None,
+):
     batch_index, batch_descriptions, api_key = batch_tuple
     if not batch_descriptions:
         return batch_index, {}
@@ -81,11 +61,20 @@ def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CA
 
     for attempt_model in models:
         try:
-            raw_text = llm_call(prompt, api_key, attempt_model)
+            raw_text = llm_call(
+                prompt,
+                api_key,
+                attempt_model,
+                api_base=api_base,
+            )
+
+            if "```json" in raw_text:
+                raw_text = raw_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in raw_text:
+                raw_text = raw_text.split("```")[1].split("```")[0].strip()
+
             parsed = json.loads(raw_text)
 
-            # Fill in any missing keys per item with DEFAULT_ATTRIBUTES,
-            # rather than trusting the model returned every key.
             validated_batch = {}
             if isinstance(parsed, dict):
                 for idx, item in parsed.items():
@@ -96,49 +85,98 @@ def process_single_batch(batch_tuple, llm_call=default_llm_call, models=MODEL_CA
 
             if validated_batch:
                 return batch_index, validated_batch
-            # Parsed to an empty/unusable shape -- try the next model.
-            logger.warning(
-                "LLM Batch %d: %s returned no usable items, trying next model",
-                batch_index,
-                attempt_model,
-            )
-        except Exception as e:  # noqa: BLE001
-            logger.error("LLM Batch %d failed on %s: %s", batch_index, attempt_model, e)
 
-    logger.error("LLM Batch %d failed on all candidate models: %s", batch_index, models)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e)
+
     return batch_index, {}
 
 
+def calculate_and_log_metrics(records: list[dict]):
+    total_records = len(records)
+    if total_records == 0:
+        logger.info("No records provided for metric calculation.")
+        return
+
+    successful_extractions = 0
+    fallback_extractions = 0
+
+    for record in records:
+        enrichment = record.get("llm_enrichment", {})
+        if (
+            enrichment.get("skills")
+            or enrichment.get("tasks")
+            or enrichment.get("seniority_level") != "unknown"
+            or enrichment.get("contract_type_from_desc") != "unknown"
+        ):
+            successful_extractions += 1
+        else:
+            fallback_extractions += 1
+
+    success_rate = (successful_extractions / total_records) * 100
+
+    logger.info("=== LLM Enrichment Summary Metrics ===")
+    logger.info("Total Records Processed: %d", total_records)
+    logger.info("Successfully Enriched: %d", successful_extractions)
+    logger.info("Fallback (Defaults Used): %d", fallback_extractions)
+    logger.info("Enrichment Success Rate: %.2f%%", success_rate)
+    logger.info("=======================================")
+
+
 def enrich_records(
-    records: list[dict], llm_call=default_llm_call, models=MODEL_CANDIDATES
+    records: list[dict], llm_call=completion_json, models: list[str] | None = None
 ) -> list[dict]:
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        logger.warning("OPENROUTER_API_KEY is not set. Skipping LLM enrichment.")
+    config = resolve_llm_config()
+    if not config:
+        logger.error("No LiteLLM API key available. Skipping LLM enrichment.")
+        for record in records:
+            record["llm_enrichment"] = DEFAULT_ATTRIBUTES.copy()
         return records
 
+    logger.info(
+        "LiteLLM gateway configured (%s, models: %s)",
+        config.api_base,
+        ", ".join(config.models),
+    )
+
+    model_list = models or config.models
     descriptions = [r.get("description", "") for r in records]
     batches = []
 
     for i in range(0, len(descriptions), BATCH_SIZE):
         batch = descriptions[i : i + BATCH_SIZE]
-        batches.append((i, batch, api_key))
+        batches.append((i, batch, config.api_key))
 
     enriched_results = {}
 
     logger.info("Processing %d batches concurrently with %d workers...", len(batches), MAX_WORKERS)
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(process_single_batch, b, llm_call, models) for b in batches]
-        for future in as_completed(futures):
-            start_idx, batch_parsed = future.result()
-            batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
 
-            for idx in range(batch_desc_len):
-                global_index = start_idx + idx
-                res = batch_parsed.get(str(idx), DEFAULT_ATTRIBUTES)
-                enriched_results[global_index] = res
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = [
+            executor.submit(
+                process_single_batch,
+                batch,
+                llm_call,
+                model_list,
+                config.api_base,
+            )
+            for batch in batches
+        ]
+        for future in as_completed(futures):
+            try:
+                start_idx, batch_parsed = future.result()
+                batch_desc_len = min(BATCH_SIZE, len(descriptions) - start_idx)
+
+                for idx in range(batch_desc_len):
+                    global_index = start_idx + idx
+                    res = batch_parsed.get(str(idx), DEFAULT_ATTRIBUTES)
+                    enriched_results[global_index] = res
+            except Exception as e:  # noqa: BLE001
+                logger.error("Unexpected failure in batch execution worker: %s", e)
 
     for idx, record in enumerate(records):
         record["llm_enrichment"] = enriched_results.get(idx, DEFAULT_ATTRIBUTES)
 
+    calculate_and_log_metrics(records)
+    logger.info("LLM enrichment process completed safely for %d records.", len(records))
     return records

@@ -43,17 +43,12 @@ _INTERPRETER_LINE = re.compile(r"^(?:/.+/)?python(?:\d+(?:\.\d+)*)?: .+")
 
 
 def filter_application_log_lines(lines: list[str]) -> list[str]:
-    """Keep pipeline application logs and their traceback tails; drop Azure SDK chatter.
+    """Return ACA container stdout for the Airflow task log.
 
-    Structured lines come from logging.basicConfig. After an application ERROR,
-    Python prints a Traceback (and the final Exception:) as plain stdout lines —
-    those must reach the Airflow task log or Mode 2/3/4 ingest failures only say
-    "Pipeline failed" with no cause. Interpreter stderr (``python: No module
-    named …``) is kept too — it is the only output when the container exits
-    before application loggers run.
-
-    After the exception line, indented Azure SDK leftovers (e.g. Metadata) must
-    not stay attached; only chaining headers may reopen the traceback body.
+    Everything the ingest container prints is kept — ``pipeline.enrich``,
+    ``jobspy_pipeline``, LiteLLM, tracebacks, interpreter errors — except Azure
+    SDK logger lines (``azure.*``) and their ``'Metadata':`` continuations.
+    The old allow-list hid enrichment output students added to debug ACA runs.
     """
     kept: list[str] = []
     in_traceback = False
@@ -65,12 +60,12 @@ def filter_application_log_lines(lines: list[str]) -> list[str]:
         match = _CONTAINER_LOG_LINE.match(line)
         if match:
             level, logger_name = match.group(1), match.group(2)
-            is_app = logger_name == "pipeline" or logger_name.startswith("src.")
-            if is_app:
-                kept.append(line)
-                in_traceback = level == "ERROR"
-            else:
+            if logger_name.startswith("azure."):
                 in_traceback = False
+                after_exception = False
+                continue
+            kept.append(line)
+            in_traceback = level == "ERROR"
             after_exception = False
             continue
         if _INTERPRETER_LINE.match(line):
@@ -78,26 +73,29 @@ def filter_application_log_lines(lines: list[str]) -> list[str]:
             in_traceback = False
             after_exception = False
             continue
-        if not in_traceback:
-            continue
-        if line.startswith(("During handling of", "The above exception")):
-            kept.append(line)
+        if line.lstrip().startswith("'Metadata':"):
+            in_traceback = False
             after_exception = False
             continue
-        if line.startswith(("Traceback ", "  File ")):
-            kept.append(line)
+        if in_traceback:
+            if line.startswith(("During handling of", "The above exception")):
+                kept.append(line)
+                after_exception = False
+                continue
+            if line.startswith(("Traceback ", "  File ")):
+                kept.append(line)
+                after_exception = False
+                continue
+            if _EXCEPTION_LINE.match(line):
+                kept.append(line)
+                after_exception = True
+                continue
+            if line.startswith("    ") and not after_exception:
+                kept.append(line)
+                continue
+            in_traceback = False
             after_exception = False
-            continue
-        if _EXCEPTION_LINE.match(line):
-            kept.append(line)
-            after_exception = True
-            continue
-        # Source line under a File frame — only before the exception settles.
-        if line.startswith("    ") and not after_exception:
-            kept.append(line)
-            continue
-        in_traceback = False
-        after_exception = False
+        kept.append(line)
     return kept
 
 
@@ -218,8 +216,8 @@ def emit_console_logs(lines: list[str], execution: str, workspace_id: str) -> No
     if not app_lines:
         if lines:
             logger.warning(
-                "Console log for %s had %d line(s) in Log Analytics but none from "
-                "application loggers (src.* / pipeline) or their traceback tails.",
+                "Console log for %s had %d line(s) in Log Analytics but none "
+                "remained after dropping Azure SDK noise.",
                 execution,
                 len(lines),
             )

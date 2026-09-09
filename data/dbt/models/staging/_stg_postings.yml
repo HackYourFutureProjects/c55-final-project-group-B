@@ -79,6 +79,8 @@ models:
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
 
+      - name: salary_is_predicted
+        description: "(boolean) Flag indicating if salary is estimated by Api rather than explicitly stated."
 
       - name: latitude
         description: "(float / double) Geographical latitude. Available for Adzuna."

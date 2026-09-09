@@ -16,8 +16,44 @@ macro-paths: ["macros"]
 # Examples: .../landing/dev/your-name  |  .../landing/dev/aca-dev  |  .../landing/prod
 # (prod volume is rooted at the container's raw/ blob prefix, so there is no
 # extra "raw" segment in the Volume path.)
+#
+# tech_roles: one shared list of (title substring -> clean tag) pairs, used by
+# int_postings_categories.sql to tag postings by role. Defined once here
+# instead of duplicated in Python and SQL separately -- add a role by adding
+# one line below, not by remembering to update two files.
 vars:
   landing_path: "{{ env_var('LANDING_PATH', '/Volumes/team_b/landing/prod') }}"
+
+  tech_roles:
+    - {match: "data engineer", tag: "Data Engineer"}
+    - {match: "data analyst", tag: "Data Analyst"}
+    - {match: "data scientist", tag: "Data Scientist"}
+    - {match: "machine learning", tag: "Machine Learning Engineer"}
+    - {match: "analytics engineer", tag: "Analytics Engineer"}
+    - {match: "ai engineer", tag: "AI Engineer"}
+    - {match: "business intelligence", tag: "BI Developer"}
+    - {match: "software engineer", tag: "Software Engineer"}
+    - {match: "backend", tag: "Backend Developer"}
+    - {match: "frontend", tag: "Frontend Developer"}
+    - {match: "full stack", tag: "Full Stack Developer"}
+    - {match: "fullstack", tag: "Full Stack Developer"}
+    - {match: "python developer", tag: "Python Developer"}
+    - {match: "java developer", tag: "Java Developer"}
+    - {match: "mobile app developer", tag: "Mobile App Developer"}
+    - {match: "devops engineer", tag: "DevOps Engineer"}
+    - {match: "cloud architect", tag: "Cloud Architect"}
+    - {match: "cloud engineer", tag: "Cloud Engineer"}
+    - {match: "site reliability", tag: "Site Reliability Engineer"}
+    - {match: "platform engineer", tag: "Platform Engineer"}
+    - {match: "systems administrator", tag: "Systems Administrator"}
+    - {match: "cyber security", tag: "Cyber Security Engineer"}
+    - {match: "security analyst", tag: "Security Analyst"}
+    - {match: "network engineer", tag: "Network Engineer"}
+    - {match: "test automation", tag: "Test Automation Engineer"}
+    - {match: "qa engineer", tag: "QA Engineer"}
+    - {match: "scrum master", tag: "Scrum Master"}
+    - {match: "product owner", tag: "Product Owner"}
+    - {match: "solution architect", tag: "Solution Architect"}
 
 clean-targets:
   - "target"
@@ -41,13 +77,11 @@ models:
       # who never asked for it would be worse than useless. Set `enabled: true`
       # and your own `secret_scope` when your team wants it. Disabled models are
       # parsed and then ignored: it costs nothing to leave this here.
-      # See ../optional/README.md.
+      # See ../optional/python_model/README.md.
       fct_title_discipline:
-        +enabled: false
+        # Off until you turn it on. Key is already in Databricks scope team_b.
+        +enabled: true
         +secret_scope: team_b
-
-
-
-
-
+        # LiteLLM aliases: cheap | medium | strong. Start on cheap.
+        +llm_model: cheap
 

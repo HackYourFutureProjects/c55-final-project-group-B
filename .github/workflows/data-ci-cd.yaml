@@ -55,6 +55,7 @@ env:
   DATABRICKS_HOST: https://adb-7405619530719547.7.azuredatabricks.net
   DATABRICKS_HTTP_PATH: /sql/1.0/warehouses/0aae52a375e34214
   SOURCE_API_URL: https://api.adzuna.com/v1/api/jobs/{country_code}/search/{page}
+  LITELLM_API_BASE: https://app-litellm-team-d.blacksky-9263d113.westeurope.azurecontainerapps.io
 
 jobs:
   lint-and-test:
@@ -289,7 +290,6 @@ jobs:
           REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           set -euo pipefail
           client_id="$(az identity show --resource-group "$RG" --name "$IDENTITY" --query clientId -o tsv)"
@@ -304,10 +304,10 @@ jobs:
               LANDING_CONTAINER="prod" \
               LANDING_PREFIX="raw" \
               DATABRICKS_CATALOG="${{ env.DATABRICKS_CATALOG }}" \
+              LITELLM_API_BASE="${{ env.LITELLM_API_BASE }}" \
               AZURE_CLIENT_ID="$client_id" \
               ADZUNA_APP_ID="$ADZUNA_APP_ID" \
-              ADZUNA_APP_KEY="$ADZUNA_APP_KEY" \
-              OPENROUTER_API_KEY="$OPENROUTER_API_KEY"
+              ADZUNA_APP_KEY="$ADZUNA_APP_KEY"
 
   deploy-dev:
     # Mode 2 dev ingest job: same image as prod, writes dev/aca-dev instead.
@@ -336,7 +336,6 @@ jobs:
           REGISTRY: ${{ env.ACR_NAME }}.azurecr.io
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           set -euo pipefail
           client_id="$(az identity show --resource-group "$RG" --name "$IDENTITY" --query clientId -o tsv)"
@@ -351,10 +350,10 @@ jobs:
               LANDING_CONTAINER="dev" \
               LANDING_PREFIX="aca-dev" \
               DATABRICKS_CATALOG="${{ env.DATABRICKS_CATALOG }}" \
+              LITELLM_API_BASE="${{ env.LITELLM_API_BASE }}" \
               AZURE_CLIENT_ID="$client_id" \
               ADZUNA_APP_ID="$ADZUNA_APP_ID" \
-              ADZUNA_APP_KEY="$ADZUNA_APP_KEY" \
-              OPENROUTER_API_KEY="$OPENROUTER_API_KEY"
+              ADZUNA_APP_KEY="$ADZUNA_APP_KEY"
 
           echo "### Deployed \`pipeline:${{ github.sha }}\` to \`$JOB\`" >> "$GITHUB_STEP_SUMMARY"
           echo "Writes to the \`dev\` container under prefix \`aca-dev\`." >> "$GITHUB_STEP_SUMMARY"

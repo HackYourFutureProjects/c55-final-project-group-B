@@ -124,6 +124,18 @@ def test_filter_application_log_lines_drops_azure_sdk_noise():
     ]
 
 
+def test_filter_application_log_lines_keeps_enrichment_and_litellm():
+    lines = [
+        "2026-09-08 17:40:57,184 INFO pipeline.enrich OPENROUTER_API_KEY loaded successfully",
+        "17:40:57 - LiteLLM:INFO: utils.py:4193 -",
+        "LiteLLM completion() model= openrouter/google/gemini-2.0-flash-001",
+        "2026-09-08 17:40:58,249 INFO pipeline.enrich Enrichment Success Rate: 67.77%",
+        "2026-09-08 17:46:05,268 INFO jobspy_pipeline Enriching 462 JobSpy records with LLM...",
+        "2026-09-08 17:40:57,476 INFO pipeline Pipeline finished",
+    ]
+    assert filter_application_log_lines(lines) == lines
+
+
 def test_filter_application_log_lines_keeps_traceback_after_error():
     """Mode 2/3/4 ingest failures print the cause as a Traceback after ERROR."""
     lines = [
@@ -139,6 +151,7 @@ def test_filter_application_log_lines_keeps_traceback_after_error():
         "    'Metadata': 'REDACTED'",
     ]
     assert filter_application_log_lines(lines) == [
+        "<frozen runpy>:128: RuntimeWarning: ignored noise",
         "2026-08-31 07:00:28,525 ERROR pipeline Pipeline failed",
         "Traceback (most recent call last):",
         '  File "/app/src/ingestion/pipeline.py", line 175, in <module>',
@@ -168,23 +181,14 @@ def test_filter_drops_metadata_immediately_after_exception():
     ]
 
 
-def test_filter_does_not_open_traceback_on_warning_or_info():
+def test_filter_keeps_unformatted_lines_after_warning():
+    """Unformatted stdout (e.g. LiteLLM) is kept even without a preceding ERROR."""
     warning_lines = [
-        "2026-08-31 07:00:28,525 WARNING pipeline something odd",
-        "Traceback (most recent call last):",
-        "ValueError: should stay dropped",
+        "2026-08-31 07:00:28,525 WARNING pipeline.enrich batch slow",
+        "LiteLLM completion() model= openrouter/example",
+        "2026-08-31 07:00:28,526 INFO pipeline.enrich done",
     ]
-    assert filter_application_log_lines(warning_lines) == [
-        "2026-08-31 07:00:28,525 WARNING pipeline something odd",
-    ]
-    info_lines = [
-        "2026-08-31 07:00:28,525 INFO pipeline still going",
-        "Traceback (most recent call last):",
-        "ValueError: should stay dropped",
-    ]
-    assert filter_application_log_lines(info_lines) == [
-        "2026-08-31 07:00:28,525 INFO pipeline still going",
-    ]
+    assert filter_application_log_lines(warning_lines) == warning_lines
 
 
 def test_filter_keeps_python_interpreter_startup_errors():

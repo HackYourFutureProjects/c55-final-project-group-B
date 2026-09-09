@@ -19,8 +19,7 @@ public class JobService {
         return jobRepository.findAllJobTitles();
     }
 
-    public JobPageResponse findJobs(String jobTitle, String city, String province,
-                                    int page, int size) {
+    public JobPageResponse findJobs(String search, String city, String province, int page, int size) {
         if (page < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Page cannot be negative");
@@ -30,12 +29,16 @@ public class JobService {
                     "Size must be between 1 and 100");
         }
 
-        List<JobSummaryDto> items = jobRepository.findJobs(
-                jobTitle, city, province, page, size);
-        long totalItems = jobRepository.countJobs(jobTitle, city, province);
-        int totalPages = totalItems == 0
-                ? 0
-                : (int) Math.ceil((double) totalItems / size);
+        List<JobSummaryDto> items = jobRepository.findJobs(search, city, province, page, size);
+
+        long totalItems = jobRepository.countJobs(search, city, province);
+        int totalPages;
+        if (totalItems == 0) {
+            totalPages = 0;
+        } else {
+            double pages = (double) totalItems / size;
+            totalPages = (int) Math.ceil(pages);
+        }
 
         return new JobPageResponse(items, page, size, totalItems, totalPages);
     }

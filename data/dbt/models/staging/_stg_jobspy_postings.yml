@@ -42,11 +42,6 @@ models:
         description: "(float / double) Minimum salary for the job, if available."
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
-      - name: salary_currency
-        description: "(string) Currency code for stated salary (e.g., EUR, USD)."
-      - name: salary_interval
-        description: "(string) Pay frequency specified by source (e.g., yearly, monthly, hourly)."
-
       - name: contract_type_from_desc
         description: "(string) Contract type extracted by LLM ('full_time', 'part_time', 'unknown')."
       - name: seniority_level

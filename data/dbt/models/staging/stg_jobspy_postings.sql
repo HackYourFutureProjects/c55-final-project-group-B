@@ -57,8 +57,6 @@ with
             -- Financials
             cast(min_amount as double) as salary_min,
             cast(max_amount as double) as salary_max,
-            currency as salary_currency,
-            interval as salary_interval,
 
             -- LLM Enrichment Fields
             -- llm_enrichment is read as a raw JSON string (not STRUCT) because
