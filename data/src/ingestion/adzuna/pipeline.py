@@ -17,7 +17,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ..enrich import enrich_records
+
 from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
@@ -101,16 +101,13 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
             len(raw_records),
         )
 
-    # 4. Enrich records via LLM API calls
-    logger.info("Enriching %d records with LLM...", len(raw_records))
-    enriched_records = enrich_records(raw_records)
 
-    # 5. Construct destination partition path
+
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
-    # 6. Land enriched records (local disk or Azure)
+
     if local_dir is not None:
-        landed = land_local_json(local_dir, path, enriched_records)
+        landed = land_local_json(local_dir, path, raw_records)
         logger.info(
             "Pipeline finished: %d written locally, %d rejected.",
             landed,
@@ -121,7 +118,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     landed = land_raw_json(
         account=config.storage_account,
         path=path,
-        records=enriched_records,
+        records=raw_records,
         container=config.landing_container,
     )
 
