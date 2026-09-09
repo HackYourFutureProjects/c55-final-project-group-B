@@ -1,7 +1,7 @@
 "use client";
 
-import { useCurrentUser } from "@/context/current-user-provider";
 import Link from "next/link";
+import { useCurrentUser } from "@/context/current-user-provider";
 import styles from "./action-banner.module.css";
 
 export default function ActionBanner() {

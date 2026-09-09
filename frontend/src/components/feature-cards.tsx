@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
 import {
-  HeartIcon,
   ArrowSquareOutIcon,
   CompassIcon,
+  HeartIcon,
   SparkleIcon,
 } from "@phosphor-icons/react/ssr";
+import type { ReactNode } from "react";
 import styles from "./feature-cards.module.css";
 
 type Feature = {

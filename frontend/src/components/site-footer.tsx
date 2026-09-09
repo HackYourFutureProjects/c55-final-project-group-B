@@ -1,6 +1,6 @@
+import { GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import styles from "./site-footer.module.css";
-import { GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -13,6 +13,7 @@ export function SiteFooter() {
             className={styles.links}
             href="https://hackyourfuture.net"
             target="_blank"
+            rel="noopener"
           >
             HackYourFuture
           </a>{" "}

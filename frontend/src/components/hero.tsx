@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SearchBar } from "@/components/search-bar";
 import styles from "./hero.module.css";
 import HeroNote from "./hero-note";
