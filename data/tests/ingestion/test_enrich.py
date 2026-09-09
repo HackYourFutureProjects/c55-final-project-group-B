@@ -4,6 +4,7 @@ No key and no network. `process_single_batch` and `enrich_records` both take
 `llm_call` as a parameter (default: the real one), so these tests hand in a
 fake that answers from a script instead of calling LiteLLM.
 """
+
 import json
 
 from src.ingestion.enrich import (
@@ -14,6 +15,7 @@ from src.ingestion.enrich import (
     enrich_records,
     process_single_batch,
 )
+
 
 def canned_response(overrides_by_index):
     """One canned model answer: {"0": {...}, "1": {...}, ...}."""
