@@ -1,28 +1,47 @@
+import type { ReactNode } from "react";
 import {
-  BriefcaseIcon,
-  BuildingOfficeIcon,
+  HeartIcon,
+  ArrowSquareOutIcon,
   CompassIcon,
+  SparkleIcon,
 } from "@phosphor-icons/react/ssr";
 import styles from "./feature-cards.module.css";
 
-const FEATURES = [
+type Feature = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  color: string;
+};
+
+const FEATURES: Feature[] = [
   {
-    title: "For job seekers",
-    body: "Your next dream job is waiting for you, so what are you waiting for?",
-    icon: <BriefcaseIcon size={32} weight="duotone" />,
+    title: "Save jobs for later",
+    description:
+      "Life gets busy. Keep the roles that catch your eye and come back when you have time.",
+    icon: <HeartIcon size={24} weight="duotone" />,
+    color: styles.swatchLove,
+  },
+  {
+    title: "Filter by city or province",
+    description:
+      "Narrow the list to where you actually want to work, from Amsterdam to Zeeland.",
+    icon: <CompassIcon size={24} weight="duotone" />,
     color: styles.swatchPine,
   },
   {
-    title: "For employers",
-    body: "Your next great hire is already browsing Flint. Post a role and start reviewing today.",
-    icon: <BuildingOfficeIcon size={32} weight="duotone" />,
-    color: styles.swatchIris,
+    title: "Fresh listings daily",
+    description:
+      "Our pipeline refreshes the database everyday, showing you the newest roles first.",
+    icon: <SparkleIcon size={24} weight="duotone" />,
+    color: styles.swatchGold,
   },
   {
-    title: "Search your region",
-    body: "Filter by city or province and search roles across the country.",
-    icon: <CompassIcon size={32} weight="duotone" />,
-    color: styles.swatchRose,
+    title: "Straight to the source",
+    description:
+      "Every listing links to the original posting, so you apply where the employer is looking.",
+    icon: <ArrowSquareOutIcon size={24} weight="duotone" />,
+    color: styles.swatchIris,
   },
 ];
 
@@ -36,7 +55,7 @@ export function FeatureCards() {
               {feature.icon}
             </span>
             <h2 className={styles.title}>{feature.title}</h2>
-            <p className={styles.body}>{feature.body}</p>
+            <p className={styles.body}>{feature.description}</p>
           </article>
         ))}
       </div>
