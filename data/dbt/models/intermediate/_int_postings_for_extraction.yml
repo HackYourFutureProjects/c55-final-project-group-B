@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: int_postings_for_extraction
+    description: >
+      Clean input feed for the LLM-based attribute extraction model
+      (`int_postings_extracted_attributes`). Selects only `job_id` and
+      `description` from `stg_postings`, dropping rows where the description
+      is null, an empty string, or whitespace-only, so no empty prompts are
+      sent to the LLM.
+    columns:
+      - name: job_id
+        description: Unique identifier for the job posting.
+        tests:
+          - not_null
+          - unique
+
+      - name: description
+        description: >
+          Raw job description text, guaranteed non-null and non-blank
+          (whitespace-only values are filtered out upstream).
+        tests:
+          - not_null

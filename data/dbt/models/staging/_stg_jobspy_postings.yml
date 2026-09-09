@@ -19,14 +19,12 @@ models:
         tests: [not_null]
       - name: description
         description: "(text) Explanation of the job, as advertised. This is a long text field."
-
       - name: location_display_name
         description: >
           (string) Raw display name for the location as sent by JobSpy, often 'City, State/Province'.
         tests: [not_null]
       - name: is_remote
         description: "(boolean) Flag indicating if the job allows full remote work."
-
       - name: source_site
         description: "(string) Underlying job board platform (e.g., linkedin, indeed, glassdoor, zip_recruiter)."
       - name: job_type
@@ -37,28 +35,10 @@ models:
         description: "(string) Industry sector of the hiring company."
       - name: emails
         description: "(array<string>) Contact emails extracted directly from the posting."
-
       - name: salary_min
         description: "(float / double) Minimum salary for the job, if available."
       - name: salary_max
         description: "(float / double) Maximum salary for the job, if available."
-      - name: contract_type_from_desc
-        description: "(string) Contract type extracted by LLM ('full_time', 'part_time', 'unknown')."
-      - name: seniority_level
-        description: "(string) Seniority level extracted by LLM ('junior', 'mid', 'senior', 'unknown')."
-      - name: posting_language
-        description: "(string) Language the job posting is written in."
-      - name: required_language
-        description: "(string) Primary language required for applicants."
-      - name: salary_per_hour
-        description: "(float / double) Pure numeric hourly salary rate extracted from description by LLM (dot-decimal), if available."
-      - name: weekly_hours
-        description: "(string) Weekly working hours or range extracted by LLM (e.g., '16-18', '32-40', '38')."
-      - name: skills
-        description: "(array<string>) List of technical skills extracted by LLM."
-      - name: tasks
-        description: "(array<string>) List of core responsibilities extracted by LLM."
-
       - name: created
         description: "(timestamp) Timestamp the posting was created at the source."
         tests: [not_null]

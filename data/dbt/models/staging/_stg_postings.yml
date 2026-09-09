@@ -46,32 +46,7 @@ models:
         description: "(text) Full job description text."
         tests:
           - not_null
-
-      # --- LLM Enriched Fields ---
-      - name: contract_type_from_desc
-        description: "(string) Contract type inferred by LLM ('full_time', 'part_time', 'unknown')."
-
-      - name: seniority_level
-        description: "(string) Seniority level inferred by LLM ('junior', 'mid', 'senior', 'unknown')."
-
-      - name: posting_language
-        description: "(string) Language the job posting is written in, detected by LLM."
-
-      - name: required_language
-        description: "(string) Primary applicant language required, detected by LLM."
-
-      - name: salary_per_hour
-        description: "(float / double) Pure numeric hourly salary rate extracted by LLM, if available."
-
-      - name: weekly_hours
-        description: "(string) Weekly working hours range extracted by LLM (e.g. '32-40')."
-
-      - name: skills
-        description: "(array<string>) List of technical skills extracted by LLM."
-
-      - name: tasks
-        description: "(array<string>) List of core responsibilities extracted by LLM."
-
+          
       # --- Financials & Work Setup ---
       - name: salary_min
         description: "(float / double) Minimum salary for the job, if available."
