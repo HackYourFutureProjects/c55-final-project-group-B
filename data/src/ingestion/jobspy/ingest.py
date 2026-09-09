@@ -10,14 +10,6 @@ from .models import JobSpyPosting
 
 logger = logging.getLogger(__name__)
 
-"""TECH_ROLES = [
-    "data engineer",
-    "software engineer",
-    "data analyst",
-    "data scientist",
-    "devops engineer",
-]"""
-
 TECH_ROLES = [
     # Data & AI / ML
     "data engineer",

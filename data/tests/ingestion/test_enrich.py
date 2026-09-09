@@ -15,6 +15,7 @@ from src.ingestion.enrich import (
     process_single_batch,
 )
 
+
 def canned_response(overrides_by_index):
     """One canned model answer: {"0": {...}, "1": {...}, ...}."""
     return json.dumps({str(i): attrs for i, attrs in overrides_by_index.items()})
