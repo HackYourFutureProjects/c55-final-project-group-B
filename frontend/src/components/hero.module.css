@@ -1,7 +1,22 @@
 .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   border-bottom: 1px solid var(--highlight-high);
   padding-block: 72px 48px;
   text-align: center;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/spark.svg") no-repeat;
+  background-size: 700px;
+  background-position: right 80px top -20px;
+  opacity: 0.33;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .title {
