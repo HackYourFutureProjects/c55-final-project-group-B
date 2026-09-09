@@ -1,0 +1,13 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.intro h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1.15;
+}
