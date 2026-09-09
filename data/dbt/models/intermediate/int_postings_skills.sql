@@ -1,5 +1,5 @@
 with
-    staging as (select job_id, skills from {{ ref("stg_postings") }}),
+    staging as (select job_id, skills from {{ ref("stg_postings") }}), --change
     exploded as (
         select job_id, lower(trim(skill_element)) as skill_name
         from staging

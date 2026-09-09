@@ -7,6 +7,7 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 
+
 # Parent landing path (no source folder). Staging models append their source
 # name, e.g. {{ var("landing_path") }}/postings, so a second source is another
 # staging model on the same parent rather than a new LANDING_PATH. Set
@@ -69,6 +70,9 @@ models:
     # warehouse but leaves you nothing to inspect when a number is off. While
     # you are learning, being able to select from it is worth more.
     intermediate:
+      int_postings_extracted_attributes:
+        +secret_scope: team_b
+        +llm_model: cheap
       +materialized: view
     marts:
       +materialized: table
@@ -80,7 +84,7 @@ models:
       # See ../optional/python_model/README.md.
       fct_title_discipline:
         # Off until you turn it on. Key is already in Databricks scope team_b.
-        +enabled: true
+        +enabled: false
         +secret_scope: team_b
         # LiteLLM aliases: cheap | medium | strong. Start on cheap.
         +llm_model: cheap
