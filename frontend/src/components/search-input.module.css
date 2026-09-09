@@ -1,0 +1,17 @@
+.input {
+  flex: 1;
+  background-color: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  border: none;
+  padding: 4px;
+}
+
+.input::placeholder {
+  color: var(--subtle);
+}
+
+.input:focus {
+  outline: none;
+}

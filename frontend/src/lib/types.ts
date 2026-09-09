@@ -1,4 +1,12 @@
 // Mirrors the backend's JobSummaryDto returned by GET /api/jobs.
+export type JobPage = {
+  items: Job[];
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export type Job = {
   jobId: string;
   title: string;

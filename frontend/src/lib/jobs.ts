@@ -29,6 +29,17 @@ export async function getJobTitleCount(): Promise<number | null> {
   }
 }
 
+export async function getJobTitles(): Promise<string[]> {
+  try {
+    const res = await fetch(`${BACKEND_API_URL}/api/job-titles`);
+    if (!res.ok) return [];
+    const titles: string[] = await res.json();
+    return titles;
+  } catch {
+    return [];
+  }
+}
+
 export async function getLocations(): Promise<Locations> {
   try {
     const [citiesRes, provincesRes] = await Promise.all([

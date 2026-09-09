@@ -3,20 +3,20 @@ import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
-import type { Job } from "@/lib/types";
+import type { Job, JobPage } from "@/lib/types";
 import styles from "./page.module.css";
 
 type JobFilters = {
-  jobTitle?: string;
+  search?: string;
   city?: string;
   province?: string;
 };
 
-async function getJobs(filters: JobFilters): Promise<Job[]> {
+async function getJobs(filters: JobFilters): Promise<JobPage> {
   const params = new URLSearchParams();
 
-  if (filters.jobTitle) {
-    params.set("jobTitle", filters.jobTitle);
+  if (filters.search) {
+    params.set("search", filters.search);
   }
 
   if (filters.city) {
@@ -35,8 +35,8 @@ async function getJobs(filters: JobFilters): Promise<Job[]> {
     throw new Error(`Could not load jobs: (Error ${res.status})`);
   }
 
-  const jobs: Job[] = await res.json();
-  return jobs;
+  const page: JobPage = await res.json();
+  return page;
 }
 
 export default async function JobsPage({
@@ -46,8 +46,12 @@ export default async function JobsPage({
 }) {
   const { q, location, jobId } = await searchParams;
   const { city, province } = parseLocation(location);
+  const { items: jobs, totalItems } = await getJobs({
+    search: q,
+    city,
+    province,
+  });
 
-  const jobs = await getJobs({ jobTitle: q, city, province });
   const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
 
   function hrefFor(id: string) {
@@ -59,7 +63,7 @@ export default async function JobsPage({
   }
 
   const place = city || province;
-  const count = jobs.length;
+  const count = totalItems;
   const hasResults = count > 0;
 
   const subtitle = (
