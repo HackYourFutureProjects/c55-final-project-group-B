@@ -64,7 +64,7 @@ const MEMBERS: Member[] = [
 export default function TeamSection() {
   return (
     <section className={styles.section}>
-      <div className="container">
+      <div className={`container ${styles.inner}`}>
         <h2 className={styles.heading}>Meet the Team</h2>
         <p className={styles.intro}>
           Five trainees across frontend, backend, and data, guided throughout by

@@ -132,7 +132,7 @@ function TrackCard({ track, color, technology }: Track) {
 export default function TechStack() {
   return (
     <section className={styles.section}>
-      <div className="container">
+      <div className={`container ${styles.inner}`}>
         <h2 className={styles.heading}>Tech Stack</h2>
         <p>
           Three tracks, one app: the site you're reading, the API behind it all,

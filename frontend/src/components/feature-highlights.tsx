@@ -64,7 +64,7 @@ const FEATURES: Feature[] = [
 export default function FeatureHighlights() {
   return (
     <section className={styles.section}>
-      <div className="container">
+      <div className={`container ${styles.inner}`}>
         <h2 className={styles.heading}>Feature Set</h2>
         <p>
           Everything Flint can do, in one place. Search for roles, save the good

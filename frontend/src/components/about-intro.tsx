@@ -3,8 +3,8 @@ import styles from "./about-intro.module.css";
 export default function AboutIntro() {
   return (
     <section className={styles.intro}>
-      <div className="container">
-        <h1>About Flint</h1>
+      <div className={`container ${styles.inner}`}>
+        <h1 className={styles.heading}>About Flint</h1>
         <p>
           Flint is a job search platform based in the Netherlands, built by five
           trainees for our final project. As we're all navigating the job market

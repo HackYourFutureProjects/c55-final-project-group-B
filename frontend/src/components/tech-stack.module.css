@@ -1,9 +1,13 @@
 .section {
+  padding-block: var(--section-padding);
+  background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
   display: flex;
   flex-direction: column;
-  background-color: var(--highlight-low);
-  padding-block: var(--section-padding);
-  border-bottom: 1px solid var(--highlight-high);
+  gap: 16px;
 }
 
 .heading {
