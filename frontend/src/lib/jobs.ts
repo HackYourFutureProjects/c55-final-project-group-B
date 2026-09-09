@@ -5,6 +5,8 @@ type Locations = {
   provinces: string[];
 };
 
+export const JOBS_PAGE_SIZE = 10;
+
 const formatCount = new Intl.NumberFormat("en-NL");
 
 export async function getJobCount(): Promise<string | null> {

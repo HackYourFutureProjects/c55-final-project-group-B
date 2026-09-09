@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
 import type { JobPage } from "@/lib/types";
+import { JOBS_PAGE_SIZE } from "@/lib/jobs";
 import styles from "./page.module.css";
 
 type JobFilters = {
@@ -27,10 +28,13 @@ async function getJobs(filters: JobFilters): Promise<JobPage> {
     params.set("province", filters.province);
   }
 
+  params.set("page", "0");
+  params.set("size", String(JOBS_PAGE_SIZE));
+
   const queryString = params.toString();
   const url = `${BACKEND_API_URL}/api/jobs`;
 
-  const res = await fetch(`${url}${queryString ? `?${queryString}` : ""}`);
+  const res = await fetch(`${url}?${queryString}`);
   if (!res.ok) {
     throw new Error(`Could not load jobs: (Error ${res.status})`);
   }
@@ -46,7 +50,11 @@ export default async function JobsPage({
 }) {
   const { q, location, jobId } = await searchParams;
   const { city, province } = parseLocation(location);
-  const { items: jobs, totalItems } = await getJobs({
+  const {
+    items: jobs,
+    totalItems,
+    totalPages,
+  } = await getJobs({
     search: q,
     city,
     province,
