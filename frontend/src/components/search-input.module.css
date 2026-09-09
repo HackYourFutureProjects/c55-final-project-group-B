@@ -51,9 +51,8 @@
   cursor: pointer;
 }
 
-.option:hover {
+.option:hover,
+.option.active {
   background-color: var(--overlay);
   color: var(--pine);
-  border-top: 1px solid var(--highlight-high);
-  border-bottom: 1px solid var(--highlight-high);
 }
