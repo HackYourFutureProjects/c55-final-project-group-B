@@ -27,6 +27,8 @@
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
+  --section-padding: 64px;
+  --inner-padding: 32px;
 }
 
 *,
