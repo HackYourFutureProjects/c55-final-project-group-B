@@ -1,0 +1,69 @@
+.section {
+  color: var(--base);
+  background-color: var(--pine);
+  border-bottom: 1px solid var(--highlight-high);
+  padding-block: var(--section-padding);
+  text-align: center;
+}
+
+.section :focus-visible {
+  outline-color: var(--surface);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+}
+
+.message {
+  font-size: 1.15rem;
+  color: var(--highlight-low);
+}
+
+.links {
+  display: flex;
+  margin-top: var(--inner-padding);
+  gap: 16px;
+  font-weight: 600;
+  align-content: center;
+  justify-content: center;
+}
+
+.primary,
+.secondary {
+  min-width: 10rem;
+}
+
+.primary {
+  padding: 10px 24px;
+  color: var(--pine);
+  background-color: var(--surface);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard);
+  border-radius: var(--radius);
+  transition: all 150ms ease-in-out;
+}
+
+.primary:hover {
+  translate: -1px -1px;
+  transition: all 150ms ease-in-out;
+}
+
+.primary:active {
+  translate: 1px 1px;
+  box-shadow: none;
+  transition: all 150ms ease-in-out;
+}
+
+.secondary {
+  padding: 10px 24px;
+  color: var(--surface);
+  background-color: transparent;
+  border: 1px solid var(--surface);
+  border-radius: var(--radius);
+  transition: all 150ms ease;
+}
+
+.secondary:hover {
+  background-color: color-mix(in srgb, var(--surface) 15%, transparent);
+}
