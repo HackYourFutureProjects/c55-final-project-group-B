@@ -25,7 +25,7 @@
   --transition-shadow: box-shadow 250ms ease;
   --transition-shadow-sm: box-shadow 150ms ease;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-inter), ui-rounded, system-ui, sans-serif;
+  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
 }
 
