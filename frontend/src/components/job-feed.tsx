@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, useRef, type ReactNode } from "react";
 import JobResults from "./job-results";
 import { parseLocation } from "@/lib/job-filters";
 import type { Job, JobPage } from "@/lib/types";
@@ -27,6 +27,7 @@ export default function JobFeed({
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const hasMore = page + 1 < totalPages;
   const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
@@ -64,20 +65,35 @@ export default function JobFeed({
     }
   }
 
+  useEffect(() => {
+    const element = sentinelRef.current;
+    if (!element || !hasMore || isLoading) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  });
+
   const footer = (
     <div>
-      {error && <p role="alert">Could not load more jobs.</p>}
+      {error && <p role="alert">{error}</p>}
       {hasMore && (
         <button
           type="button"
           className="button-secondary"
-          aria-label="Load more jobs"
           onClick={loadMore}
           disabled={isLoading}
         >
           {isLoading ? "Loading..." : "Load more"}
         </button>
       )}
+      <div ref={sentinelRef} />
     </div>
   );
 
