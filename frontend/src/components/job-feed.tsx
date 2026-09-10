@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef, type ReactNode } from "react";
-import JobResults from "./job-results";
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { parseLocation } from "@/lib/job-filters";
-import type { Job, JobPage } from "@/lib/types";
 import { buildJobsQuery } from "@/lib/jobs";
+import type { Job, JobPage } from "@/lib/types";
+import styles from "./job-feed.module.css";
+import JobResults from "./job-results";
 
 type JobFeedProps = {
   initialJobs: Job[];
@@ -74,25 +76,43 @@ export default function JobFeed({
           loadMore();
         }
       },
-      { rootMargin: "400px 0px" },
+      { rootMargin: "300px 0px" },
     );
     observer.observe(element);
     return () => observer.disconnect();
   });
 
-  const footer = (
-    <div>
-      {error && <p role="alert">{error}</p>}
-      {hasMore && (
-        <button
-          type="button"
-          className="button-secondary"
-          onClick={loadMore}
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "Load more"}
+  function renderStatus() {
+    if (isLoading)
+      return (
+        <CircleNotchIcon
+          className={styles.spinner}
+          size={32}
+          weight="duotone"
+          aria-hidden="true"
+        />
+      );
+    if (error)
+      return (
+        <>
+          <p role="alert">{error}</p>
+          <button type="button" className="button-secondary" onClick={loadMore}>
+            {"Try again"}
+          </button>
+        </>
+      );
+    if (hasMore)
+      return (
+        <button type="button" className="button-secondary" onClick={loadMore}>
+          {"Load more"}
         </button>
-      )}
+      );
+    return null;
+  }
+
+  const footer = (
+    <div className={styles.footer}>
+      {renderStatus()}
       <div ref={sentinelRef} />
     </div>
   );

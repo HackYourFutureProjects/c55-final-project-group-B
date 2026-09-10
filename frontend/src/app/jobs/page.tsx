@@ -1,11 +1,11 @@
+import JobFeed from "@/components/job-feed";
 import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
-import type { JobPage } from "@/lib/types";
 import { buildJobsQuery, type JobFilters } from "@/lib/jobs";
+import type { JobPage } from "@/lib/types";
 import styles from "./page.module.css";
-import JobFeed from "@/components/job-feed";
 
 async function getJobs(filters: JobFilters): Promise<JobPage> {
   const queryString = buildJobsQuery(filters);
