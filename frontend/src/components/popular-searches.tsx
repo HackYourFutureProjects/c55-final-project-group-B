@@ -25,7 +25,7 @@ export default function PopularSearches() {
         {cities.map((city) => (
           <li key={city}>
             <Link
-              href={{ pathname: "/location", query: { q: city } }}
+              href={{ pathname: "/jobs", query: { location: `city:${city}` } }}
               className={styles.chip}
             >
               <MapPinIcon size={15} weight="duotone" aria-hidden="true" />{" "}
