@@ -19,3 +19,14 @@ models:
         description: "Cleaned, lowercased skill name associated with the posting."
         tests:
           - not_null
+
+      - name: source_system
+        description: "System from which the skill data originates."
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: "Timestamp of when the record was ingested."
+        tests:
+          - not_null
+             
