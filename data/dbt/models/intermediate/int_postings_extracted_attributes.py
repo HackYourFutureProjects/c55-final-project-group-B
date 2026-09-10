@@ -229,7 +229,8 @@ def model(dbt, session):
     extracted = extract_descriptions(descriptions, api_key, model_name)
 
     output_rows = [
-        _to_output_row(job_ids[index], extracted[index]) for index in range(len(extracted))
+        _to_output_row(job_ids[index], extracted[index])
+        for index in range(len(extracted))
     ]
 
     return session.createDataFrame(output_rows, OUTPUT_SCHEMA)
