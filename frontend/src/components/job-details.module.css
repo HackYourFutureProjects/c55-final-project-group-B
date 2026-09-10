@@ -68,5 +68,32 @@
   min-height: 0;
   overflow-y: auto;
   padding: 12px;
-  white-space: pre-line;
+}
+
+.description > * + * {
+  margin-top: 12px;
+}
+
+.description h1,
+.description h2,
+.description h3,
+.description h4 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-top: 20px;
+}
+
+.description ul,
+.description ol {
+  padding-left: 1.25rem;
+}
+
+.description li + li {
+  margin-top: 4px;
+}
+
+.description a {
+  color: var(--pine);
+  text-decoration: underline;
 }
