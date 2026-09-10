@@ -3,9 +3,7 @@ with
         select job_id, source_system, ingested_at from {{ ref("stg_postings") }}
     ),
 
-    staging as (
-        select * from {{ ref("int_postings_extracted_attributes") }}
-    ),
+    staging as (select * from {{ ref("int_postings_extracted_attributes") }}),
 
     joined as (
         select
@@ -19,10 +17,7 @@ with
 
     exploded as (
         select
-            job_id,
-            source_system,
-            ingested_at,
-            lower(trim(skill_element)) as skill_name
+            job_id, source_system, ingested_at, lower(trim(skill_element)) as skill_name
         from joined
         lateral view explode(skills) as skill_element
     )
