@@ -1,4 +1,12 @@
 import { BACKEND_API_URL } from "./config";
+import { Job } from "./types";
+
+export type JobFilters = {
+  search?: string;
+  city?: string;
+  province?: string;
+  page: number;
+};
 
 type Locations = {
   cities: string[];
@@ -8,6 +16,27 @@ type Locations = {
 export const JOBS_PAGE_SIZE = 10;
 
 const formatCount = new Intl.NumberFormat("en-NL");
+
+export function buildJobsQuery(filters: JobFilters): string {
+  const params = new URLSearchParams();
+
+  if (filters.search) {
+    params.set("search", filters.search);
+  }
+
+  if (filters.city) {
+    params.set("city", filters.city);
+  }
+
+  if (filters.province) {
+    params.set("province", filters.province);
+  }
+
+  params.set("page", String(filters.page));
+  params.set("size", String(JOBS_PAGE_SIZE));
+
+  return params.toString();
+}
 
 export async function getJobCount(): Promise<string | null> {
   try {

@@ -1,38 +1,14 @@
-import JobResults from "@/components/job-results";
 import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
 import type { JobPage } from "@/lib/types";
-import { JOBS_PAGE_SIZE } from "@/lib/jobs";
+import { buildJobsQuery, type JobFilters } from "@/lib/jobs";
 import styles from "./page.module.css";
 import JobFeed from "@/components/job-feed";
 
-type JobFilters = {
-  search?: string;
-  city?: string;
-  province?: string;
-};
-
 async function getJobs(filters: JobFilters): Promise<JobPage> {
-  const params = new URLSearchParams();
-
-  if (filters.search) {
-    params.set("search", filters.search);
-  }
-
-  if (filters.city) {
-    params.set("city", filters.city);
-  }
-
-  if (filters.province) {
-    params.set("province", filters.province);
-  }
-
-  params.set("page", "0");
-  params.set("size", String(JOBS_PAGE_SIZE));
-
-  const queryString = params.toString();
+  const queryString = buildJobsQuery(filters);
   const url = `${BACKEND_API_URL}/api/jobs`;
 
   const res = await fetch(`${url}?${queryString}`);
@@ -47,7 +23,11 @@ async function getJobs(filters: JobFilters): Promise<JobPage> {
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; location?: string; jobId?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    location?: string;
+    jobId?: string;
+  }>;
 }) {
   const { q, location, jobId } = await searchParams;
   const { city, province } = parseLocation(location);
@@ -59,6 +39,7 @@ export default async function JobsPage({
     search: q,
     city,
     province,
+    page: 0,
   });
 
   const place = city || province;
