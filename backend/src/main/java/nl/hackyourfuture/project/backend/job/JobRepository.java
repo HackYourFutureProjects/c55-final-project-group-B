@@ -29,15 +29,15 @@ public class JobRepository {
                                         int size) {
 
         String sql = """
-            SELECT job_id, title, company_name, location_city, location_province,
-                   description, latitude, longitude, created, redirect_url, ingested_at,
-                   salary_min, salary_max, salary_display, salary_per_hour,
-                   employment_type
-            FROM analytics.fct_postings
-            " + JOB_FILTER_CONDITIONS + "
-            ORDER BY created DESC
-            LIMIT :size
-            OFFSET :offset
+        SELECT job_id, title, company_name, location_city, location_province,
+               description, latitude, longitude, created, redirect_url, ingested_at,
+               salary_min, salary_max, salary_display, salary_per_hour,
+               employment_type
+        FROM analytics.fct_postings
+        """ + JOB_FILTER_CONDITIONS + """
+        ORDER BY created DESC
+        LIMIT :size
+        OFFSET :offset
         """;
 
         return jdbcClient.sql(sql)
