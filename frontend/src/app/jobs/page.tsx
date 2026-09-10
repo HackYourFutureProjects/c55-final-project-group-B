@@ -6,6 +6,7 @@ import { parseLocation } from "@/lib/job-filters";
 import type { JobPage } from "@/lib/types";
 import { JOBS_PAGE_SIZE } from "@/lib/jobs";
 import styles from "./page.module.css";
+import JobFeed from "@/components/job-feed";
 
 type JobFilters = {
   search?: string;
@@ -60,16 +61,6 @@ export default async function JobsPage({
     province,
   });
 
-  const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
-
-  function hrefFor(id: string) {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (location) params.set("location", location);
-    params.set("jobId", id);
-    return `/jobs?${params}`;
-  }
-
   const place = city || province;
   const count = totalItems;
   const hasResults = count > 0;
@@ -93,10 +84,12 @@ export default async function JobsPage({
       <section className={styles.results}>
         <div className="container">
           {hasResults ? (
-            <JobResults
-              jobs={jobs}
-              selectedJob={selectedJob}
-              hrefFor={hrefFor}
+            <JobFeed
+              initialJobs={jobs}
+              totalPages={totalPages}
+              jobId={jobId}
+              q={q}
+              location={location}
               subtitle={subtitle}
             />
           ) : (
