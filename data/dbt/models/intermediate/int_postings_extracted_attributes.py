@@ -32,7 +32,7 @@ ENDPOINT = (
     "https://app-litellm-team-d.blacksky-9263d113.westeurope.azurecontainerapps.io"
     "/v1/chat/completions"
 )
-MODEL = "cheap"
+MODEL = "medium"
 BATCH_SIZE = 10
 DESC_MAX_CHARS = 800
 HTTP_TIMEOUT = 300
