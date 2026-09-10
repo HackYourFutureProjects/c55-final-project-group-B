@@ -1,15 +1,29 @@
 .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   border-bottom: 1px solid var(--highlight-high);
   padding-block: 72px 48px;
   text-align: center;
 }
 
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/spark.svg") no-repeat;
+  background-size: 700px;
+  background-position: right 80px top -20px;
+  opacity: 0.33;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .title {
   font-family: var(--font-display);
-  font-size: clamp(38px, 6vw, 56px);
+  font-size: 4rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+  line-height: 1;
 }
 
 .accent {
@@ -30,20 +44,4 @@
 
 .search {
   margin-top: 36px;
-}
-
-.note {
-  margin-top: 24px;
-  color: var(--subtle);
-  font-size: 15px;
-}
-
-.noteLink {
-  color: var(--pine);
-  font-weight: 600;
-  text-underline-offset: 4px;
-}
-
-.noteLink:hover {
-  text-decoration: underline;
 }

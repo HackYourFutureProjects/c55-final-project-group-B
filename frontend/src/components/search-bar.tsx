@@ -1,29 +1,6 @@
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/ssr";
-import { BACKEND_API_URL } from "@/lib/config";
+import { getLocations } from "@/lib/jobs";
 import styles from "./search-bar.module.css";
-
-type Locations = {
-  cities: string[];
-  provinces: string[];
-};
-
-async function getLocations(): Promise<Locations> {
-  try {
-    const [citiesRes, provincesRes] = await Promise.all([
-      fetch(`${BACKEND_API_URL}/api/locations/cities`),
-      fetch(`${BACKEND_API_URL}/api/locations/provinces`),
-    ]);
-    if (!citiesRes.ok || !provincesRes.ok) {
-      throw new Error("Could not get locations.");
-    }
-    return {
-      cities: await citiesRes.json(),
-      provinces: await provincesRes.json(),
-    };
-  } catch {
-    return { cities: [], provinces: [] };
-  }
-}
 
 export async function SearchBar({
   action = "/jobs",

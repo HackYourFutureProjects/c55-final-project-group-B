@@ -5,14 +5,9 @@
 
 .grid {
   display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 32px;
   padding-block: 44px;
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 .feature {
@@ -27,24 +22,13 @@
 
 .icon {
   color: var(--base);
-  display: block;
+  display: grid;
+  place-items: center;
   width: 36px;
   height: 36px;
   border: 1px solid var(--text);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-hard-sm);
-}
-
-.swatchPine {
-  background-color: var(--pine);
-}
-
-.swatchIris {
-  background-color: var(--iris);
-}
-
-.swatchRose {
-  background-color: var(--rose);
+  box-shadow: var(--shadow-soft-sm);
 }
 
 .title {
@@ -59,4 +43,20 @@
   color: var(--subtle);
   font-size: 14.5px;
   line-height: 1.6;
+}
+
+.swatchPine {
+  background-color: var(--pine);
+}
+
+.swatchIris {
+  background-color: var(--iris);
+}
+
+.swatchLove {
+  background-color: var(--love);
+}
+
+.swatchGold {
+  background-color: var(--gold);
 }

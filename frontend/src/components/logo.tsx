@@ -5,13 +5,15 @@ import styles from "./logo.module.css";
 export function Logo() {
   return (
     <Link href="/" className={styles.title} aria-label="Flint — home">
-      <Image
-        width={48}
-        height={48}
-        src="/logo.svg"
-        alt=""
-        className={styles.logo}
-      />
+      <span className={styles.image}>
+        <Image
+          width={48}
+          height={48}
+          src="/logo.svg"
+          alt=""
+          className={styles.logo}
+        />
+      </span>
       flint
     </Link>
   );
