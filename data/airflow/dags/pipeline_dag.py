@@ -16,6 +16,11 @@ runs. Secrets never do: each is fetched from Key Vault inside the task that
 needs it, using the machine's identity. See data/README.md, "What runs in
 Airflow".
 
+Optional one-off dbt overrides: set `DBT_BUILD_EXTRA_ARGS` in Admin -> Variables
+before you trigger a run (e.g. `--full-refresh --select int_postings_extracted_attributes`),
+then clear the Variable back to empty when you are done. Scheduled runs with no
+Variable set keep the default `dbt build`.
+
 The dev integration DAG (`final_project_pipeline_dev`) lives in
 `pipeline_dag_dev.py` on the team VM only.
 """
@@ -25,6 +30,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -53,6 +59,13 @@ DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/airflow/include/dbt")
 # Bump the two together. uvx, because the Airflow image ships a newer Python
 # than stable dbt-core supports.
 DBT_RUNNER = "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
+
+# Optional Admin -> Variables override for one-off runs. Leave unset for the
+# default `dbt build`. Example: --full-refresh --select int_postings_extracted_attributes
+DBT_BUILD_EXTRA_ARGS_VAR = "DBT_BUILD_EXTRA_ARGS"
+DBT_EXTRA_ARGS_PATTERN = re.compile(r"^[\w\s\-+.:]+$")
+DBT_BUILD_DEFAULT_TIMEOUT = 1800
+DBT_BUILD_FULL_REFRESH_TIMEOUT = 5400
 
 
 @dataclass(frozen=True)
@@ -99,6 +112,31 @@ PROD_PROFILE = PipelineProfile(
 )
 
 
+def optional_setting(name: str, default: str = "") -> str:
+    """Like setting(), but returns default when the Variable is absent."""
+    value = Variable.get(name, default=None) or os.environ.get(name) or default
+    return (value or "").strip()
+
+
+def dbt_build_extra_args() -> str:
+    """Extra flags appended to `dbt build`, from DBT_BUILD_EXTRA_ARGS if set."""
+    raw = optional_setting(DBT_BUILD_EXTRA_ARGS_VAR)
+    if not raw:
+        return ""
+    if not DBT_EXTRA_ARGS_PATTERN.match(raw):
+        raise RuntimeError(
+            f"{DBT_BUILD_EXTRA_ARGS_VAR} contains invalid characters. "
+            "Use dbt flags only, e.g. --full-refresh --select my_model"
+        )
+    return raw
+
+
+def dbt_build_timeout(extra_args: str) -> int:
+    if "--full-refresh" in extra_args:
+        return DBT_BUILD_FULL_REFRESH_TIMEOUT
+    return DBT_BUILD_DEFAULT_TIMEOUT
+
+
 def dbt_command() -> str:
     """The dbt command, aimed at whoever is running it.
 
@@ -108,11 +146,16 @@ def dbt_command() -> str:
     principal. Hardcoding `--target prod` made the documented local run fail
     with "Env var required but not provided: 'DATABRICKS_CLIENT_ID'", asking a
     laptop for a credential it is deliberately not allowed to have.
+
+    Admin -> Variables `DBT_BUILD_EXTRA_ARGS` inserts flags after `dbt build`
+    and before `--project-dir` (empty Variable = default build).
     """
     target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
+    extra = dbt_build_extra_args()
+    extra_suffix = f" {extra}" if extra else ""
     deps = f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     build = (
-        f"{DBT_RUNNER} build --target {target} "
+        f"{DBT_RUNNER} build --target {target}{extra_suffix} "
         f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     )
     return f"{deps} && {build}"
@@ -276,6 +319,10 @@ def make_pipeline(profile: PipelineProfile):
             """Build the models and run the tests."""
             import subprocess
 
+            extra = dbt_build_extra_args()
+            if extra:
+                logger.info("%s override active: %s", DBT_BUILD_EXTRA_ARGS_VAR, extra)
+
             result = subprocess.run(
                 dbt_command(),
                 shell=True,
@@ -283,7 +330,7 @@ def make_pipeline(profile: PipelineProfile):
                 env={**os.environ, **databricks_environment(profile)},
                 text=True,
                 capture_output=True,
-                timeout=1800,
+                timeout=dbt_build_timeout(extra),
             )
             print(result.stdout[-8000:])
             if result.returncode != 0:
