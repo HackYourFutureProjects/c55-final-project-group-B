@@ -1,4 +1,4 @@
-.section {
+.intro {
   padding-block: var(--section-padding);
   background-color: var(--base);
   border-bottom: 1px solid var(--highlight-high);
@@ -12,11 +12,6 @@
 
 .heading {
   font-family: var(--font-display);
-  font-size: 1.75rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  font-size: 2.5rem;
+  line-height: 1.15;
 }

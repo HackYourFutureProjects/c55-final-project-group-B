@@ -64,24 +64,26 @@ const FEATURES: Feature[] = [
 export default function FeatureHighlights() {
   return (
     <section className={styles.section}>
-      <h2 className={styles.heading}>Feature Set</h2>
-      <p>
-        Everything Flint can do, in one place. Search for roles, save the good
-        ones, and let your profile do some of the looking for you.
-      </p>
-      <ul className={styles.list}>
-        {FEATURES.map((feature) => (
-          <li key={feature.title} className={styles.item}>
-            <div className={styles.top}>
-              <span aria-hidden className={`${styles.icon} ${feature.color}`}>
-                {feature.icon}
-              </span>
-              <h3 className={styles.title}>{feature.title}</h3>
-            </div>
-            <p className={styles.description}>{feature.description}</p>
-          </li>
-        ))}
-      </ul>
+      <div className={`container ${styles.inner}`}>
+        <h2 className={styles.heading}>Feature Set</h2>
+        <p>
+          Everything Flint can do, in one place. Search for roles, save the good
+          ones, and let your profile do some of the looking for you.
+        </p>
+        <ul className={styles.list}>
+          {FEATURES.map((feature) => (
+            <li key={feature.title} className={styles.item}>
+              <div className={styles.top}>
+                <span aria-hidden className={`${styles.icon} ${feature.color}`}>
+                  {feature.icon}
+                </span>
+                <h3 className={styles.title}>{feature.title}</h3>
+              </div>
+              <p className={styles.description}>{feature.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 .section {
   padding-block: var(--inner-padding);
-  background-color: var(--surface);
+  background-color: var(--base);
   border-bottom: 1px solid var(--highlight-high);
 }
 

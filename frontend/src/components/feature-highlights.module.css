@@ -1,7 +1,15 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  padding-block: var(--section-padding);
+  background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .heading {
@@ -18,6 +26,7 @@
 }
 
 .item {
+  background-color: var(--surface);
   padding: 12px;
   border: 1px solid var(--text);
   border-radius: var(--radius);
