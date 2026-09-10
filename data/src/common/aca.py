@@ -206,7 +206,7 @@ def fetch_console_logs(
             )
         except (
             Exception
-        ) as exc:  # noqa: BLE001 — best-effort; any failure just skips logs
+        ) as exc:
             logger.warning("Log Analytics query failed for %s: %s", execution, exc)
             lines = []
         if lines:
@@ -287,7 +287,7 @@ def start_and_wait(
             )
         except (
             Exception
-        ) as exc:  # noqa: BLE001 — best-effort; job wait continues without logs
+        ) as exc:
             logger.warning(
                 "Could not resolve Log Analytics workspace for %s: %s", team, exc
             )
