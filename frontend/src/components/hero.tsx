@@ -1,6 +1,7 @@
 import { SearchBar } from "@/components/search-bar";
 import styles from "./hero.module.css";
 import HeroNote from "./hero-note";
+import PopularSearches from "./popular-searches";
 
 export function Hero() {
   return (
@@ -16,6 +17,7 @@ export function Hero() {
         <div className={styles.search}>
           <SearchBar />
         </div>
+        <PopularSearches />
         <HeroNote />
       </div>
     </section>

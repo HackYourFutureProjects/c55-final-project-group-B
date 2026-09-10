@@ -1,6 +1,7 @@
 import { BinocularsIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./no-search-results.module.css";
+import PopularSearches from "./popular-searches";
 
 export function NoSearchResults({
   q,
@@ -38,6 +39,7 @@ export function NoSearchResults({
       <Link href={clearHref} className="button">
         Clear search
       </Link>
+      <PopularSearches />
     </div>
   );
 }
