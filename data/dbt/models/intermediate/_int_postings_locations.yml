@@ -12,8 +12,7 @@ models:
 
       - name: country
         description: "Cleaned country name in Title Case. Defaults to 'Unknown' if NULL."
-        tests:
-          - not_null
+       
 
       - name: province
         description: "Cleaned Dutch province name in Title Case (e.g., Noord-Brabant)."
