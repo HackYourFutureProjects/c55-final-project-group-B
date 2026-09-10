@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int_postings_skills
+    description: >
+      Explodes the `skills` array produced by int_postings_extracted_attributes
+      into one row per (job_id, skill_name), joined back to posting metadata
+      from stg_postings. Skill names are lowercased and trimmed, and rows with
+      null, empty, or implausibly short/long skill names (outside 2-35 chars)
+      are filtered out. Deduplicated via SELECT DISTINCT.
+
+    columns:
+      - name: job_id
+        description: Unique identifier for the job posting.
+        tests:
+          - not_null
+
+      - name: source_system
+        description: The source system the job posting originated from (from stg_postings).
+        tests:
+          - not_null
+
+      - name: skill_name
+        description: >
+          A single normalized (lowercased, trimmed) skill extracted from the
+          posting's skills array. Restricted to strings between 2 and 35
+          characters in length.
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: Timestamp indicating when the source posting was ingested.
+        tests:
+          - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - job_id
+            - skill_name
