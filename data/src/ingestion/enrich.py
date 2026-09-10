@@ -2,7 +2,11 @@ import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from src.ingestion.litellm_client import DEFAULT_MODELS, completion_json, resolve_llm_config
+from src.ingestion.litellm_client import (
+    DEFAULT_MODELS,
+    completion_json,
+    resolve_llm_config,
+)
 
 logger = logging.getLogger("pipeline.enrich")
 
@@ -87,7 +91,9 @@ def process_single_batch(
                 return batch_index, validated_batch
 
         except Exception as e:  # noqa: BLE001
-            logger.warning("LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e)
+            logger.warning(
+                "LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e
+            )
 
     return batch_index, {}
 
@@ -149,7 +155,11 @@ def enrich_records(
 
     enriched_results = {}
 
-    logger.info("Processing %d batches concurrently with %d workers...", len(batches), MAX_WORKERS)
+    logger.info(
+        "Processing %d batches concurrently with %d workers...",
+        len(batches),
+        MAX_WORKERS,
+    )
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = [

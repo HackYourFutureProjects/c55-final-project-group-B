@@ -67,4 +67,6 @@ col1.metric("Rows", int(stats["row_count"][0]))
 col2.metric("Days covered", int(stats["days_covered"][0]))
 col3.metric("Last ingest", str(stats["last_ingested"][0]))
 
-st.caption("Add a chart per metric your team cares about. Keep it to what you would check at 9am.")
+st.caption(
+    "Add a chart per metric your team cares about. Keep it to what you would check at 9am."
+)

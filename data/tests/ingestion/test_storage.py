@@ -99,7 +99,9 @@ def test_the_container_is_chosen_by_the_caller(monkeypatch):
     monkeypatch.setattr(storage, "BlobServiceClient", FakeService)
     monkeypatch.setattr(storage, "DefaultAzureCredential", lambda: "credential")
 
-    storage.land_raw_json("sthyffpteama", "alex/postings/x.json", [{"a": 1}], container="dev")
+    storage.land_raw_json(
+        "sthyffpteama", "alex/postings/x.json", [{"a": 1}], container="dev"
+    )
     assert captured["container"] == "dev"
 
 
@@ -109,7 +111,9 @@ def test_local_writes_the_same_newline_delimited_bytes(tmp_path):
     nothing about the real run."""
     records = [{"slug": "a", "title": "One"}, {"slug": "b", "title": "Two"}]
 
-    written = storage.land_local_json(tmp_path, "alex/postings/2026-08-12.json", records)
+    written = storage.land_local_json(
+        tmp_path, "alex/postings/2026-08-12.json", records
+    )
 
     destination = tmp_path / "alex" / "postings" / "2026-08-12.json"
     assert written == 2

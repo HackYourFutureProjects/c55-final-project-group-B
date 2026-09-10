@@ -52,7 +52,9 @@ DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/airflow/include/dbt")
 # dbt-core <1.10.10, so a wildcard stops resolving on the next patch release.
 # Bump the two together. uvx, because the Airflow image ships a newer Python
 # than stable dbt-core supports.
-DBT_RUNNER = "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
+DBT_RUNNER = (
+    "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
+)
 
 
 @dataclass(frozen=True)
@@ -68,7 +70,9 @@ class PipelineProfile:
     dbt_schema_var: str
     dbt_schema_default: str
     landing_path_var: str
-    landing_path_suffix: str  # landing/<volume>/<prefix> under the catalog (no source folder)
+    landing_path_suffix: (
+        str  # landing/<volume>/<prefix> under the catalog (no source folder)
+    )
     ingest_mode_default: str
     backend_pg_user_var: str
     backend_pg_user_default: str
@@ -126,7 +130,9 @@ def setting(name: str, default: str | None = None) -> str:
     """
     value = Variable.get(name, default=None) or os.environ.get(name) or default
     if value is None:
-        raise RuntimeError(f"{name} is not set. Add it in the Airflow UI under Admin -> Variables.")
+        raise RuntimeError(
+            f"{name} is not set. Add it in the Airflow UI under Admin -> Variables."
+        )
     return value
 
 
@@ -178,7 +184,9 @@ def databricks_environment(profile: PipelineProfile) -> dict[str, str]:
     return {
         **where,
         "AZURE_TENANT_ID": setting("AZURE_TENANT_ID"),
-        "DATABRICKS_CLIENT_ID": secret("DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"),
+        "DATABRICKS_CLIENT_ID": secret(
+            "DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"
+        ),
         "DATABRICKS_CLIENT_SECRET": secret(
             "DATABRICKS_CLIENT_SECRET", f"fp-databricks-client-secret-{team}"
         ),
@@ -243,7 +251,9 @@ def make_pipeline(profile: PipelineProfile):
                 landed = run()
                 return f"local ingest landed {landed} records"
 
-            job_name = setting(profile.aca_ingest_job_var, profile.aca_ingest_job_default)
+            job_name = setting(
+                profile.aca_ingest_job_var, profile.aca_ingest_job_default
+            )
             return start_job(job_name)
 
         @task
@@ -314,7 +324,8 @@ def make_pipeline(profile: PipelineProfile):
                 profile.backend_pg_user_var, profile.backend_pg_user_default
             )
             os.environ["BACKEND_PG_PUBLISH_SCHEMA"] = setting(
-                profile.backend_pg_publish_schema_var, profile.backend_pg_publish_schema_default
+                profile.backend_pg_publish_schema_var,
+                profile.backend_pg_publish_schema_default,
             )
 
             if not os.environ.get("BACKEND_PG_PASSWORD"):
@@ -322,7 +333,9 @@ def make_pipeline(profile: PipelineProfile):
                 secret_name = setting(
                     profile.backend_pg_secret_var, ""
                 ) or profile.backend_pg_secret_fallback(team)
-                os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
+                os.environ["BACKEND_PG_PASSWORD"] = secret(
+                    "BACKEND_PG_PASSWORD", secret_name
+                )
 
             return sync.run(
                 marts=[

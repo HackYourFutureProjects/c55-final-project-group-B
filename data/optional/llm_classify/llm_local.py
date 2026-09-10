@@ -125,9 +125,16 @@ def _request_chat(prompt: str, api_key: str, model: str) -> dict:
     req = urllib.request.Request(
         ENDPOINT,
         data=json.dumps(
-            {"model": model, "temperature": 0, "messages": [{"role": "user", "content": prompt}]}
+            {
+                "model": model,
+                "temperature": 0,
+                "messages": [{"role": "user", "content": prompt}],
+            }
         ).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
     )
     try:
         with urllib.request.urlopen(req, timeout=_http_timeout()) as resp:
@@ -179,7 +186,9 @@ def _parse_batch_response(
     if start == -1 or end == -1:
         raise ValueError(f"no JSON in the answer: {content[:120]!r}")
     answer = json.loads(content[start : end + 1])
-    labels = [str(answer.get(str(index), "other")).strip().lower() for index in range(size)]
+    labels = [
+        str(answer.get(str(index), "other")).strip().lower() for index in range(size)
+    ]
     if categories is None:
         return labels
     return [label if label in categories else "other" for label in labels]

@@ -53,11 +53,17 @@ def fetch_raw(url: str, params: dict, max_retries: int = 3) -> list[Any]:
                 payload = response.json()
 
                 # Adzuna wraps its list of jobs inside a 'results' key, so we pull that out
-                records = payload.get("results", payload) if isinstance(payload, dict) else payload
+                records = (
+                    payload.get("results", payload)
+                    if isinstance(payload, dict)
+                    else payload
+                )
 
                 # Double check that we actually got a list back before moving on
                 if not isinstance(records, list):
-                    raise TypeError(f"Expected a list of records, got {type(records).__name__}")
+                    raise TypeError(
+                        f"Expected a list of records, got {type(records).__name__}"
+                    )
 
                 logger.info("Received %d record(s)", len(records))
                 return records
@@ -105,7 +111,9 @@ def fetch_all_pages(
 
     # Make sure we actually have keys before trying to hit the API
     if not app_id or not app_key:
-        raise ValueError("ADZUNA_APP_ID and ADZUNA_APP_KEY environment variables must be set.")
+        raise ValueError(
+            "ADZUNA_APP_ID and ADZUNA_APP_KEY environment variables must be set."
+        )
 
     # Set up standard query parameters that Adzuna expects on every request
     params = {
@@ -181,11 +189,15 @@ def parse_records(records: list[Any]) -> tuple[list[Posting], int]:
 
             # Grab the job ID if it's a dict, otherwise fallback to a snippet of the record
             identifier = (
-                record.get("id", "<no id>") if isinstance(record, dict) else repr(record)[:40]
+                record.get("id", "<no id>")
+                if isinstance(record, dict)
+                else repr(record)[:40]
             )
 
             # Log a warning showing which record failed and how many validation errors it had
-            logger.warning("Rejected record %s: %s errors", identifier, exc.error_count())
+            logger.warning(
+                "Rejected record %s: %s errors", identifier, exc.error_count()
+            )
 
     logger.info("Parsed %d record(s), rejected %d", len(parsed), rejected)
     return parsed, rejected

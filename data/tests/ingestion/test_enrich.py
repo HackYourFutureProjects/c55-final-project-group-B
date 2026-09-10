@@ -26,7 +26,11 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
     descriptions = ["Backend role, Python, 32 hours/week", "Frontend role, React"]
     answer = canned_response(
         {
-            0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior", "skills": ["python"]},
+            0: {
+                **DEFAULT_ATTRIBUTES,
+                "seniority_level": "senior",
+                "skills": ["python"],
+            },
             1: {**DEFAULT_ATTRIBUTES, "seniority_level": "junior", "skills": ["react"]},
         }
     )
@@ -64,7 +68,9 @@ def test_the_second_model_is_tried_when_the_first_raises():
             raise TimeoutError("upstream took too long")
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior"}})
 
-    _batch_index, parsed = process_single_batch((1, ["some description"], "fake-key"), fake_call)
+    _batch_index, parsed = process_single_batch(
+        (1, ["some description"], "fake-key"), fake_call
+    )
 
     assert calls == list(MODEL_CANDIDATES)
     assert parsed["0"]["seniority_level"] == "senior"
@@ -80,7 +86,9 @@ def test_the_second_model_is_tried_when_the_first_returns_no_usable_items():
             return "{}"  # valid JSON, but nothing usable in it
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "junior"}})
 
-    _batch_index, parsed = process_single_batch((0, ["a description"], "fake-key"), fake_call)
+    _batch_index, parsed = process_single_batch(
+        (0, ["a description"], "fake-key"), fake_call
+    )
 
     assert calls == list(MODEL_CANDIDATES)
     assert parsed["0"]["seniority_level"] == "junior"
@@ -90,7 +98,9 @@ def test_all_models_failing_returns_empty_rather_than_crashing():
     def fake_call(prompt, api_key, model, **kwargs):
         raise TimeoutError("upstream took too long")
 
-    batch_index, parsed = process_single_batch((1, ["some description"], "fake-key"), fake_call)
+    batch_index, parsed = process_single_batch(
+        (1, ["some description"], "fake-key"), fake_call
+    )
 
     assert (batch_index, parsed) == (1, {})
 
@@ -101,7 +111,9 @@ def test_a_response_that_is_not_json_falls_back_rather_than_crashing():
             return "Sure, here is your answer: not actually JSON"
         return canned_response({0: {**DEFAULT_ATTRIBUTES, "seniority_level": "mid"}})
 
-    _batch_index, parsed = process_single_batch((0, ["a description"], "fake-key"), fake_call)
+    _batch_index, parsed = process_single_batch(
+        (0, ["a description"], "fake-key"), fake_call
+    )
 
     assert parsed["0"]["seniority_level"] == "mid"
 

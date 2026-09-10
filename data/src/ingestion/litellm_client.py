@@ -61,7 +61,9 @@ def load_litellm_key_from_keyvault() -> str | None:
         from azure.identity import DefaultAzureCredential
 
         token = DefaultAzureCredential().get_token(VAULT_SCOPE).token
-        request = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+        request = urllib.request.Request(
+            url, headers={"Authorization": f"Bearer {token}"}
+        )
         with urllib.request.urlopen(request, timeout=15) as response:
             payload = json.loads(response.read().decode("utf-8"))
         return payload.get("value")
