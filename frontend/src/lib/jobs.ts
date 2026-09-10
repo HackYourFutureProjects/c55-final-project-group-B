@@ -1,5 +1,4 @@
 import { BACKEND_API_URL } from "./config";
-import { Job } from "./types";
 
 export type JobFilters = {
   search?: string;
