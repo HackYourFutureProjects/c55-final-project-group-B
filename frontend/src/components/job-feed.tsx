@@ -30,6 +30,7 @@ export default function JobFeed({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const hasMore = page + 1 < totalPages;
   const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
@@ -76,7 +77,7 @@ export default function JobFeed({
           loadMore();
         }
       },
-      { rootMargin: "300px 0px" },
+      { root: listRef.current, rootMargin: "300px 0px" },
     );
     observer.observe(element);
     return () => observer.disconnect();
@@ -124,6 +125,7 @@ export default function JobFeed({
       hrefFor={hrefFor}
       subtitle={subtitle}
       footer={footer}
+      listRef={listRef}
     />
   );
 }

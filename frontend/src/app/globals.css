@@ -27,6 +27,8 @@
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
+  --header-height: 77px;
+  --footer-height: 74px;
   --section-padding: 64px;
   --inner-padding: 32px;
 }
@@ -70,7 +72,7 @@ a {
 }
 
 ::selection {
-  background-color: var(--highlight-med);
+  background-color: color-mix(in srgb, var(--gold) 50%, transparent);
   color: var(--text);
 }
 

@@ -54,7 +54,7 @@ export default async function JobsPage({
   );
 
   return (
-    <>
+    <div className={styles.page}>
       <section className={styles.hero}>
         <div className="container">
           <h1 className={styles.heading}>Find your next opportunity</h1>
@@ -63,7 +63,7 @@ export default async function JobsPage({
       </section>
 
       <section className={styles.results}>
-        <div className="container">
+        <div className={`container ${styles.board}`}>
           {hasResults ? (
             <JobFeed
               initialJobs={jobs}
@@ -78,6 +78,6 @@ export default async function JobsPage({
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }
