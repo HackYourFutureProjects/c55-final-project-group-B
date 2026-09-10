@@ -1,0 +1,26 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px;
+}
+
+.spinner {
+  color: var(--pine);
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+.spinner svg {
+  display: block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

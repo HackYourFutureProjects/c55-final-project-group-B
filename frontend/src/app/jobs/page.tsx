@@ -1,36 +1,17 @@
-import JobResults from "@/components/job-results";
+import JobFeed from "@/components/job-feed";
 import { NoSearchResults } from "@/components/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";
+import { buildJobsQuery, type JobFilters } from "@/lib/jobs";
 import type { JobPage } from "@/lib/types";
 import styles from "./page.module.css";
 
-type JobFilters = {
-  search?: string;
-  city?: string;
-  province?: string;
-};
-
 async function getJobs(filters: JobFilters): Promise<JobPage> {
-  const params = new URLSearchParams();
-
-  if (filters.search) {
-    params.set("search", filters.search);
-  }
-
-  if (filters.city) {
-    params.set("city", filters.city);
-  }
-
-  if (filters.province) {
-    params.set("province", filters.province);
-  }
-
-  const queryString = params.toString();
+  const queryString = buildJobsQuery(filters);
   const url = `${BACKEND_API_URL}/api/jobs`;
 
-  const res = await fetch(`${url}${queryString ? `?${queryString}` : ""}`);
+  const res = await fetch(`${url}?${queryString}`);
   if (!res.ok) {
     throw new Error(`Could not load jobs: (Error ${res.status})`);
   }
@@ -42,25 +23,24 @@ async function getJobs(filters: JobFilters): Promise<JobPage> {
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; location?: string; jobId?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    location?: string;
+    jobId?: string;
+  }>;
 }) {
   const { q, location, jobId } = await searchParams;
   const { city, province } = parseLocation(location);
-  const { items: jobs, totalItems } = await getJobs({
+  const {
+    items: jobs,
+    totalItems,
+    totalPages,
+  } = await getJobs({
     search: q,
     city,
     province,
+    page: 0,
   });
-
-  const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
-
-  function hrefFor(id: string) {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (location) params.set("location", location);
-    params.set("jobId", id);
-    return `/jobs?${params}`;
-  }
 
   const place = city || province;
   const count = totalItems;
@@ -85,10 +65,12 @@ export default async function JobsPage({
       <section className={styles.results}>
         <div className="container">
           {hasResults ? (
-            <JobResults
-              jobs={jobs}
-              selectedJob={selectedJob}
-              hrefFor={hrefFor}
+            <JobFeed
+              initialJobs={jobs}
+              totalPages={totalPages}
+              jobId={jobId}
+              q={q}
+              location={location}
               subtitle={subtitle}
             />
           ) : (

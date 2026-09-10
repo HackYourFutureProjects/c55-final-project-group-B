@@ -2,6 +2,7 @@
   padding: 42px;
   text-align: center;
   border-bottom: 1px solid var(--highlight-high);
+  position: sticky;
 }
 
 .heading {

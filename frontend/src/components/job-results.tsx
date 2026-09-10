@@ -10,11 +10,13 @@ export default function JobResults({
   selectedJob,
   hrefFor,
   subtitle,
+  footer,
 }: {
   jobs: Job[];
   selectedJob: Job;
   hrefFor: (id: string) => string;
   subtitle: ReactNode;
+  footer?: ReactNode;
 }) {
   return (
     <SavedJobsProvider>
@@ -29,6 +31,7 @@ export default function JobResults({
               href={hrefFor(job.jobId)}
             />
           ))}
+          {footer}
         </div>
         <div className={styles.details}>
           <JobDetails job={selectedJob} />
