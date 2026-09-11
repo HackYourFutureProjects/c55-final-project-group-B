@@ -89,7 +89,7 @@ def final_project_pipeline_dev():
             print(f"  file={file_path} bytes={length} modified={modified}")
         return len(rows)
 
-    @task
+    @task(retries=0)  # full dbt build is heavy; retry loops can OOM the VM
     def dbt_build() -> str:
         from pipeline_dag import (
             dbt_build_extra_args_with_source,
