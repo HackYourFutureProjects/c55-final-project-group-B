@@ -33,7 +33,8 @@ public class JobRepository {
         SELECT job_id, title, company_name, location_city, location_province,
                description, latitude, longitude, created, redirect_url, ingested_at,
                salary_min, salary_max, salary_display, salary_per_hour,
-               employment_type
+               employment_type, contract_type, seniority_level, posting_language,
+               weekly_hours, skills, category_tag
         FROM analytics.fct_postings
         """ + JOB_FILTER_CONDITIONS + """
         ORDER BY created DESC
@@ -63,7 +64,15 @@ public class JobRepository {
                         rs.getBigDecimal("salary_max"),
                         rs.getString("salary_display"),
                         rs.getBigDecimal("salary_per_hour"),
-                        rs.getString("employment_type")
+                        rs.getString("employment_type"),
+                        rs.getString("contract_type"),
+                        rs.getString("seniority_level"),
+                        rs.getString("posting_language"),
+                        rs.getString("weekly_hours"),
+                        rs.getArray("skills") == null
+                                ? List.of()
+                                : List.of((String[]) rs.getArray("skills").getArray()),
+                        rs.getString("category_tag")
                 ))
                 .list();
     }
