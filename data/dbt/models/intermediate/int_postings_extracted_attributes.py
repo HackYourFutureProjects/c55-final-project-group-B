@@ -10,7 +10,7 @@
 #         int_postings_extracted_attributes:
 #           +secret_scope: team_b
 #           +llm_model: cheap
-#fixed the timezone error
+# Fixed the timezone error
 import json
 import time
 import urllib.error
