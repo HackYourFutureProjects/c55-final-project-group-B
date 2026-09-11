@@ -168,7 +168,7 @@ def extract_descriptions(
         # Don't sleep after the very last batch — nothing more to wait for.
         if batch_index < len(batch_starts) - 1:
             time.sleep(10)
-            # fmt: off 
+            # fmt: off
             print(f"Resumed after sleep at {datetime.now(timezone.utc).isoformat()}") # noqa: UP017
 
     return results
