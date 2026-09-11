@@ -44,9 +44,7 @@ def databricks_environment_dev() -> dict[str, str]:
     return {
         **where,
         "AZURE_TENANT_ID": setting("AZURE_TENANT_ID"),
-        "DATABRICKS_CLIENT_ID": secret(
-            "DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"
-        ),
+        "DATABRICKS_CLIENT_ID": secret("DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"),
         "DATABRICKS_CLIENT_SECRET": secret(
             "DATABRICKS_CLIENT_SECRET", f"fp-databricks-client-secret-{team}"
         ),
@@ -93,7 +91,17 @@ def final_project_pipeline_dev():
 
     @task
     def dbt_build() -> str:
-        from pipeline_dag import dbt_command
+        from pipeline_dag import (
+            dbt_build_extra_args_with_source,
+            dbt_build_timeout,
+            dbt_build_xcom_value,
+            dbt_command,
+            logger,
+        )
+
+        extra, source = dbt_build_extra_args_with_source()
+        if extra:
+            logger.info("dbt_build_extra_args from %s: %s", source, extra)
 
         result = subprocess.run(
             dbt_command(),
@@ -102,15 +110,14 @@ def final_project_pipeline_dev():
             env={**os.environ, **databricks_environment_dev()},
             text=True,
             capture_output=True,
-            timeout=1800,
+            timeout=dbt_build_timeout(extra),
         )
         print(result.stdout[-8000:])
         if result.returncode != 0:
             print(result.stderr[-4000:])
             raise RuntimeError(f"dbt build exited {result.returncode}")
 
-        summary = [line for line in result.stdout.splitlines() if "PASS=" in line]
-        return summary[-1].strip() if summary else "dbt build finished"
+        return dbt_build_xcom_value(extra, result.stdout)
 
     @task
     def publish_to_backend() -> int:
@@ -130,21 +137,15 @@ def final_project_pipeline_dev():
             if value:
                 os.environ[name] = value
 
-        os.environ["BACKEND_PG_USER"] = setting(
-            "BACKEND_PG_USER_DEV", "analytics_dev_user"
-        )
+        os.environ["BACKEND_PG_USER"] = setting("BACKEND_PG_USER_DEV", "analytics_dev_user")
         os.environ["BACKEND_PG_PUBLISH_SCHEMA"] = setting(
             "BACKEND_PG_PUBLISH_SCHEMA_DEV", "analytics_dev"
         )
 
         if not os.environ.get("BACKEND_PG_PASSWORD"):
             team = team_slug()
-            secret_name = (
-                setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
-            )
-            os.environ["BACKEND_PG_PASSWORD"] = secret(
-                "BACKEND_PG_PASSWORD", secret_name
-            )
+            secret_name = setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
+            os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
         return sync.run(
             marts=[

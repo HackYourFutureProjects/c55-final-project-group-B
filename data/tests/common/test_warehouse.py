@@ -91,9 +91,7 @@ def test_query_refuses_a_result_short_of_the_row_count_the_warehouse_reported():
 
 
 def test_a_failed_statement_raises():
-    warehouse, _ = build(
-        [{"status": {"state": "FAILED", "error": {"message": "boom"}}}]
-    )
+    warehouse, _ = build([{"status": {"state": "FAILED", "error": {"message": "boom"}}}])
     with pytest.raises(WarehouseError, match="FAILED"):
         warehouse.run("select 1")
 

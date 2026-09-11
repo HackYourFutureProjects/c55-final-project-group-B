@@ -85,9 +85,7 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
         <HeartIcon size={20} weight={saved ? "fill" : "duotone"} />
       </button>
       {showLoginHint && (
-        <span className={styles.hint} role="status">
-          Log in to save jobs
-        </span>
+        <output className={styles.hint}>Log in to save jobs</output>
       )}
     </span>
   );

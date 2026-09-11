@@ -86,13 +86,9 @@ def read_mart(
     """Read a whole published table out of the warehouse, with its columns."""
     qualified = f"{warehouse.catalog}.{schema}.{table}"
     columns, rows = warehouse.query(f"select * from {qualified}")
-    logger.info(
-        "read %d rows and %d columns from %s", len(rows), len(columns), qualified
-    )
+    logger.info("read %d rows and %d columns from %s", len(rows), len(columns), qualified)
     if not rows:
-        raise ValueError(
-            f"{qualified} returned no rows: refusing to publish an empty mart"
-        )
+        raise ValueError(f"{qualified} returned no rows: refusing to publish an empty mart")
     return columns, rows
 
 
@@ -158,9 +154,7 @@ def publish(
             # The swap. `if exists` is what makes the very first publish work,
             # when there is nothing to replace yet.
             cursor.execute(SQL("drop table if exists {}").format(published))
-            cursor.execute(
-                SQL("alter table {} rename to {}").format(staging, Identifier(table))
-            )
+            cursor.execute(SQL("alter table {} rename to {}").format(staging, Identifier(table)))
             if source:
                 # A comment, not a column: it describes the table rather than
                 # every row in it, and it survives the swap without widening
@@ -181,11 +175,7 @@ def publish(
 
 def dsn_from_env() -> str:
     """The connection string, built from the environment both callers share."""
-    missing = [
-        name
-        for name in ("BACKEND_PG_HOST", "BACKEND_PG_DB")
-        if not os.environ.get(name)
-    ]
+    missing = [name for name in ("BACKEND_PG_HOST", "BACKEND_PG_DB") if not os.environ.get(name)]
     if missing:
         raise RuntimeError(f"{', '.join(missing)} not set. See data/.env.example.")
 
@@ -213,26 +203,19 @@ def run(
     """
     if marts:
         return sum(
-            run(mart=mart_name, table=table_name, schema=schema)
-            for mart_name, table_name in marts
+            run(mart=mart_name, table=table_name, schema=schema) for mart_name, table_name in marts
         )
 
     warehouse_schema = os.environ["DBT_SCHEMA"]
     columns, rows = read_mart(Warehouse.from_env(), warehouse_schema, mart)
     target_schema = schema or os.environ.get("BACKEND_PG_PUBLISH_SCHEMA", "analytics")
-    return publish(
-        dsn_from_env(), target_schema, table, columns, rows, source=warehouse_schema
-    )
+    return publish(dsn_from_env(), target_schema, table, columns, rows, source=warehouse_schema)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
-    parser = argparse.ArgumentParser(
-        description="Publish one mart to the backend's database."
-    )
+    parser = argparse.ArgumentParser(description="Publish one mart to the backend's database.")
     parser.add_argument(
         "--mart", default=DEFAULT_MART, help=f"warehouse table to read [{DEFAULT_MART}]"
     )
@@ -241,9 +224,7 @@ if __name__ == "__main__":
         default=DEFAULT_TABLE,
         help=f"name to write it under [{DEFAULT_TABLE}]",
     )
-    parser.add_argument(
-        "--schema", default=None, help="target schema [BACKEND_PG_PUBLISH_SCHEMA]"
-    )
+    parser.add_argument("--schema", default=None, help="target schema [BACKEND_PG_PUBLISH_SCHEMA]")
     args = parser.parse_args()
 
     try:

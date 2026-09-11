@@ -10,7 +10,7 @@ export default async function SavedJobsPage({
   const { q, location, jobId } = await searchParams;
 
   return (
-    <>
+    <div className={styles.page}>
       <section className={styles.hero}>
         <div className="container">
           <h1 className={styles.heading}>Your saved jobs</h1>
@@ -23,10 +23,10 @@ export default async function SavedJobsPage({
       </section>
 
       <section className={styles.results}>
-        <div className="container">
+        <div className={`container ${styles.board}`}>
           <SavedJobResults q={q} location={location} jobId={jobId} />
         </div>
       </section>
-    </>
+    </div>
   );
 }

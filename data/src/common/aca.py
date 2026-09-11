@@ -199,14 +199,12 @@ def fetch_console_logs(
     while time.monotonic() < deadline:
         end = datetime.now(UTC)
         start = started_at - timedelta(minutes=1)
-        timespan = f"{start.isoformat().replace('+00:00', 'Z')}/{end.isoformat().replace('+00:00', 'Z')}"
+        timespan = (
+            f"{start.isoformat().replace('+00:00', 'Z')}/{end.isoformat().replace('+00:00', 'Z')}"
+        )
         try:
-            lines = _query_log_analytics(
-                workspace_id, query, timespan, token, opener=opener
-            )
-        except (
-            Exception
-        ) as exc:
+            lines = _query_log_analytics(workspace_id, query, timespan, token, opener=opener)
+        except Exception as exc:  # noqa: BLE001
             logger.warning("Log Analytics query failed for %s: %s", execution, exc)
             lines = []
         if lines:
@@ -285,12 +283,8 @@ def start_and_wait(
             workspace_id = log_analytics_customer_id(
                 subscription, resource_group, team, token, opener=opener
             )
-        except (
-            Exception
-        ) as exc:
-            logger.warning(
-                "Could not resolve Log Analytics workspace for %s: %s", team, exc
-            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Could not resolve Log Analytics workspace for %s: %s", team, exc)
 
     def pull_console_logs() -> None:
         if not workspace_id:
@@ -328,6 +322,4 @@ def start_and_wait(
                 "See the console log block above for container output."
             )
 
-    raise TimeoutError(
-        f"{job_name} execution {execution} did not finish within {timeout_seconds}s"
-    )
+    raise TimeoutError(f"{job_name} execution {execution} did not finish within {timeout_seconds}s")

@@ -20,11 +20,17 @@
   --radius: 6px;
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
+  --shadow-soft: 4px 4px 0 0 var(--highlight-high);
+  --shadow-soft-sm: 2px 2px 0 0 var(--highlight-high);
   --transition-shadow: box-shadow 250ms ease;
   --transition-shadow-sm: box-shadow 150ms ease;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-inter), ui-rounded, system-ui, sans-serif;
+  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
+  --header-height: 77px;
+  --footer-height: 74px;
+  --section-padding: 64px;
+  --inner-padding: 32px;
 }
 
 *,
@@ -66,7 +72,7 @@ a {
 }
 
 ::selection {
-  background-color: var(--highlight-med);
+  background-color: color-mix(in srgb, var(--gold) 50%, transparent);
   color: var(--text);
 }
 

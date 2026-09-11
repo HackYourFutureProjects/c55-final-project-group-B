@@ -42,9 +42,7 @@ class RecordingOpener:
     def __call__(self, request, timeout=None):
         self.requests.append(request)
         if not self.answers:
-            raise AssertionError(
-                f"no answer left for {getattr(request, 'full_url', request)}"
-            )
+            raise AssertionError(f"no answer left for {getattr(request, 'full_url', request)}")
         return response(self.answers.pop(0))
 
     @property

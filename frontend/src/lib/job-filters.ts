@@ -25,11 +25,19 @@ export function filterJobs(
   const query = q?.toLowerCase();
   return jobs.filter((job) => {
     if (query) {
-      const haystack = `${job.title} ${job.companyName}`.toLowerCase();
-      if (!haystack.includes(query)) return false;
+      const searchableText = `${job.title} ${job.companyName}`.toLowerCase();
+      if (!searchableText.includes(query)) return false;
     }
     if (city && job.locationCity !== city) return false;
     if (province && job.locationProvince !== province) return false;
     return true;
   });
+}
+
+export function getSuggestions(titles: string[], query: string): string[] {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (normalizedQuery.length < 2) return [];
+  return titles
+    .filter((title) => title.toLowerCase().includes(normalizedQuery))
+    .slice(0, 8);
 }

@@ -1,4 +1,5 @@
 import { ArrowSquareOutIcon } from "@phosphor-icons/react/ssr";
+import Markdown from "react-markdown";
 import { formatPostedDate } from "@/lib/formatPostedDate";
 import type { Job } from "@/lib/types";
 import styles from "./job-details.module.css";
@@ -31,7 +32,11 @@ export default function JobDetails({ job }: { job: Job }) {
           </div>
         </div>
       </div>
-      <p className={styles.description}>{job.description}</p>
+      <div className={styles.description}>
+        <Markdown components={{ h1: "h3", h2: "h3" }}>
+          {job.description}
+        </Markdown>
+      </div>
     </div>
   );
 }

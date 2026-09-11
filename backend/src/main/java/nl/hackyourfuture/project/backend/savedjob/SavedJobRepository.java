@@ -29,7 +29,7 @@ public class SavedJobRepository {
 
     public List<SavedJobResponse> findSavedJobsByUserId(UUID userId) {
         String sql = """
-        SELECT fct_postings.job_id,
+            SELECT fct_postings.job_id,
                fct_postings.title,
                fct_postings.company_name,
                fct_postings.location_city,
@@ -40,6 +40,17 @@ public class SavedJobRepository {
                fct_postings.created,
                fct_postings.redirect_url,
                fct_postings.ingested_at,
+               fct_postings.salary_min,
+               fct_postings.salary_max,
+               fct_postings.salary_display,
+               fct_postings.salary_per_hour,
+               fct_postings.employment_type,
+               fct_postings.contract_type,
+               fct_postings.seniority_level,
+               fct_postings.posting_language,
+               fct_postings.weekly_hours,
+               fct_postings.skills,
+               fct_postings.category_tag,
                saved_jobs.saved_at
         FROM saved_jobs
         JOIN analytics.fct_postings ON fct_postings.job_id = saved_jobs.job_id
@@ -61,6 +72,19 @@ public class SavedJobRepository {
                         rs.getString("created"),
                         rs.getString("redirect_url"),
                         rs.getString("ingested_at"),
+                        rs.getBigDecimal("salary_min"),
+                        rs.getBigDecimal("salary_max"),
+                        rs.getString("salary_display"),
+                        rs.getBigDecimal("salary_per_hour"),
+                        rs.getString("employment_type"),
+                        rs.getString("contract_type"),
+                        rs.getString("seniority_level"),
+                        rs.getString("posting_language"),
+                        rs.getString("weekly_hours"),
+                        rs.getArray("skills") == null
+                                ? List.of()
+                                : List.of((String[]) rs.getArray("skills").getArray()),
+                        rs.getString("category_tag"),
                         rs.getString("saved_at")
                 ))
                 .list();

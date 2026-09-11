@@ -2,6 +2,7 @@ package nl.hackyourfuture.project.backend.job;
 
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
+import nl.hackyourfuture.project.backend.job.dto.RecommendedJobDto;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -32,7 +33,8 @@ public class JobRepository {
         SELECT job_id, title, company_name, location_city, location_province,
                description, latitude, longitude, created, redirect_url, ingested_at,
                salary_min, salary_max, salary_display, salary_per_hour,
-               employment_type
+               employment_type, contract_type, seniority_level, posting_language,
+               weekly_hours, skills, category_tag
         FROM analytics.fct_postings
         """ + JOB_FILTER_CONDITIONS + """
         ORDER BY created DESC
@@ -62,7 +64,15 @@ public class JobRepository {
                         rs.getBigDecimal("salary_max"),
                         rs.getString("salary_display"),
                         rs.getBigDecimal("salary_per_hour"),
-                        rs.getString("employment_type")
+                        rs.getString("employment_type"),
+                        rs.getString("contract_type"),
+                        rs.getString("seniority_level"),
+                        rs.getString("posting_language"),
+                        rs.getString("weekly_hours"),
+                        rs.getArray("skills") == null
+                                ? List.of()
+                                : List.of((String[]) rs.getArray("skills").getArray()),
+                        rs.getString("category_tag")
                 ))
                 .list();
     }
@@ -80,6 +90,73 @@ public class JobRepository {
                 .query(Long.class)
                 .single();
 
+        return result == null ? 0 : result;
+    }
+
+    public List<RecommendedJobDto> findRecommendedJobs(
+            List<String> userSkills,
+            String preferredCity,
+            String preferredProvince,
+            int page,
+            int size
+    ) {
+        String skills = String.join("\u001F", userSkills);
+        String sql = """
+                WITH user_skills AS (
+                    SELECT LOWER(TRIM(skill)) AS skill
+                    FROM unnest(string_to_array(CAST(:skills AS text), CHR(31))) AS skill
+                    WHERE TRIM(skill) <> ''
+                ), ranked_jobs AS (
+                    SELECT p.*, COALESCE(matches.match_count, 0) AS match_count,
+                           COALESCE(matches.matched_skills, ARRAY[]::text[]) AS matched_skills
+                    FROM analytics.fct_postings p
+                    LEFT JOIN LATERAL (
+                        SELECT COUNT(*)::integer AS match_count,
+                               ARRAY_AGG(user_skills.skill ORDER BY user_skills.skill) AS matched_skills
+                        FROM user_skills
+                        WHERE EXISTS (
+                            SELECT 1
+                            FROM unnest(regexp_split_to_array(COALESCE(p.skills, ''), '\\s*[,;/|]\\s*')) AS job_skill
+                            WHERE LOWER(TRIM(job_skill)) = user_skills.skill
+                        )
+                    ) matches ON TRUE
+                )
+                SELECT job_id, title, company_name, location_city, location_province,
+                       description, latitude, longitude, created, redirect_url, ingested_at,
+                       salary_min, salary_max, salary_display, salary_per_hour, employment_type,
+                       match_count, matched_skills
+                FROM ranked_jobs
+                ORDER BY match_count DESC,
+                         CASE WHEN NULLIF(:preferredCity, '') IS NOT NULL
+                                   AND location_city ILIKE :preferredCity THEN 1 ELSE 0 END DESC,
+                         CASE WHEN NULLIF(:preferredProvince, '') IS NOT NULL
+                                   AND location_province ILIKE :preferredProvince THEN 1 ELSE 0 END DESC,
+                         created DESC
+                LIMIT :size OFFSET :offset
+                """;
+        return jdbcClient.sql(sql)
+                .param("skills", skills)
+                .param("preferredCity", preferredCity == null ? "" : preferredCity)
+                .param("preferredProvince", preferredProvince == null ? "" : preferredProvince)
+                .param("size", size)
+                .param("offset", (long) page * size)
+                .query((rs, rowNumber) -> new RecommendedJobDto(
+                        rs.getString("job_id"), rs.getString("title"), rs.getString("company_name"),
+                        rs.getString("location_city"), rs.getString("location_province"),
+                        rs.getString("description"), rs.getObject("latitude", Double.class),
+                        rs.getObject("longitude", Double.class), rs.getString("created"),
+                        rs.getString("redirect_url"), rs.getString("ingested_at"),
+                        rs.getBigDecimal("salary_min"), rs.getBigDecimal("salary_max"),
+                        rs.getString("salary_display"), rs.getBigDecimal("salary_per_hour"),
+                        rs.getString("employment_type"), rs.getInt("match_count"),
+                        List.of((String[]) rs.getArray("matched_skills").getArray())
+                )).list();
+    }
+
+    public long countAllJobs() {
+        Long result = jdbcClient.sql("SELECT COUNT(*) FROM analytics.fct_postings")
+                .query(Long.class)
+                .single();
         return result == null ? 0 : result;
     }
 

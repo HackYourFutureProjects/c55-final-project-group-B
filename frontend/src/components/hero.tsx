@@ -1,31 +1,24 @@
-import Link from "next/link";
 import { SearchBar } from "@/components/search-bar";
 import styles from "./hero.module.css";
+import HeroNote from "./hero-note";
+import PopularSearches from "./popular-searches";
 
 export function Hero() {
   return (
     <section className={styles.hero}>
       <div className="container">
         <h1 className={styles.title}>
-          Find your next <span className={styles.accent}>role</span>
+          Strike a <span className={styles.accent}>match</span>
           <span className={styles.accentDot}>.</span>
         </h1>
 
-        <p className={styles.tagline}>
-          Thousands of jobs across the Netherlands to explore!
-        </p>
+        <p className={styles.tagline}>Your next role is one spark away!</p>
 
         <div className={styles.search}>
           <SearchBar />
         </div>
-
-        <p className={styles.note}>
-          Not a user yet?{" "}
-          <Link href="/signup" className={styles.noteLink}>
-            Sign up
-          </Link>{" "}
-          to save jobs.
-        </p>
+        <PopularSearches />
+        <HeroNote />
       </div>
     </section>
   );

@@ -1,0 +1,84 @@
+.section {
+  padding-block: var(--section-padding);
+  background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.track {
+  padding: 24px;
+}
+
+.track:hover {
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-shadow);
+}
+
+.trackName {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--base);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft-sm);
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.description {
+  color: var(--subtle);
+  font-size: 14px;
+}
+
+.swatchFoam {
+  background-color: var(--foam);
+}
+
+.swatchRose {
+  background-color: var(--rose);
+}
+
+.swatchIris {
+  background-color: var(--iris);
+}
