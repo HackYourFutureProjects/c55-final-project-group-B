@@ -65,9 +65,7 @@ def land_raw_json(
 
     credential = DefaultAzureCredential()
     service = BlobServiceClient(f"https://{account}.blob.core.windows.net", credential)
-    service.get_blob_client(container=container, blob=path).upload_blob(
-        payload, overwrite=True
-    )
+    service.get_blob_client(container=container, blob=path).upload_blob(payload, overwrite=True)
 
     logger.info(
         "landed %d records, %d bytes, to %s/%s on %s",

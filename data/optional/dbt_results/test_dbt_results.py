@@ -93,9 +93,7 @@ def test_a_message_with_a_quote_does_not_break_the_insert(tmp_path):
     """dbt failure messages quote SQL back at you, apostrophes included."""
     payload = {
         "metadata": {"invocation_id": "x", "generated_at": "2026-08-12T06:00:00Z"},
-        "results": [
-            {"unique_id": "test.fp.t", "status": "fail", "message": "it's broken"}
-        ],
+        "results": [{"unique_id": "test.fp.t", "status": "fail", "message": "it's broken"}],
     }
     path = tmp_path / "run_results.json"
     path.write_text(json.dumps(payload))

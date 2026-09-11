@@ -168,12 +168,8 @@ def test_the_source_schema_is_stamped_on_the_table(connection):
 
 
 def test_the_stamp_lands_after_the_swap(connection):
-    sync.publish(
-        "dsn", "analytics_dev", "fct_postings", COLUMNS, ROWS, source="team_b.dev_mareh"
-    )
-    assert index_of(connection.log, "rename to") < index_of(
-        connection.log, "comment on table"
-    )
+    sync.publish("dsn", "analytics_dev", "fct_postings", COLUMNS, ROWS, source="team_b.dev_mareh")
+    assert index_of(connection.log, "rename to") < index_of(connection.log, "comment on table")
 
 
 def test_no_source_means_no_comment(connection):

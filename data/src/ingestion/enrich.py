@@ -91,9 +91,7 @@ def process_single_batch(
                 return batch_index, validated_batch
 
         except Exception as e:  # noqa: BLE001
-            logger.warning(
-                "LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e
-            )
+            logger.warning("LLM Batch %d failed on model %s: %s", batch_index, attempt_model, e)
 
     return batch_index, {}
 

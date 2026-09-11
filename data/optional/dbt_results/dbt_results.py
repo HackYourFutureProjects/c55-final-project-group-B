@@ -130,7 +130,5 @@ def publish_results(warehouse: Queryable, results: list[dict]) -> int:
     )
     for result in results:
         if result["status"] not in GOOD_STATUSES:
-            logger.warning(
-                "  %s %s %s", result["status"], result["node"], result["message"][:120]
-            )
+            logger.warning("  %s %s %s", result["status"], result["node"], result["message"][:120])
     return len(results)

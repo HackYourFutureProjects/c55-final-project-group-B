@@ -44,9 +44,7 @@ def databricks_environment_dev() -> dict[str, str]:
     return {
         **where,
         "AZURE_TENANT_ID": setting("AZURE_TENANT_ID"),
-        "DATABRICKS_CLIENT_ID": secret(
-            "DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"
-        ),
+        "DATABRICKS_CLIENT_ID": secret("DATABRICKS_CLIENT_ID", f"fp-databricks-client-id-{team}"),
         "DATABRICKS_CLIENT_SECRET": secret(
             "DATABRICKS_CLIENT_SECRET", f"fp-databricks-client-secret-{team}"
         ),
@@ -130,21 +128,15 @@ def final_project_pipeline_dev():
             if value:
                 os.environ[name] = value
 
-        os.environ["BACKEND_PG_USER"] = setting(
-            "BACKEND_PG_USER_DEV", "analytics_dev_user"
-        )
+        os.environ["BACKEND_PG_USER"] = setting("BACKEND_PG_USER_DEV", "analytics_dev_user")
         os.environ["BACKEND_PG_PUBLISH_SCHEMA"] = setting(
             "BACKEND_PG_PUBLISH_SCHEMA_DEV", "analytics_dev"
         )
 
         if not os.environ.get("BACKEND_PG_PASSWORD"):
             team = team_slug()
-            secret_name = (
-                setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
-            )
-            os.environ["BACKEND_PG_PASSWORD"] = secret(
-                "BACKEND_PG_PASSWORD", secret_name
-            )
+            secret_name = setting("BACKEND_PG_SECRET_DEV", "") or f"fp-pg-analytics-dev-{team}"
+            os.environ["BACKEND_PG_PASSWORD"] = secret("BACKEND_PG_PASSWORD", secret_name)
 
         return sync.run(
             marts=[

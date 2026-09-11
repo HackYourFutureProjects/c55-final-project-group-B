@@ -186,9 +186,7 @@ def _parse_batch_response(
     if start == -1 or end == -1:
         raise ValueError(f"no JSON in the answer: {content[:120]!r}")
     answer = json.loads(content[start : end + 1])
-    labels = [
-        str(answer.get(str(index), "other")).strip().lower() for index in range(size)
-    ]
+    labels = [str(answer.get(str(index), "other")).strip().lower() for index in range(size)]
     if categories is None:
         return labels
     return [label if label in categories else "other" for label in labels]
