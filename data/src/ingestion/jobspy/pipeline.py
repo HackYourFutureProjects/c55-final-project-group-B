@@ -56,9 +56,7 @@ def load_config(local: bool = False) -> Config:
     def required(name: str) -> str:
         value = os.getenv(name)
         if not value:
-            raise MissingSetting(
-                f"{name} is not set. Copy .env.example to .env and fill it in."
-            )
+            raise MissingSetting(f"{name} is not set. Copy .env.example to .env and fill it in.")
         return value
 
     return Config(
@@ -100,11 +98,8 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     valid_records = [model.model_dump() for model in parsed_models]
 
-
-
     # 5. Construct destination partition path
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
-
 
     if local_dir is not None:
         landed = land_local_json(local_dir, path, valid_records)
@@ -131,9 +126,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Run JobSpy ingestion ."
-    )
+    parser = argparse.ArgumentParser(description="Run JobSpy ingestion .")
 
     parser.add_argument(
         "--run-date",

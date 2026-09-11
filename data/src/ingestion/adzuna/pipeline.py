@@ -67,9 +67,7 @@ def load_config(local: bool = False) -> Config:
     def required(name: str) -> str:
         value = os.getenv(name)
         if not value:
-            raise MissingSetting(
-                f"{name} is not set. Copy .env.example to .env and fill it in."
-            )
+            raise MissingSetting(f"{name} is not set. Copy .env.example to .env and fill it in.")
         return value
 
     return Config(
@@ -94,9 +92,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     # 3. Stop execution if no valid records exist
     if not parsed:
-        raise RuntimeError(
-            f"No valid records: {len(raw_records)} received, {rejected} rejected"
-        )
+        raise RuntimeError(f"No valid records: {len(raw_records)} received, {rejected} rejected")
 
     if rejected:
         logger.warning(
@@ -105,12 +101,8 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
             len(raw_records),
         )
 
-
-   
-
     # 5. Construct destination partition path
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
-
 
     if local_dir is not None:
         landed = land_local_json(local_dir, path, raw_records)
@@ -144,9 +136,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Run one ingestion ."
-    )
+    parser = argparse.ArgumentParser(description="Run one ingestion .")
 
     parser.add_argument(
         "--run-date",

@@ -40,8 +40,6 @@ class JobSpyPosting(BaseModel):
     currency: str | None = None
     interval: str | None = None
 
-
-
     @field_validator("*", mode="before")
     @classmethod
     def _sanitize_nan(cls, value: Any) -> Any:

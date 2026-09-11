@@ -118,9 +118,7 @@ def parse_records(records: list[dict[str, Any]]) -> tuple[list[JobSpyPosting], i
                 if isinstance(record, dict)
                 else repr(record)[:40]
             )
-            logger.warning(
-                "Rejected JobSpy record '%s': %s errors", identifier, exc.error_count()
-            )
+            logger.warning("Rejected JobSpy record '%s': %s errors", identifier, exc.error_count())
 
     logger.info("Parsed %d record(s) successfully, rejected %d", len(parsed), rejected)
     return parsed, rejected
