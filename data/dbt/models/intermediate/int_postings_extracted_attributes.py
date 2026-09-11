@@ -25,7 +25,6 @@ DEFAULT_ATTRIBUTES = {
     "salary_per_hour": None,
     "weekly_hours": None,
     "skills": [],
-    "tasks": [],
 }
 
 ENDPOINT = (
@@ -46,8 +45,7 @@ OUTPUT_SCHEMA = (
     "required_language string, "
     "salary_per_hour double, "
     "weekly_hours string, "
-    "skills array<string>, "
-    "tasks array<string>"
+    "skills array<string> "
 )
 
 
@@ -76,8 +74,6 @@ def build_batch_prompt(descriptions: list[str]) -> str:
         'prefer the explicit hourly range (e.g. "16-19"). Return null if completely omitted.\n'
         '7. "skills": List of technical skills or tools mentioned. Translate Dutch skills '
         "to English. Return [] if none.\n"
-        '8. "tasks": List of core job responsibilities or daily tasks. Translate Dutch '
-        "tasks to English. Return [] if none.\n\n"
         f"Job Descriptions:\n{numbered}"
     )
 
@@ -201,7 +197,6 @@ def _to_output_row(job_id: str, attrs: dict) -> tuple:
         _as_float(attrs.get("salary_per_hour")),
         attrs.get("weekly_hours"),
         _as_string_list(attrs.get("skills")),
-        _as_string_list(attrs.get("tasks")),
     )
 
 

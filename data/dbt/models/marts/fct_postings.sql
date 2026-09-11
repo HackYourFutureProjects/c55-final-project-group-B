@@ -35,7 +35,6 @@ select
     llm_postings.salary_per_hour,
     llm_postings.weekly_hours,
     llm_postings.skills,
-    llm_postings.tasks,
     contract_col.contract_type,
     job_title_company.employment_type,
 
