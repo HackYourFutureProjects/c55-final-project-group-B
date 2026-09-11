@@ -146,8 +146,8 @@ def dbt_build_extra_args_with_source() -> tuple[str, str]:
             conf_raw = (conf_raw or "").strip()
             if conf_raw:
                 return _validate_dbt_extra_args(conf_raw, "dag run conf"), "conf"
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — no task context; fall back to Variable
+        logger.debug("Could not read dbt_build_extra_args from dag run conf: %s", exc)
 
     var_raw = optional_setting(DBT_BUILD_EXTRA_ARGS_VAR)
     if var_raw:
