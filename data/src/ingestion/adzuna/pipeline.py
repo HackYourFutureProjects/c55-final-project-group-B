@@ -17,7 +17,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 from .ingest import fetch_all_pages, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
