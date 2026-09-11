@@ -16,7 +16,7 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 DEFAULT_ATTRIBUTES = {
     "contract_type_from_desc": "unknown",
@@ -168,7 +168,8 @@ def extract_descriptions(
         # Don't sleep after the very last batch — nothing more to wait for.
         if batch_index < len(batch_starts) - 1:
             time.sleep(10)
-            print(f"Resumed after sleep at {datetime.now(UTC).isoformat()}")
+            # fmt: off
+            print(f"Resumed after sleep at {datetime.now(timezone.utc).isoformat()}") # noqa: UP017
 
     return results
 
