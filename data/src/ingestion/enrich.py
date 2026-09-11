@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from src.ingestion.litellm_client import (
     DEFAULT_MODELS,
     completion_json,
+    litellm_gateway,
     resolve_llm_config,
 )
 
@@ -62,6 +63,7 @@ def process_single_batch(
         return batch_index, {}
 
     prompt = build_batch_prompt(batch_descriptions)
+    gateway = api_base or f"{litellm_gateway()}/v1"
 
     for attempt_model in models:
         try:
@@ -69,7 +71,7 @@ def process_single_batch(
                 prompt,
                 api_key,
                 attempt_model,
-                api_base=api_base,
+                api_base=gateway,
             )
 
             if "```json" in raw_text:
