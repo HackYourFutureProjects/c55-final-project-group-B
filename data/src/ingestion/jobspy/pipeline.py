@@ -1,4 +1,4 @@
-"""The JobSpy ingestion job: fetch, validate, enrich, land.
+"""The JobSpy ingestion job: fetch, validate,  land.
 
 Run locally:
     uv run python -m src.ingestion.jobspy.pipeline --local
@@ -14,7 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ..enrich import enrich_records
+
 from .ingest import fetch_jobspy_raw, parse_records
 from .storage import (
     LOCAL_LANDING_DIR,
@@ -100,16 +100,14 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
     valid_records = [model.model_dump() for model in parsed_models]
 
-    # 4. Enrich records via LLM API calls
-    logger.info("Enriching %d JobSpy records with LLM...", len(valid_records))
-    enriched_records = enrich_records(valid_records)
+
 
     # 5. Construct destination partition path
     path = blob_path(SOURCE_NAME, run_date, config.landing_prefix)
 
-    # 6. Land enriched records (Local disk or Azure)
+
     if local_dir is not None:
-        landed = land_local_json(local_dir, path, enriched_records)
+        landed = land_local_json(local_dir, path, valid_records)
         logger.info(
             "JobSpy Pipeline finished: %d written locally, %d rejected.",
             landed,
@@ -120,7 +118,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
     landed = land_raw_json(
         account=config.storage_account,
         path=path,
-        records=enriched_records,
+        records=valid_records,
         container=config.landing_container,
     )
 
@@ -134,7 +132,7 @@ def run(run_date: str | None = None, local_dir: Path | None = None) -> int:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Run JobSpy ingestion with LLM enrichment."
+        description="Run JobSpy ingestion ."
     )
 
     parser.add_argument(
