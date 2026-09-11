@@ -40,9 +40,6 @@ class JobSpyPosting(BaseModel):
     currency: str | None = None
     interval: str | None = None
 
-    # LLM Enrichment Object (مستخرج بشكل منفصل)
-    llm_enrichment: dict[str, Any] | None = Field(default_factory=dict)
-
     @field_validator("*", mode="before")
     @classmethod
     def _sanitize_nan(cls, value: Any) -> Any:
