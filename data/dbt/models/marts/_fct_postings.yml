@@ -122,10 +122,6 @@ models:
         description: >
           (array<string>) Technical, domain, or professional skills extracted by the
           LLM from the job description. Empty array when none were found.
-      - name: tasks
-        description: >
-          (array<string>) Core tasks, duties, or physical responsibilities extracted
-          by the LLM from the job description. Empty array when none were found.
       - name: ingested_at
         description: "(timestamp) When your pipeline last saw this record. Use it to show data freshness in the UI."
         tests: [not_null]
