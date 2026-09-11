@@ -16,10 +16,21 @@ from dbt_results import parse_run_results, publish_results, summarise
 from tests.conftest import FakeWarehouse
 
 PAYLOAD = {
-    "metadata": {"invocation_id": "abc-123", "generated_at": "2026-08-12T06:00:00.123Z"},
+    "metadata": {
+        "invocation_id": "abc-123",
+        "generated_at": "2026-08-12T06:00:00.123Z",
+    },
     "results": [
-        {"unique_id": "model.fp.stg_postings", "status": "success", "execution_time": 1.5},
-        {"unique_id": "model.fp.fct_postings", "status": "success", "execution_time": 2.0},
+        {
+            "unique_id": "model.fp.stg_postings",
+            "status": "success",
+            "execution_time": 1.5,
+        },
+        {
+            "unique_id": "model.fp.fct_postings",
+            "status": "success",
+            "execution_time": 2.0,
+        },
         {
             "unique_id": "test.fp.assert_postings_not_empty",
             "status": "fail",

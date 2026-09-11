@@ -220,7 +220,9 @@ if __name__ == "__main__":
         "--mart", default=DEFAULT_MART, help=f"warehouse table to read [{DEFAULT_MART}]"
     )
     parser.add_argument(
-        "--table", default=DEFAULT_TABLE, help=f"name to write it under [{DEFAULT_TABLE}]"
+        "--table",
+        default=DEFAULT_TABLE,
+        help=f"name to write it under [{DEFAULT_TABLE}]",
     )
     parser.add_argument("--schema", default=None, help="target schema [BACKEND_PG_PUBLISH_SCHEMA]")
     args = parser.parse_args()

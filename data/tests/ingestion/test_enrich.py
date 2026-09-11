@@ -26,7 +26,11 @@ def test_a_full_batch_is_parsed_into_indexed_attributes():
     descriptions = ["Backend role, Python, 32 hours/week", "Frontend role, React"]
     answer = canned_response(
         {
-            0: {**DEFAULT_ATTRIBUTES, "seniority_level": "senior", "skills": ["python"]},
+            0: {
+                **DEFAULT_ATTRIBUTES,
+                "seniority_level": "senior",
+                "skills": ["python"],
+            },
             1: {**DEFAULT_ATTRIBUTES, "seniority_level": "junior", "skills": ["react"]},
         }
     )

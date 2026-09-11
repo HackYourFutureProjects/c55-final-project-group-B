@@ -125,9 +125,16 @@ def _request_chat(prompt: str, api_key: str, model: str) -> dict:
     req = urllib.request.Request(
         ENDPOINT,
         data=json.dumps(
-            {"model": model, "temperature": 0, "messages": [{"role": "user", "content": prompt}]}
+            {
+                "model": model,
+                "temperature": 0,
+                "messages": [{"role": "user", "content": prompt}],
+            }
         ).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
     )
     try:
         with urllib.request.urlopen(req, timeout=_http_timeout()) as resp:

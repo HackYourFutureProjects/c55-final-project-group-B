@@ -399,7 +399,8 @@ def make_pipeline(profile: PipelineProfile):
                 profile.backend_pg_user_var, profile.backend_pg_user_default
             )
             os.environ["BACKEND_PG_PUBLISH_SCHEMA"] = setting(
-                profile.backend_pg_publish_schema_var, profile.backend_pg_publish_schema_default
+                profile.backend_pg_publish_schema_var,
+                profile.backend_pg_publish_schema_default,
             )
 
             if not os.environ.get("BACKEND_PG_PASSWORD"):

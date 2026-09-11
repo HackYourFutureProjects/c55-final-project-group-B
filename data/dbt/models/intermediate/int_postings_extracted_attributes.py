@@ -10,11 +10,12 @@
 #         int_postings_extracted_attributes:
 #           +secret_scope: team_b
 #           +llm_model: cheap
-
 import json
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
+from datetime import UTC, datetime
 
 DEFAULT_ATTRIBUTES = {
     "contract_type_from_desc": "unknown",
@@ -32,7 +33,7 @@ ENDPOINT = (
     "/v1/chat/completions"
 )
 MODEL = "medium"
-BATCH_SIZE = 15
+BATCH_SIZE = 10
 DESC_MAX_CHARS = 800
 HTTP_TIMEOUT = 300
 SECRET_KEY_NAME = "litellm-api-key"
@@ -157,13 +158,21 @@ def extract_descriptions(
     call: Callable[[str, str, str], str] = chat,
 ) -> list[dict]:
     results: list[dict] = []
-    for start in range(0, len(descriptions), BATCH_SIZE):
+    batch_starts = list(range(0, len(descriptions), BATCH_SIZE))
+
+    for batch_index, start in enumerate(batch_starts):
         batch = descriptions[start : start + BATCH_SIZE]
         try:
             results.extend(extract_batch(batch, api_key, model, call=call))
         except RuntimeError as error:
             print(f"Stopping early after rate limit: {error}")
             break  # keep whatever succeeded, stop instead of crashing
+
+        # Don't sleep after the very last batch — nothing more to wait for.
+        if batch_index < len(batch_starts) - 1:
+            time.sleep(10)
+            print(f"Resumed after sleep at {datetime.now(UTC).isoformat()}")
+
     return results
 
 
