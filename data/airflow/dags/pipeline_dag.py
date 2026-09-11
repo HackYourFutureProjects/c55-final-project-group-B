@@ -16,10 +16,12 @@ runs. Secrets never do: each is fetched from Key Vault inside the task that
 needs it, using the machine's identity. See data/README.md, "What runs in
 Airflow".
 
-Optional one-off dbt overrides: set `DBT_BUILD_EXTRA_ARGS` in Admin -> Variables
-before you trigger a run (e.g. `--full-refresh --select int_postings_extracted_attributes`),
-then clear the Variable back to empty when you are done. Scheduled runs with no
-Variable set keep the default `dbt build`.
+Optional one-off dbt overrides when you trigger a run manually: open Advanced
+options and set Configuration JSON, e.g.
+`{"dbt_build_extra_args": "--full-refresh --select int_postings_extracted_attributes"}`.
+That applies to that run only — scheduled runs with `{}` keep the default
+`dbt build`. Legacy fallback: Admin -> Variables `DBT_BUILD_EXTRA_ARGS` (clear
+when done). When an override is active, `dbt_build` XCom shows `override: …`.
 
 The dev integration DAG (`final_project_pipeline_dev`) lives in
 `pipeline_dag_dev.py` on the team VM only.
@@ -60,10 +62,12 @@ DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/airflow/include/dbt")
 # than stable dbt-core supports.
 DBT_RUNNER = "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
 
-# Optional Admin -> Variables override for one-off runs. Leave unset for the
-# default `dbt build`. Example: --full-refresh --select int_postings_extracted_attributes
+# Optional override for one-off runs: dag run conf `dbt_build_extra_args` first,
+# then legacy Admin -> Variables `DBT_BUILD_EXTRA_ARGS`.
+DBT_BUILD_EXTRA_ARGS_CONF_KEY = "dbt_build_extra_args"
 DBT_BUILD_EXTRA_ARGS_VAR = "DBT_BUILD_EXTRA_ARGS"
 DBT_EXTRA_ARGS_PATTERN = re.compile(r"^[\w\s\-+.:]+$")
+ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 DBT_BUILD_DEFAULT_TIMEOUT = 1800
 DBT_BUILD_FULL_REFRESH_TIMEOUT = 5400
 
@@ -118,23 +122,58 @@ def optional_setting(name: str, default: str = "") -> str:
     return (value or "").strip()
 
 
-def dbt_build_extra_args() -> str:
-    """Extra flags appended to `dbt build`, from DBT_BUILD_EXTRA_ARGS if set."""
-    raw = optional_setting(DBT_BUILD_EXTRA_ARGS_VAR)
-    if not raw:
-        return ""
+def _validate_dbt_extra_args(raw: str, source: str) -> str:
     if not DBT_EXTRA_ARGS_PATTERN.match(raw):
         raise RuntimeError(
-            f"{DBT_BUILD_EXTRA_ARGS_VAR} contains invalid characters. "
+            f"{source} contains invalid dbt_build_extra_args. "
             "Use dbt flags only, e.g. --full-refresh --select my_model"
         )
     return raw
+
+
+def dbt_build_extra_args_with_source() -> tuple[str, str]:
+    """Extra flags for `dbt build` and where they came from (`conf` or `variable`)."""
+    try:
+        from airflow.sdk import get_current_context
+
+        dag_run = get_current_context().get("dag_run")
+        if dag_run and dag_run.conf:
+            conf_raw = (
+                dag_run.conf.get(DBT_BUILD_EXTRA_ARGS_CONF_KEY)
+                or dag_run.conf.get(DBT_BUILD_EXTRA_ARGS_VAR)
+                or ""
+            )
+            conf_raw = (conf_raw or "").strip()
+            if conf_raw:
+                return _validate_dbt_extra_args(conf_raw, "dag run conf"), "conf"
+    except Exception:
+        pass
+
+    var_raw = optional_setting(DBT_BUILD_EXTRA_ARGS_VAR)
+    if var_raw:
+        return _validate_dbt_extra_args(var_raw, DBT_BUILD_EXTRA_ARGS_VAR), "variable"
+    return "", ""
+
+
+def dbt_build_extra_args() -> str:
+    extra, _ = dbt_build_extra_args_with_source()
+    return extra
 
 
 def dbt_build_timeout(extra_args: str) -> int:
     if "--full-refresh" in extra_args:
         return DBT_BUILD_FULL_REFRESH_TIMEOUT
     return DBT_BUILD_DEFAULT_TIMEOUT
+
+
+def dbt_build_xcom_value(extra: str, stdout: str) -> str:
+    """Task return value for dbt_build; shown in Airflow XCom."""
+    clean = ANSI_ESCAPE.sub("", stdout)
+    summary_lines = [line for line in clean.splitlines() if "PASS=" in line]
+    summary = summary_lines[-1].strip() if summary_lines else "dbt build finished"
+    if extra:
+        return f"override: {extra} | {summary}"
+    return summary
 
 
 def dbt_command() -> str:
@@ -147,8 +186,8 @@ def dbt_command() -> str:
     with "Env var required but not provided: 'DATABRICKS_CLIENT_ID'", asking a
     laptop for a credential it is deliberately not allowed to have.
 
-    Admin -> Variables `DBT_BUILD_EXTRA_ARGS` inserts flags after `dbt build`
-    and before `--project-dir` (empty Variable = default build).
+    Trigger conf `dbt_build_extra_args` (or legacy Variable) inserts flags after
+    `dbt build` and before `--project-dir`.
     """
     target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
     extra = dbt_build_extra_args()
@@ -319,9 +358,9 @@ def make_pipeline(profile: PipelineProfile):
             """Build the models and run the tests."""
             import subprocess
 
-            extra = dbt_build_extra_args()
+            extra, source = dbt_build_extra_args_with_source()
             if extra:
-                logger.info("%s override active: %s", DBT_BUILD_EXTRA_ARGS_VAR, extra)
+                logger.info("dbt_build_extra_args from %s: %s", source, extra)
 
             result = subprocess.run(
                 dbt_command(),
@@ -337,8 +376,7 @@ def make_pipeline(profile: PipelineProfile):
                 print(result.stderr[-4000:])
                 raise RuntimeError(f"dbt build exited {result.returncode}")
 
-            summary = [line for line in result.stdout.splitlines() if "PASS=" in line]
-            return summary[-1].strip() if summary else "dbt build finished"
+            return dbt_build_xcom_value(extra, result.stdout)
 
         @task
         def publish_to_backend() -> int:
