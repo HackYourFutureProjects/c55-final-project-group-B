@@ -353,7 +353,7 @@ def make_pipeline(profile: PipelineProfile):
                 print(f"  file={file_path} bytes={length} modified={modified}")
             return len(rows)
 
-        @task
+        @task(retries=0)  # full dbt build is heavy; retry loops can OOM the VM
         def dbt_build() -> str:
             """Build the models and run the tests."""
             import subprocess
