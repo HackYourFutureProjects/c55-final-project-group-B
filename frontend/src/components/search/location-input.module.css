@@ -15,10 +15,6 @@
   color: var(--subtle);
 }
 
-.input:focus {
-  outline: none;
-}
-
 .list {
   position: absolute;
   top: calc(100% + 24px);
@@ -60,4 +56,13 @@
   font-size: var(--text-sm);
   font-style: italic;
   color: var(--subtle);
+}
+
+.form:has(input:focus-visible) {
+  outline: 2px solid var(--pine);
+  outline-offset: 2px;
+}
+
+.wrapper:has(input:focus-visible) {
+  border-color: var(--pine);
 }

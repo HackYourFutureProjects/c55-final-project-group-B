@@ -31,9 +31,9 @@
     box-shadow var(--duration-fast) ease;
 }
 
-.input:focus {
-  outline: none;
-  border: 1px solid var(--text);
+.input:focus-visible {
+  outline: 2px solid var(--pine);
+  outline-offset: -2px;
   box-shadow: var(--shadow-hard-sm);
 }
 

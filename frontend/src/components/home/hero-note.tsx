@@ -33,7 +33,7 @@ export default function HeroNote() {
 
   return (
     <p className={styles.note}>
-      Welcome back, {user.name}! Your{" "}
+      Welcome back, <strong>{user.name}</strong>! Your{" "}
       <Link href="/saved-jobs" className={styles.noteLink}>
         saved jobs
       </Link>{" "}

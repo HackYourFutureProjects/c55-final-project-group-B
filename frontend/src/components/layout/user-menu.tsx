@@ -1,6 +1,11 @@
 "use client";
 
-import { HeartIcon, SignOutIcon, UserCircleIcon } from "@phosphor-icons/react";
+import {
+  HeartIcon,
+  SignOutIcon,
+  UserCircleIcon,
+  UserIcon,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
@@ -99,6 +104,14 @@ export default function UserMenu() {
             <span className={styles.name}>{user.name}</span>
             <span className={styles.email}>{user.email}</span>
           </p>
+          <Link
+            href="/profile"
+            className={styles.item}
+            onClick={() => setIsOpen(false)}
+          >
+            <UserIcon size={18} weight="duotone" aria-hidden="true" />
+            Profile
+          </Link>
           <Link
             href="/saved-jobs"
             className={styles.item}

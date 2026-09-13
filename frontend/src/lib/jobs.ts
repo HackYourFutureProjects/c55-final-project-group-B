@@ -62,12 +62,12 @@ export async function getJobCount(): Promise<string | null> {
   }
 }
 
-export async function getJobTitleCount(): Promise<number | null> {
+export async function getJobTitleCount(): Promise<string | null> {
   try {
     const res = await fetch(`${BACKEND_API_URL}/api/job-titles`);
     if (!res.ok) return null;
     const titles = await res.json();
-    return titles.length;
+    return formatCount.format(titles.length);
   } catch {
     return null;
   }
