@@ -48,7 +48,7 @@ def load_freshness() -> pd.DataFrame:
         select
             max(ingested_at) as last_ingested,
             count(*)         as row_count,
-            count(distinct posted_date) as days_covered
+            count(distinct created) as days_covered
         from {SCHEMA}.fct_postings
     """
     # Read with a cursor rather than pd.read_sql. pandas only recognises
