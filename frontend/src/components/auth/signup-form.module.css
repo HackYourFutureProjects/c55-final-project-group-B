@@ -44,11 +44,6 @@
   color: var(--subtle);
 }
 
-.hint {
-  color: var(--subtle);
-  font-size: 14px;
-}
-
 .form :global(.button) {
   align-self: flex-start;
 }
