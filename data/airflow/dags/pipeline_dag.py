@@ -169,9 +169,10 @@ def dbt_build_extra_args() -> str:
 
 
 def dbt_build_timeout(extra_args: str) -> int:
-    """Wall-clock limit for the locked deps+build shell command.
+    """Wall-clock limit for the locked dbt build shell command.
 
     Includes time spent waiting on flock when the other DAG holds the lock.
+    Package install runs in airflow-dag-pull, not in this task.
     """
     build_timeout = (
         DBT_BUILD_FULL_REFRESH_TIMEOUT
@@ -192,20 +193,21 @@ def dbt_build_xcom_value(extra: str, stdout: str) -> str:
 
 
 def dbt_build_inner_command() -> str:
-    """Install packages (if needed) and run dbt build — no outer flock."""
+    """Run dbt build only. Packages are installed by airflow-dag-pull on deploy."""
     target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
     extra = dbt_build_extra_args()
     extra_suffix = f" {extra}" if extra else ""
-    deps = (
-        f"test -f {DBT_UTILS_PROJECT} || rm -rf {DBT_PROJECT_DIR}/dbt_packages; "
-        f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR} && "
-        f"test -f {DBT_UTILS_PROJECT}"
+    verify = (
+        f"test -f {DBT_UTILS_PROJECT} || {{ "
+        f"echo 'missing {DBT_UTILS_PROJECT} — wait for airflow-dag-pull or run dbt deps on the VM' >&2; "
+        f"exit 1; "
+        f"}}"
     )
     build = (
         f"{DBT_RUNNER} build --target {target}{extra_suffix} "
         f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     )
-    return f"{deps} && {build}"
+    return f"{verify} && {build}"
 
 
 def dbt_command() -> str:
