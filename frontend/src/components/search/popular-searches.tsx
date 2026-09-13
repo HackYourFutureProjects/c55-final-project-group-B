@@ -1,4 +1,4 @@
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { MapPinIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./popular-searches.module.css";
 

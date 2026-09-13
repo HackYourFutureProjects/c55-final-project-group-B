@@ -1,7 +1,4 @@
-import {
-  GithubLogoIcon,
-  LinkedinLogoIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { GithubLogoIcon, LinkedinLogoIcon } from "@phosphor-icons/react/ssr";
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import styles from "./team-profile.module.css";

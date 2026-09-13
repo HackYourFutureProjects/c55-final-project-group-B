@@ -1,4 +1,4 @@
-import { GithubLogoIcon } from "@phosphor-icons/react/dist/ssr";
+import { GithubLogoIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./site-footer.module.css";
 

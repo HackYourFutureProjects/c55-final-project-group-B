@@ -5,7 +5,7 @@ import {
   PersonArmsSpreadIcon,
   PlantIcon,
   UserIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react/ssr";
 import type { ReactNode } from "react";
 import styles from "./feature-highlights.module.css";
 

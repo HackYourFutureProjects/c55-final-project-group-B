@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { CircleNotchIcon } from "@phosphor-icons/react/ssr";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { parseLocation } from "@/lib/job-filters";
 import { buildJobsQuery } from "@/lib/jobs";
