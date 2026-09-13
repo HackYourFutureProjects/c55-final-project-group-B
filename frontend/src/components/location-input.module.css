@@ -1,6 +1,5 @@
 .wrapper {
-  flex: 1;
-  position: relative;
+  flex: 0 1 220px;
 }
 
 .input {
@@ -23,7 +22,7 @@
 
 .list {
   position: absolute;
-  top: calc(100% + 32px);
+  top: calc(100% + 24px);
   left: 0;
   right: 0;
   z-index: 10;
@@ -60,5 +59,6 @@
 .kind {
   margin-left: auto;
   font-size: 12px;
+  font-style: italic;
   color: var(--subtle);
 }

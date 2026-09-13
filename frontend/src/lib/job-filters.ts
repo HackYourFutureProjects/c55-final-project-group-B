@@ -1,4 +1,3 @@
-import { match } from "assert";
 import type { Job } from "./types";
 
 export type LocationOption = {

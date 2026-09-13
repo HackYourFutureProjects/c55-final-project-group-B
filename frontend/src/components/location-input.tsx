@@ -58,6 +58,8 @@ export default function LocationInput({
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setText(event.target.value);
+    setIsOpen(true);
+    setActiveIndex(-1);
   }
 
   function select(option: LocationOption) {
@@ -125,7 +127,7 @@ export default function LocationInput({
         <div
           id={listId}
           role="listbox"
-          aria-label="Suggestions"
+          aria-label="Location suggestions"
           className={styles.list}
           onMouseDown={(event) => event.preventDefault()}
         >
