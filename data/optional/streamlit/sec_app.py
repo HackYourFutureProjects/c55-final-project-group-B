@@ -217,4 +217,3 @@ try:
 
 except psycopg.Error as e:
     st.warning(f"Could not load skills breakdown: Database error - {e}")
-
