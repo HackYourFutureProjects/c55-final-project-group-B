@@ -7,7 +7,7 @@
   --subtle: #74708f;
   --text: #464261;
 
-  --love: #b4637a;
+  --love: #9c4f66;
   --gold: #ea9d34;
   --rose: #d7827e;
   --pine: #286983;
@@ -44,15 +44,20 @@
   --radius: 6px;
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
+  --shadow-hard-md: 3px 3px 0 0 var(--text);
   --shadow-soft: 4px 4px 0 0 var(--highlight-high);
   --shadow-soft-sm: 2px 2px 0 0 var(--highlight-high);
-  --transition-shadow: box-shadow 250ms ease;
-  --transition-shadow-sm: box-shadow 150ms ease;
   --container-width: 1180px;
   --header-height: 77px;
   --footer-height: 74px;
   --section-padding: 64px;
   --inner-padding: 32px;
+
+  /* Motion tokens */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --transition-shadow: box-shadow var(--duration-base) ease;
+  --transition-shadow-sm: box-shadow var(--duration-base) ease;
 }
 
 *,

@@ -165,11 +165,7 @@ export default function SignupForm() {
         <FieldError message={errorFor("confirmPassword")} />
       </div>
 
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
+      {error && <FieldError message={error} />}
 
       <button type="submit" className="button" disabled={isSubmitting}>
         {isSubmitting ? "Signing up…" : "Sign up"}

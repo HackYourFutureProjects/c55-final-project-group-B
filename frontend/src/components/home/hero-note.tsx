@@ -9,7 +9,7 @@ export default function HeroNote() {
 
   if (isLoading) {
     return (
-      <p aria-hidden="true" className={styles.note}>
+      <p className={styles.note}>
         Not a user yet?{" "}
         <Link href="/signup" className={styles.noteLink}>
           Sign up

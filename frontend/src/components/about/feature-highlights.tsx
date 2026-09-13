@@ -34,7 +34,7 @@ const FEATURES: Feature[] = [
   {
     title: "Accessible by design",
     description:
-      "Flint is for everyone. Labelled controls and keyboard navigation makes it work just as well with a screen reader as with a mouse.",
+      "Flint is for everyone. Labelled controls and keyboard navigation make it work just as well with a screen reader as with a mouse.",
     icon: <PersonArmsSpreadIcon size={24} weight="duotone" />,
     color: styles.swatchFoam,
   },

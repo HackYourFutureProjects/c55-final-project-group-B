@@ -23,7 +23,7 @@ export default function ActionBanner() {
             className={styles.primary}
             href={user ? "/saved-jobs" : "/signup"}
           >
-            {user ? "Saved job" : "Sign up"}
+            {user ? "Saved jobs" : "Sign up"}
           </Link>
           <Link className={styles.secondary} href="/jobs">
             Browse jobs

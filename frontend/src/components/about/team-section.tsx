@@ -24,7 +24,7 @@ const MEMBERS: TeamProfileProps[] = [
   },
   {
     photo: dagim,
-    name: "Dagim H.Selassie",
+    name: "Dagim Hailelassie",
     role: "Backend",
     github: "https://github.com/Unlock7",
     linkedin: "https://www.linkedin.com/in/dagim-h-selassie-7aa9ab1b4/",
@@ -57,11 +57,11 @@ export default function TeamSection() {
     <section className={styles.section}>
       <div className={`container ${styles.inner}`}>
         <h2 className={styles.heading}>Meet the Team</h2>
-        <p className={styles.intro}>
+        <p>
           Five trainees across frontend, backend, and data, guided throughout by
           Jana, our volunteer project manager and the reason any of it shipped
           on time. We all come from different backgrounds and careers, and Flint
-          is what happened when we put all our ideas together.Say hello on
+          is what happened when we put all our ideas together. Say hello on
           LinkedIn, we're all job hunting too.
         </p>
         <div className={styles.grid}>

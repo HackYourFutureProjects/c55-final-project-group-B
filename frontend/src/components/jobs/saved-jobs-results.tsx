@@ -70,7 +70,7 @@ export default function SavedJobsResults({
   if (state.status === "error") {
     return (
       <div className={styles.notice}>
-        <p className={styles.noticeText}>
+        <p role="alert" className={styles.noticeText}>
           Could not load your saved jobs. Please try again later.
         </p>
       </div>

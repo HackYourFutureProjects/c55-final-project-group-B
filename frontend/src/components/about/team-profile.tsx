@@ -25,26 +25,28 @@ export default function TeamProfile({
         placeholder="blur"
         alt={`${name} profile photo`}
         className={styles.photo}
-      ></Image>
+      />
       <div className={styles.details}>
         <h3 className={styles.name}>{name}</h3>
         <p className={styles.role}>{role}</p>
         <div className={styles.links}>
-          <Link className={`${styles.button} ${styles.github}`} href={github}>
-            <GithubLogoIcon
-              size={32}
-              weight="duotone"
-              aria-label={`${name} on GitHub`}
-              target="_blank"
-            />
+          <Link
+            className={`${styles.button} ${styles.github}`}
+            href={github}
+            aria-label={`${name} on GitHub`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <GithubLogoIcon size={32} weight="duotone" aria-hidden="true" />
           </Link>
           <Link
             className={`${styles.button} ${styles.linkedin}`}
             href={linkedin}
             aria-label={`${name} on LinkedIn`}
             target="_blank"
+            rel="noopener noreferrer"
           >
-            <LinkedinLogoIcon size={32} weight="duotone" />
+            <LinkedinLogoIcon size={32} weight="duotone" aria-hidden="true" />
           </Link>
         </div>
       </div>

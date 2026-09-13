@@ -19,6 +19,10 @@ export function formatPostedDateShort(created: string | null): string | null {
   if (!created) return null;
 
   const date = new Date(created);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
   const now = new Date();
 
   const diffMs = now.getTime() - date.getTime();

@@ -21,8 +21,6 @@ export function validate(values: Values): Record<string, string | undefined> {
   if (values.name.trim().length < 2) errors.name = "Please enter a valid name.";
   if (!isValidEmail(values.email))
     errors.email = "Please enter a valid e-mail address.";
-  if (!passwordRules.every((r) => r.test(values.password)))
-    errors.password = "Password does not meet the requirements.";
   if (values.password !== values.confirmPassword)
     errors.confirmPassword = "Passwords do not match.";
   return errors;

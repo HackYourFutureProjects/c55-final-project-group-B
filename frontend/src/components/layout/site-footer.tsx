@@ -13,7 +13,7 @@ export function SiteFooter() {
             className={styles.links}
             href="https://hackyourfuture.net"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
           >
             HackYourFuture
           </a>{" "}
@@ -34,6 +34,7 @@ export function SiteFooter() {
               aria-label="Flint source code on GitHub"
               href="https://github.com/HackYourFutureProjects/c55-final-project-group-B"
               target="_blank"
+              rel="noopener noreferrer"
             >
               <GithubLogoIcon size={24} weight="duotone" aria-hidden="true" />
             </Link>

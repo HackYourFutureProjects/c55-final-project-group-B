@@ -112,6 +112,10 @@ export default function SearchInput({
         placeholder="Search by role, skill or company"
         value={query}
         onChange={handleChange}
+        onBlur={() => {
+          setIsOpen(false);
+          setActiveIndex(-1);
+        }}
         onKeyDown={handleKeyDown}
         autoComplete="off"
         className={styles.input}

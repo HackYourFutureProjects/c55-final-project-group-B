@@ -117,6 +117,10 @@ export default function LocationInput({
         placeholder="City or province"
         value={text}
         onChange={handleChange}
+        onBlur={() => {
+          setIsOpen(false);
+          setActiveIndex(-1);
+        }}
         onKeyDown={handleKeyDown}
         autoComplete="off"
         className={styles.input}

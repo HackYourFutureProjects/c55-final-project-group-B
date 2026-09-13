@@ -32,7 +32,7 @@ const FEATURES: Feature[] = [
   {
     title: "Fresh listings daily",
     description:
-      "Our pipeline refreshes the database everyday, showing you the newest roles first.",
+      "Our pipeline refreshes the database every day, showing you the newest roles first.",
     icon: <SparkleIcon size={24} weight="duotone" />,
     color: styles.swatchGold,
   },
