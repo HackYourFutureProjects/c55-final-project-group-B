@@ -1,5 +1,4 @@
 with
-    -- source as {{ ref("stg_postings") }},
     source as (select * from {{ ref("stg_postings") }}),
 
     extract_contract as (
@@ -15,7 +14,6 @@ with
                 then 'part_time'
                 when lower(title) rlike '\\b(fulltime|full-time|voltijd)\\b'
                 then 'full_time'
-                else null
             end as contract_type_from_title
         from source
     ),
@@ -34,8 +32,6 @@ with
                 then 'graduation_internship'
                 when
                     lower(title)
-                    -- rlike
-                    -- '\\b(stage|stageplek|stageplaats|traineeship|trainee|werkervaringsplek|internship)\\b'
                     rlike '\\b(stage|stageplek|stageplaats|stagiair|stagiaire|traineeship|trainee|werkervaringsplek|internship)\\b'
                 then 'internship'
                 else 'regular_job'
@@ -50,13 +46,27 @@ with
             source_system,
             contract_type_from_title,
             employment_type,
-            -- Step 1: Remove contract type words from title
-            -- Example: "Restaurant Medewerker Fulltime" -> "Restaurant Medewerker"
-            regexp_replace(
-                title,
-                '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
-                ''
-            ) as title
+            -- Step 1: Remove contract type words from title, but ONLY if something
+            -- remains afterward. If the title is *just* "Parttime" / "Fulltime" etc,
+            -- keep it as-is so it doesn't collapse to an empty/null title downstream.
+            case
+                when
+                    trim(
+                        regexp_replace(
+                            title,
+                            '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
+                            ''
+                        )
+                    )
+                    = ''
+                then title
+                else
+                    regexp_replace(
+                        title,
+                        '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
+                        ''
+                    )
+            end as title
         from extract_employment_type
     ),
 
@@ -282,4 +292,3 @@ select
     source_system
 from cleaned
 where title is not null
-;
