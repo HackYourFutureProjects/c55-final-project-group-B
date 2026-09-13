@@ -1,20 +1,44 @@
 :root {
-  /* Rose Pine (dawn) palette */
+  /* Color tokens */
   --base: #faf4ed;
   --surface: #fffaf3;
   --overlay: #f2e9e1;
   --muted: #9893a5;
-  --subtle: #797593;
+  --subtle: #74708f;
   --text: #464261;
+
   --love: #b4637a;
   --gold: #ea9d34;
   --rose: #d7827e;
   --pine: #286983;
   --foam: #56949f;
   --iris: #907aa9;
+
   --highlight-low: #f4ede8;
   --highlight-med: #dfdad9;
   --highlight-high: #cecacd;
+
+  /* Type tokens */
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-display: 4rem;
+
+  /* Spacing tokens */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
 
   /* Design tokens */
   --radius: 6px;
@@ -24,8 +48,6 @@
   --shadow-soft-sm: 2px 2px 0 0 var(--highlight-high);
   --transition-shadow: box-shadow 250ms ease;
   --transition-shadow-sm: box-shadow 150ms ease;
-  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
   --header-height: 77px;
   --footer-height: 74px;
