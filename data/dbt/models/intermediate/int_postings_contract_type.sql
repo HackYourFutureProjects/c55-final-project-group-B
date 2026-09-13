@@ -18,9 +18,9 @@ with
             contract_type_from_title,
             contract_type_from_desc,
             case
-                when contract_type_from_title is not null
+                when contract_type_from_title in ('full_time', 'part_time')
                 then contract_type_from_title
-                when contract_type_from_desc is not null
+                when contract_type_from_desc in ('full_time', 'part_time')
                 then contract_type_from_desc
                 else 'unknown'
             end as contract_type

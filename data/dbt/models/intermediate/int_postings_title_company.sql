@@ -44,21 +44,35 @@ with
     ),
 
     step1 as (
-        select
-            job_id,
-            company_name,
-            source_system,
-            contract_type_from_title,
-            employment_type,
-            -- Step 1: Remove contract type words from title
-            -- Example: "Restaurant Medewerker Fulltime" -> "Restaurant Medewerker"
-            regexp_replace(
-                title,
-                '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
-                ''
-            ) as title
-        from extract_employment_type
-    ),
+    select
+        job_id,
+        company_name,
+        source_system,
+        contract_type_from_title,
+        employment_type,
+        -- Step 1: Remove contract type words from title, but ONLY if something
+        -- remains afterward. If the title is *just* "Parttime" / "Fulltime" etc,
+        -- keep it as-is so it doesn't collapse to an empty/null title downstream.
+        case
+            when
+                trim(
+                    regexp_replace(
+                        title,
+                        '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
+                        ''
+                    )
+                )
+                = ''
+            then title
+            else
+                regexp_replace(
+                    title,
+                    '(?i)\\b(fulltime|full-time|parttime|part-time|bijbaan|deeltijd|voltijd)\\b',
+                    ''
+                )
+        end as title
+    from extract_employment_type
+),
 
     step2 as (
         select
