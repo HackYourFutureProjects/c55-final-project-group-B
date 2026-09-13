@@ -11,7 +11,6 @@ HYF maintains this file. Edit pipeline_dag.py for your own DAG work.
 from __future__ import annotations
 
 import os
-import subprocess
 from datetime import timedelta
 
 import pendulum
@@ -98,24 +97,19 @@ def final_project_pipeline_dev():
             dbt_build_xcom_value,
             dbt_command,
             logger,
+            run_shell_command_streaming,
         )
 
         extra, source = dbt_build_extra_args_with_source()
         if extra:
             logger.info("dbt_build_extra_args from %s: %s", source, extra)
 
-        result = subprocess.run(
+        result = run_shell_command_streaming(
             dbt_command(),
-            shell=True,
-            check=False,
             env={**os.environ, **databricks_environment_dev()},
-            text=True,
-            capture_output=True,
             timeout=dbt_build_timeout(extra),
         )
-        print(result.stdout[-8000:])
         if result.returncode != 0:
-            print(result.stderr[-4000:])
             raise RuntimeError(f"dbt build exited {result.returncode}")
 
         return dbt_build_xcom_value(extra, result.stdout)

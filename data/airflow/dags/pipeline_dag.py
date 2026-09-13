@@ -34,10 +34,13 @@ import logging
 import os
 import re
 import shlex
+import subprocess
+import time
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
+from threading import Thread
 
 import pendulum
 from airflow.sdk import Variable, dag, task
@@ -62,8 +65,10 @@ DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/airflow/include/dbt")
 # Bump the two together. uvx, because the Airflow image ships a newer Python
 # than stable dbt-core supports.
 DBT_RUNNER = "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
-DBT_DEPS_LOCK = f"{DBT_PROJECT_DIR}/.dbt_deps.lock"
+# One lock for deps and build: prod + dev DAGs share this dbt project dir on the VM.
+DBT_PROJECT_LOCK = f"{DBT_PROJECT_DIR}/.dbt_project.lock"
 DBT_UTILS_PROJECT = f"{DBT_PROJECT_DIR}/dbt_packages/dbt_utils/dbt_project.yml"
+DBT_LOCK_WAIT_SECONDS = 7200
 
 # Optional override for one-off runs: dag run conf `dbt_build_extra_args` first,
 # then legacy Admin -> Variables `DBT_BUILD_EXTRA_ARGS`.
@@ -71,8 +76,8 @@ DBT_BUILD_EXTRA_ARGS_CONF_KEY = "dbt_build_extra_args"
 DBT_BUILD_EXTRA_ARGS_VAR = "DBT_BUILD_EXTRA_ARGS"
 DBT_EXTRA_ARGS_PATTERN = re.compile(r"^[\w\s\-+.:]+$")
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
-DBT_BUILD_DEFAULT_TIMEOUT = 1800
-DBT_BUILD_FULL_REFRESH_TIMEOUT = 5400
+DBT_BUILD_DEFAULT_TIMEOUT = 3600
+DBT_BUILD_FULL_REFRESH_TIMEOUT = 7200
 
 
 @dataclass(frozen=True)
@@ -164,9 +169,16 @@ def dbt_build_extra_args() -> str:
 
 
 def dbt_build_timeout(extra_args: str) -> int:
-    if "--full-refresh" in extra_args:
-        return DBT_BUILD_FULL_REFRESH_TIMEOUT
-    return DBT_BUILD_DEFAULT_TIMEOUT
+    """Wall-clock limit for the locked deps+build shell command.
+
+    Includes time spent waiting on flock when the other DAG holds the lock.
+    """
+    build_timeout = (
+        DBT_BUILD_FULL_REFRESH_TIMEOUT
+        if "--full-refresh" in extra_args
+        else DBT_BUILD_DEFAULT_TIMEOUT
+    )
+    return DBT_LOCK_WAIT_SECONDS + build_timeout + 300
 
 
 def dbt_build_xcom_value(extra: str, stdout: str) -> str:
@@ -179,19 +191,21 @@ def dbt_build_xcom_value(extra: str, stdout: str) -> str:
     return summary
 
 
-def dbt_deps_command() -> str:
-    """Install dbt packages under a file lock.
-
-    Prod and dev DAGs share one dbt project dir on the VM. Without a lock,
-    concurrent `dbt deps` calls can leave dbt_packages half-written while the
-    lock file still says "Up to date!". Wipe broken installs before re-fetching.
-    """
-    inner = (
+def dbt_build_inner_command() -> str:
+    """Install packages (if needed) and run dbt build — no outer flock."""
+    target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
+    extra = dbt_build_extra_args()
+    extra_suffix = f" {extra}" if extra else ""
+    deps = (
         f"test -f {DBT_UTILS_PROJECT} || rm -rf {DBT_PROJECT_DIR}/dbt_packages; "
         f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR} && "
         f"test -f {DBT_UTILS_PROJECT}"
     )
-    return f"flock -w 600 {DBT_DEPS_LOCK} bash -c {shlex.quote(inner)}"
+    build = (
+        f"{DBT_RUNNER} build --target {target}{extra_suffix} "
+        f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
+    )
+    return f"{deps} && {build}"
 
 
 def dbt_command() -> str:
@@ -207,14 +221,59 @@ def dbt_command() -> str:
     Trigger conf `dbt_build_extra_args` (or legacy Variable) inserts flags after
     `dbt build` and before `--project-dir`.
     """
-    target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
-    extra = dbt_build_extra_args()
-    extra_suffix = f" {extra}" if extra else ""
-    build = (
-        f"{DBT_RUNNER} build --target {target}{extra_suffix} "
-        f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
+    inner = dbt_build_inner_command()
+    return (
+        f"flock -w {DBT_LOCK_WAIT_SECONDS} {DBT_PROJECT_LOCK} "
+        f"bash -c {shlex.quote(inner)}"
     )
-    return f"{dbt_deps_command()} && {build}"
+
+
+def run_shell_command_streaming(
+    command: str,
+    *,
+    env: dict[str, str],
+    timeout: int,
+) -> subprocess.CompletedProcess[str]:
+    """Run a shell command and stream merged stdout/stderr to the task log."""
+    proc = subprocess.Popen(
+        command,
+        shell=True,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    lines: list[str] = []
+    assert proc.stdout is not None
+
+    def consume() -> None:
+        for line in proc.stdout:
+            line = line.rstrip("\n")
+            lines.append(line)
+            print(line, flush=True)
+
+    reader = Thread(target=consume, daemon=True)
+    reader.start()
+    deadline = time.monotonic() + timeout
+    returncode: int | None = None
+    while True:
+        returncode = proc.poll()
+        if returncode is not None:
+            break
+        if time.monotonic() > deadline:
+            proc.kill()
+            proc.wait()
+            reader.join(timeout=5)
+            raise subprocess.TimeoutExpired(cmd=command, timeout=timeout)
+        time.sleep(1)
+
+    reader.join(timeout=30)
+    return subprocess.CompletedProcess(
+        args=command,
+        returncode=returncode or 0,
+        stdout="\n".join(lines),
+        stderr="",
+    )
 
 
 def setting(name: str, default: str | None = None) -> str:
@@ -373,24 +432,16 @@ def make_pipeline(profile: PipelineProfile):
         @task(retries=0)  # full dbt build is heavy; retry loops can OOM the VM
         def dbt_build() -> str:
             """Build the models and run the tests."""
-            import subprocess
-
             extra, source = dbt_build_extra_args_with_source()
             if extra:
                 logger.info("dbt_build_extra_args from %s: %s", source, extra)
 
-            result = subprocess.run(
+            result = run_shell_command_streaming(
                 dbt_command(),
-                shell=True,
-                check=False,
                 env={**os.environ, **databricks_environment(profile)},
-                text=True,
-                capture_output=True,
                 timeout=dbt_build_timeout(extra),
             )
-            print(result.stdout[-8000:])
             if result.returncode != 0:
-                print(result.stderr[-4000:])
                 raise RuntimeError(f"dbt build exited {result.returncode}")
 
             return dbt_build_xcom_value(extra, result.stdout)
