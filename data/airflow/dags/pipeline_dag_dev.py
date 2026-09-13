@@ -1,6 +1,7 @@
 """VM-only dev integration DAG for the final project pipeline.
 
-Daily 09:00 Europe/Amsterdam on the team Airflow VM: job-fp-ingest-dev, dev_airflow schema,
+Daily 10:00 Europe/Amsterdam on the team Airflow VM (one hour after prod so shared
+dbt_packages are not installed by two DAGs at once): job-fp-ingest-dev, dev_airflow schema,
 analytics_dev publish. Not loaded on Astro (laptops have DATABRICKS_TOKEN in
 data/.env). For local DAG runs use final_project_pipeline in pipeline_dag.py.
 
@@ -55,7 +56,7 @@ def databricks_environment_dev() -> dict[str, str]:
     dag_id="final_project_pipeline_dev",
     description="Mode 3: VM platform-dev — aca-dev landing, main code, dev_airflow, analytics_dev",
     start_date=pendulum.datetime(2026, 1, 1, tz="Europe/Amsterdam"),
-    schedule="0 9 * * *",
+    schedule="0 10 * * *",
     catchup=False,
     max_active_runs=1,
     default_args=DEFAULT_ARGS,
