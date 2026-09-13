@@ -841,7 +841,6 @@ dependencies = [
     { name = "requests" },
     { name = "ruff" },
     { name = "sqlalchemy" },
-    { name = "sqlfmt" },
     { name = "tenacity" },
 ]
 
@@ -903,7 +902,6 @@ requires-dist = [
     { name = "shandy-sqlfmt", marker = "extra == 'dev'", specifier = ">=0.23.0" },
     { name = "sqlalchemy", specifier = ">=2.0.52" },
     { name = "sqlfluff", marker = "extra == 'dev'", specifier = ">=4.3.0" },
-    { name = "sqlfmt", specifier = ">=0.0.2" },
     { name = "streamlit", marker = "extra == 'dashboard'", specifier = ">=1.39.0" },
     { name = "tenacity", specifier = ">=9.1.4" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a1" },
@@ -2819,18 +2817,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c8/06/c675066797f91a77d456bc15375a0a8c9b4765f1e66db639655772a928da/sqlfluff-4.3.0.tar.gz", hash = "sha256:aa647b3721112f1aca581efe8eaa815a332ae214610a0946592f98a19ef1e8cb", size = 1068771, upload-time = "2026-08-07T09:01:19.317Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/79/be/0be38ce154b9d798bb00b5ce65a3ad0e1ae2bc9419fcd8e3c773c2b80c70/sqlfluff-4.3.0-py3-none-any.whl", hash = "sha256:582e12af5101bd1c5bc120cb4a6942dadcfe5e5b1e01406f220dd08f5b3f31dd", size = 1051485, upload-time = "2026-08-07T09:01:17.139Z" },
-]
-
-[[package]]
-name = "sqlfmt"
-version = "0.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "sqlfluff" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/b6/54d9249944d3aa1bb1d36609f0ed1bf777bc6fb5e9203dab4f240e714c57/sqlfmt-0.0.2.tar.gz", hash = "sha256:05308d6e21a0c6bfb8af6e662670a19f86400837ccff142980bbc2df34257a9d", size = 2809, upload-time = "2021-11-25T18:11:44.228Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/ba/3a808daf24b666297e9a8b6274ce70f38b6023b09e6d8ed9064e3c5305aa/sqlfmt-0.0.2-py3-none-any.whl", hash = "sha256:92a40c9c5c50a2fa4c39ea82046e9f697e82ad0bc2849cde3c25519badb08bd2", size = 3383, upload-time = "2021-11-25T18:11:43.047Z" },
 ]
 
 [[package]]
