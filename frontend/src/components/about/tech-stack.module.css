@@ -1,5 +1,5 @@
 .section {
-  padding-block: var(--section-padding);
+  padding-block: var(--space-3xl);
   background-color: var(--highlight-low);
   border-bottom: 1px solid var(--highlight-high);
 }
@@ -7,32 +7,28 @@
 .inner {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .heading {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: var(--text-2xl);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: var(--space-xl);
 }
 
 .track {
-  padding: 24px;
-}
-
-.track:hover {
+  padding: var(--space-lg);
   box-shadow: var(--shadow-soft);
-  transition: var(--transition-shadow);
 }
 
 .trackName {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   font-weight: 700;
 }
 
@@ -40,14 +36,14 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .icon {
@@ -63,12 +59,12 @@
 
 .name {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .description {
   color: var(--subtle);
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 .swatchFoam {

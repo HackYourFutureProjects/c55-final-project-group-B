@@ -1,43 +1,40 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-lg);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-xs);
 }
 
 .label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
+  gap: var(--space-xs);
+  font-size: var(--text-base);
   font-weight: 600;
 }
 
 .input {
-  padding: 12px;
+  padding: var(--space-sm);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   color: var(--text);
   background-color: var(--highlight-low);
   border: 1px solid var(--highlight-high);
   border-radius: var(--radius);
   transition:
-    150ms ease,
-    var(--transition-shadow-sm);
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
 .input:focus {
   outline: none;
   border: 1px solid var(--text);
   box-shadow: var(--shadow-hard-sm);
-  transition:
-    150ms ease,
-    var(--transition-shadow-sm);
 }
 
 .input::placeholder {

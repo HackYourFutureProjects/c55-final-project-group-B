@@ -8,14 +8,14 @@
   flex-shrink: 0;
   text-align: center;
   border-bottom: 1px solid var(--highlight-high);
-  padding: 42px;
+  padding: var(--space-xl);
 }
 
 .heading {
   font-family: var(--font-display);
-  font-size: 2.75rem;
+  font-size: var(--text-3xl);
   font-weight: 800;
-  padding: 32px;
+  padding: var(--space-xl);
 }
 
 .results {
@@ -23,7 +23,7 @@
   min-height: 0;
   overflow: hidden;
   background-color: var(--highlight-low);
-  padding: 36px;
+  padding: var(--space-xl);
 }
 
 .board {

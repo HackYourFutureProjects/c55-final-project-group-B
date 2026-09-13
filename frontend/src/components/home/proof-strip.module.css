@@ -1,5 +1,5 @@
 .section {
-  padding-block: var(--inner-padding);
+  padding-block: var(--space-xl);
   background-color: var(--base);
   border-bottom: 1px solid var(--highlight-high);
 }
@@ -12,7 +12,7 @@
 .item {
   display: flex;
   flex-direction: column-reverse;
-  gap: 8px;
+  gap: var(--space-xs);
   align-items: center;
   text-align: center;
 }
@@ -24,7 +24,7 @@
 .value {
   color: var(--pine);
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: var(--text-3xl);
   font-weight: 800;
   line-height: 1;
 }

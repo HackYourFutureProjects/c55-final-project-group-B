@@ -2,7 +2,7 @@
   color: var(--base);
   background-color: var(--pine);
   border-bottom: 1px solid var(--highlight-high);
-  padding-block: var(--section-padding);
+  padding-block: var(--space-3xl);
   text-align: center;
 }
 
@@ -12,18 +12,18 @@
 
 .heading {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: var(--text-3xl);
 }
 
 .message {
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   color: var(--highlight-low);
 }
 
 .links {
   display: flex;
-  margin-top: var(--inner-padding);
-  gap: 16px;
+  margin-top: var(--space-xl);
+  gap: var(--space-md);
   font-weight: 600;
   align-content: center;
   justify-content: center;
@@ -35,34 +35,32 @@
 }
 
 .primary {
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--pine);
   background-color: var(--surface);
   border: 1px solid var(--text);
   box-shadow: var(--shadow-hard-sm);
   border-radius: var(--radius);
-  transition: all 150ms ease-in-out;
+  transition: var(--transition-lift);
 }
 
 .primary:hover {
   translate: -1px -1px;
-  box-shadow: var(--shadow-hard);
-  transition: all 150ms ease-in-out;
+  box-shadow: var(--shadow-hard-md);
 }
 
 .primary:active {
   translate: 1px 1px;
   box-shadow: none;
-  transition: all 150ms ease-in-out;
 }
 
 .secondary {
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--surface);
   background-color: transparent;
   border: 1px solid var(--surface);
   border-radius: var(--radius);
-  transition: all 150ms ease;
+  transition: background-color var(--duration-fast) ease;
 }
 
 .secondary:hover {

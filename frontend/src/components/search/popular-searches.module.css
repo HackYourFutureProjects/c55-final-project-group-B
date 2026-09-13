@@ -1,10 +1,10 @@
 .wrapper {
-  margin-top: 20px;
+  margin-top: var(--space-lg);
 }
 
 .label {
-  margin-bottom: 8px;
-  font-size: 0.875rem;
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-sm);
   color: var(--subtle);
 }
 
@@ -12,23 +12,23 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-xs);
   list-style: none;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: var(--surface);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   transition:
-    translate 0.15s ease,
-    var(--transition-shadow);
+    var(--transition-lift),
+    background-color var(--duration-fast) ease;
 }
 
 .chip:hover {

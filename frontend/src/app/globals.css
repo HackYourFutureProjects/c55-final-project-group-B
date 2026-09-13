@@ -4,7 +4,7 @@
   --surface: #fffaf3;
   --overlay: #f2e9e1;
   --muted: #9893a5;
-  --subtle: #74708f;
+  --subtle: #6a6683;
   --text: #464261;
 
   --love: #9c4f66;
@@ -50,14 +50,12 @@
   --container-width: 1180px;
   --header-height: 77px;
   --footer-height: 74px;
-  --section-padding: 64px;
-  --inner-padding: 32px;
 
   /* Motion tokens */
   --duration-fast: 150ms;
   --duration-base: 300ms;
-  --transition-shadow: box-shadow var(--duration-base) ease;
-  --transition-shadow-sm: box-shadow var(--duration-base) ease;
+  --transition-lift:
+    translate var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 }
 
 *,
@@ -81,7 +79,7 @@ body {
   background-color: var(--base);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: var(--text-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -113,7 +111,7 @@ a {
 .container {
   margin-inline: auto;
   max-width: var(--container-width);
-  padding-inline: 24px;
+  padding-inline: var(--space-lg);
 }
 
 .button {
@@ -121,25 +119,23 @@ a {
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: var(--pine);
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--surface);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-hard-sm);
-  transition:
-    translate 0.15s ease,
-    var(--transition-shadow);
+  transition: var(--transition-lift);
 }
 
 .button:hover {
   translate: -1px -1px;
-  box-shadow: 3px 3px 0 0 var(--text);
+  box-shadow: var(--shadow-hard-md);
 }
 
 .button:active {
-  translate: 2px 2px;
+  translate: 1px 1px;
   box-shadow: none;
 }
 
@@ -148,15 +144,15 @@ a {
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: transparent;
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition:
-    0.15s ease,
-    var(--transition-shadow);
+    var(--transition-lift),
+    background-color var(--duration-fast) ease;
 }
 
 .button-secondary:hover {

@@ -1,6 +1,6 @@
 .footer {
   margin-top: auto;
-  font-size: 14px;
+  font-size: var(--text-sm);
   background-color: var(--surface);
   color: var(--subtle);
   border-top: 1px solid var(--highlight-high);
@@ -13,7 +13,7 @@
   justify-content: space-between;
   margin-inline: auto;
   max-width: 75%;
-  padding-inline: 24px;
+  padding-inline: var(--space-lg);
 }
 
 .nav {
@@ -21,12 +21,13 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: var(--space-md);
   list-style: none;
 }
 
 .links {
   text-underline-offset: 4px;
+  transition: color var(--duration-fast) ease;
 }
 
 .links:hover {

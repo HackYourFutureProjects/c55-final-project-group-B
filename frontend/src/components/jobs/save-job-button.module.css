@@ -10,8 +10,8 @@
   translate: -50%;
   bottom: 100%;
   white-space: nowrap;
-  padding: 4px;
-  font-size: 14px;
+  padding: var(--space-2xs);
+  font-size: var(--text-sm);
   color: var(--base);
   background-color: var(--love);
   border: 1px solid var(--text);
@@ -28,7 +28,7 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  transition: scale 50ms ease-out;
+  transition: scale var(--duration-fast) ease;
 }
 
 .like:hover {

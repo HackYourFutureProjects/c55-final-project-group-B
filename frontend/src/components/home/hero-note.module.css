@@ -1,7 +1,7 @@
 .note {
-  margin-top: 24px;
+  margin-top: var(--space-lg);
   color: var(--subtle);
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 
 .noteLink {

@@ -8,9 +8,9 @@
   background-color: transparent;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   border: none;
-  padding: 4px;
+  padding: var(--space-2xs);
 }
 
 .input::placeholder {
@@ -39,13 +39,13 @@
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 10px;
-  padding: 11px 16px;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
   border: none;
   background: none;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 500;
   text-align: left;
   cursor: pointer;

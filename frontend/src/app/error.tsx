@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { QuestionIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { StatusPage } from "@/components/ui/status-page";
 
 export default function ErrorPage({

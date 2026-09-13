@@ -1,11 +1,11 @@
 .section {
-  padding-block: 72px 48px;
+  padding-block: var(--space-3xl) var(--space-2xl);
 }
 
 .pane {
   max-width: 28rem;
   margin-inline: auto;
-  padding: 32px;
+  padding: var(--space-xl);
   background-color: var(--surface);
   border: 1px solid var(--text);
   border-radius: var(--radius);
@@ -14,21 +14,21 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: 32px;
+  font-size: var(--text-2xl);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  margin-top: 8px;
-  margin-bottom: 28px;
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-xl);
   color: var(--subtle);
 }
 
 .note {
-  margin-top: 24px;
+  margin-top: var(--space-lg);
   color: var(--subtle);
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 
 .noteLink {
