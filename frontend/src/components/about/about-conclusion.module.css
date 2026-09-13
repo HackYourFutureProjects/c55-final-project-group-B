@@ -1,0 +1,20 @@
+.section {
+  padding-block: var(--space-3xl);
+  background-color: var(--base);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+}
+
+.action {
+  align-self: center;
+}

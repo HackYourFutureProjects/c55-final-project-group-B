@@ -1,6 +1,8 @@
 import Link from "next/link";
-import SignupForm from "@/components/signup-form";
+import SignupForm from "@/components/auth/signup-form";
 import styles from "./page.module.css";
+
+export const metadata = { title: "Sign up" };
 
 export default function SignupPage() {
   return (

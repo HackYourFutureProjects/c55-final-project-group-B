@@ -1,0 +1,36 @@
+.layout {
+  display: flex;
+  gap: var(--space-xl);
+  height: 100%;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 420px;
+  gap: var(--space-sm);
+}
+
+.cards {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  padding: var(--space-2xs) var(--space-md) var(--space-2xs) var(--space-2xs);
+  list-style: none;
+}
+
+.details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  padding: 0 var(--space-md);
+  color: var(--subtle);
+}

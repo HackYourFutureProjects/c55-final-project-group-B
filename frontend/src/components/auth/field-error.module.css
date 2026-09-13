@@ -1,0 +1,13 @@
+.error {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-items: center;
+  gap: var(--space-xs);
+  color: var(--love);
+}
+
+.message {
+  font-size: var(--text-base);
+  font-weight: 600;
+}

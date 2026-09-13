@@ -1,0 +1,27 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--space-xs) var(--space-sm);
+  max-width: 66%;
+  margin-inline: auto;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--surface);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs);
+  gap: var(--space-xs);
+  border: 1px solid var(--highlight-high);
+  border-radius: var(--radius);
+}
+
+.icon {
+  color: var(--subtle);
+}

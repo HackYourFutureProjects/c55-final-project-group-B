@@ -1,6 +1,8 @@
-import SavedJobResults from "@/components/saved-jobs-results";
-import { SearchBar } from "@/components/search-bar";
+import SavedJobsResults from "@/components/jobs/saved-jobs-results";
+import { SearchBar } from "@/components/search/search-bar";
 import styles from "./page.module.css";
+
+export const metadata = { title: "Saved jobs" };
 
 export default async function SavedJobsPage({
   searchParams,
@@ -24,7 +26,7 @@ export default async function SavedJobsPage({
 
       <section className={styles.results}>
         <div className={`container ${styles.board}`}>
-          <SavedJobResults q={q} location={location} jobId={jobId} />
+          <SavedJobsResults q={q} location={location} jobId={jobId} />
         </div>
       </section>
     </div>

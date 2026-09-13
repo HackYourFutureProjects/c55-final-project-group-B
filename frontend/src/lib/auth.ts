@@ -2,7 +2,7 @@
 // the backend. The browser stores and sends the JSESSIONID session cookie by
 // itself; we never read it (it is HttpOnly).
 
-import type { ProblemDetail, User } from "@/lib/types";
+import type { ProblemDetail, User } from "./types";
 
 // Thrown when the backend answers with an error status. `fieldErrors` holds
 // per-field validation messages from a 400 response, e.g. { email: "..." }.
@@ -31,7 +31,10 @@ type CsrfResponse = {
 async function getCsrf(): Promise<CsrfResponse> {
   const res = await fetch("/api/auth/csrf");
   if (!res.ok) {
-    throw new ApiError(res.status, "Could not get a security token");
+    throw new ApiError(
+      res.status,
+      "We couldn't start a secure session. Refresh the page and try again.",
+    );
   }
   return res.json();
 }
@@ -55,13 +58,18 @@ export async function sendJson(
 }
 
 // Turns a failed response into an ApiError. The 403 for a missing CSRF token
-// is not in the ProblemDetail shape, so parsing is wrapped in try/catch.
+// is not in the ProblemDetail shape, so parsing is wrapped in try/catch. The
+// status code stays on the error for logic; the message is what users read,
+// so it never contains the code.
 export async function readError(res: Response): Promise<ApiError> {
   try {
     const problem: ProblemDetail = await res.json();
     return new ApiError(res.status, problem.detail, problem.errors ?? {});
   } catch {
-    return new ApiError(res.status, `Request failed (${res.status})`);
+    return new ApiError(
+      res.status,
+      "Something went wrong on our end. Please try again in a moment.",
+    );
   }
 }
 

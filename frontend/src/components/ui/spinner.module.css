@@ -1,0 +1,31 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  display: block;
+  padding-block: var(--space-4xl);
+  text-align: center;
+}
+
+.spinner {
+  color: var(--pine);
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+.spinner svg {
+  display: block;
+}
+
+.message {
+  color: var(--text);
+  font-size: var(--text-lg);
+  margin-top: var(--space-md);
+  font-weight: 600;
+}

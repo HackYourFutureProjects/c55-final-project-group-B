@@ -1,0 +1,76 @@
+.card {
+  display: flex;
+  flex-direction: row;
+  z-index: 1;
+  padding: var(--space-md);
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--text);
+  transition:
+    var(--transition-lift),
+    background-color var(--duration-fast) ease;
+  position: relative;
+}
+
+.selected {
+  background-color: var(--highlight-low);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.company {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--pine);
+}
+
+.location {
+  color: var(--subtle);
+}
+
+.card:hover {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard);
+  background-color: var(--base);
+}
+
+.card.selected {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard);
+}
+
+.details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.aside {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.date {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--subtle);
+}

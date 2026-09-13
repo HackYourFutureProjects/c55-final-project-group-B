@@ -1,4 +1,5 @@
 import { BACKEND_API_URL } from "./config";
+import type { JobPage } from "./types";
 
 export type JobFilters = {
   search?: string;
@@ -12,7 +13,7 @@ type Locations = {
   provinces: string[];
 };
 
-export const JOBS_PAGE_SIZE = 10;
+const JOBS_PAGE_SIZE = 10;
 
 const formatCount = new Intl.NumberFormat("en-NL");
 
@@ -37,6 +38,19 @@ export function buildJobsQuery(filters: JobFilters): string {
   return params.toString();
 }
 
+export async function getJobs(filters: JobFilters): Promise<JobPage> {
+  const queryString = buildJobsQuery(filters);
+  const url = `${BACKEND_API_URL}/api/jobs`;
+
+  const res = await fetch(`${url}?${queryString}`);
+  if (!res.ok) {
+    throw new Error(`Could not load jobs: (Error ${res.status})`);
+  }
+
+  const page: JobPage = await res.json();
+  return page;
+}
+
 export async function getJobCount(): Promise<string | null> {
   try {
     const res = await fetch(`${BACKEND_API_URL}/api/jobs?size=1`);
@@ -48,12 +62,12 @@ export async function getJobCount(): Promise<string | null> {
   }
 }
 
-export async function getJobTitleCount(): Promise<number | null> {
+export async function getJobTitleCount(): Promise<string | null> {
   try {
     const res = await fetch(`${BACKEND_API_URL}/api/job-titles`);
     if (!res.ok) return null;
     const titles = await res.json();
-    return titles.length;
+    return formatCount.format(titles.length);
   } catch {
     return null;
   }

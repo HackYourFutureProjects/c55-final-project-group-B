@@ -1,36 +1,61 @@
 :root {
-  /* Rose Pine (dawn) palette */
+  /* Color tokens */
   --base: #faf4ed;
   --surface: #fffaf3;
   --overlay: #f2e9e1;
   --muted: #9893a5;
-  --subtle: #797593;
+  --subtle: #6a6683;
   --text: #464261;
-  --love: #b4637a;
+
+  --love: #9c4f66;
   --gold: #ea9d34;
   --rose: #d7827e;
   --pine: #286983;
   --foam: #56949f;
   --iris: #907aa9;
+
   --highlight-low: #f4ede8;
   --highlight-med: #dfdad9;
   --highlight-high: #cecacd;
+
+  /* Type tokens */
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-display: 4rem;
+
+  /* Spacing tokens */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
 
   /* Design tokens */
   --radius: 6px;
   --shadow-hard: 4px 4px 0 0 var(--text);
   --shadow-hard-sm: 2px 2px 0 0 var(--text);
+  --shadow-hard-md: 3px 3px 0 0 var(--text);
   --shadow-soft: 4px 4px 0 0 var(--highlight-high);
   --shadow-soft-sm: 2px 2px 0 0 var(--highlight-high);
-  --transition-shadow: box-shadow 250ms ease;
-  --transition-shadow-sm: box-shadow 150ms ease;
-  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-hanken), ui-rounded, system-ui, sans-serif;
   --container-width: 1180px;
   --header-height: 77px;
   --footer-height: 74px;
-  --section-padding: 64px;
-  --inner-padding: 32px;
+
+  /* Motion tokens */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --transition-lift:
+    translate var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 }
 
 *,
@@ -54,7 +79,7 @@ body {
   background-color: var(--base);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: var(--text-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -86,7 +111,7 @@ a {
 .container {
   margin-inline: auto;
   max-width: var(--container-width);
-  padding-inline: 24px;
+  padding-inline: var(--space-lg);
 }
 
 .button {
@@ -94,25 +119,23 @@ a {
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: var(--pine);
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--surface);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-hard-sm);
-  transition:
-    translate 0.15s ease,
-    var(--transition-shadow);
+  transition: var(--transition-lift);
 }
 
 .button:hover {
   translate: -1px -1px;
-  box-shadow: 3px 3px 0 0 var(--text);
+  box-shadow: var(--shadow-hard-md);
 }
 
 .button:active {
-  translate: 2px 2px;
+  translate: 1px 1px;
   box-shadow: none;
 }
 
@@ -121,15 +144,15 @@ a {
   border: 1px solid var(--text);
   border-radius: var(--radius);
   background-color: transparent;
-  padding: 10px 24px;
+  padding: var(--space-xs) var(--space-lg);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   transition:
-    0.15s ease,
-    var(--transition-shadow);
+    var(--transition-lift),
+    background-color var(--duration-fast) ease;
 }
 
 .button-secondary:hover {

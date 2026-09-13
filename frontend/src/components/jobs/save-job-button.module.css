@@ -1,0 +1,117 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.hint {
+  z-index: 5;
+  position: absolute;
+  right: calc(100% + var(--space-xs));
+  top: 50%;
+  translate: 0 -50%;
+  white-space: nowrap;
+  padding: var(--space-2xs) var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--base);
+  background-color: var(--love);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard-sm);
+  animation: shake 400ms ease-in-out;
+}
+
+.like {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--subtle);
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: scale var(--duration-fast) ease;
+}
+
+.like:hover {
+  scale: 1.15;
+}
+
+.like:active {
+  scale: 0.9;
+}
+
+.like[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--subtle);
+}
+
+.like[aria-disabled="true"]:hover {
+  scale: 1;
+}
+
+/* Applied from shared state: every button for this job fills in. */
+.save {
+  color: var(--love);
+}
+
+/* Applied only to the button that was clicked. */
+.animateSave {
+  animation: save 350ms ease-in-out;
+}
+
+.animateRemove {
+  animation: remove 250ms ease-out;
+}
+
+@keyframes save {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  25% {
+    transform: scale(1.4) rotate(-12deg);
+  }
+  50% {
+    transform: scale(1.75) rotate(12deg);
+  }
+  75% {
+    transform: scale(1.3) rotate(-6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes remove {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: scale(0.6) translateX(0);
+  }
+  20% {
+    transform: scale(1) translateX(0);
+  } /* pop done, now shake */
+  35% {
+    transform: scale(1) translateX(-8px);
+  }
+  50% {
+    transform: scale(1) translateX(7px);
+  }
+  65% {
+    transform: scale(1) translateX(-5px);
+  }
+  80% {
+    transform: scale(1) translateX(3px);
+  }
+  100% {
+    transform: scale(1) translateX(0);
+  }
+}

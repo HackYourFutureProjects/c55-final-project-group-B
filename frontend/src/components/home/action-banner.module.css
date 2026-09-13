@@ -1,0 +1,68 @@
+.section {
+  color: var(--base);
+  background-color: var(--pine);
+  border-bottom: 1px solid var(--highlight-high);
+  padding-block: var(--space-3xl);
+  text-align: center;
+}
+
+.section :focus-visible {
+  outline-color: var(--surface);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+}
+
+.message {
+  font-size: var(--text-lg);
+  color: var(--highlight-low);
+}
+
+.links {
+  display: flex;
+  margin-top: var(--space-xl);
+  gap: var(--space-md);
+  font-weight: 600;
+  align-content: center;
+  justify-content: center;
+}
+
+.primary,
+.secondary {
+  min-width: 10rem;
+}
+
+.primary {
+  padding: var(--space-xs) var(--space-lg);
+  color: var(--pine);
+  background-color: var(--surface);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard-sm);
+  border-radius: var(--radius);
+  transition: var(--transition-lift);
+}
+
+.primary:hover {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard-md);
+}
+
+.primary:active {
+  translate: 1px 1px;
+  box-shadow: none;
+}
+
+.secondary {
+  padding: var(--space-xs) var(--space-lg);
+  color: var(--surface);
+  background-color: transparent;
+  border: 1px solid var(--surface);
+  border-radius: var(--radius);
+  transition: background-color var(--duration-fast) ease;
+}
+
+.secondary:hover {
+  background-color: color-mix(in srgb, var(--surface) 15%, transparent);
+}

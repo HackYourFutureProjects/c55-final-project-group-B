@@ -1,0 +1,81 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--space-3xl);
+  background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+}
+
+.list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.item {
+  background-color: var(--surface);
+  padding: var(--space-sm);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+}
+
+.description {
+  color: var(--subtle);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--base);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft-sm);
+}
+
+.swatchLove {
+  background-color: var(--love);
+}
+.swatchGold {
+  background-color: var(--gold);
+}
+.swatchRose {
+  background-color: var(--rose);
+}
+.swatchPine {
+  background-color: var(--pine);
+}
+.swatchFoam {
+  background-color: var(--foam);
+}
+.swatchIris {
+  background-color: var(--iris);
+}

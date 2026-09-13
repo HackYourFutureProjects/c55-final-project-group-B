@@ -1,0 +1,80 @@
+.section {
+  padding-block: var(--space-3xl);
+  background-color: var(--highlight-low);
+  border-bottom: 1px solid var(--highlight-high);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+}
+
+.track {
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.trackName {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--base);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft-sm);
+}
+
+.name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.description {
+  color: var(--subtle);
+  font-size: var(--text-sm);
+}
+
+.swatchFoam {
+  background-color: var(--foam);
+}
+
+.swatchRose {
+  background-color: var(--rose);
+}
+
+.swatchIris {
+  background-color: var(--iris);
+}

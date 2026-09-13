@@ -1,4 +1,4 @@
-export type Values = {
+type Values = {
   name: string;
   email: string;
   password: string;
@@ -20,10 +20,8 @@ export function validate(values: Values): Record<string, string | undefined> {
   const errors: Record<string, string | undefined> = {};
   if (values.name.trim().length < 2) errors.name = "Please enter a valid name.";
   if (!isValidEmail(values.email))
-    errors.email = "Please enter a valid e-mail address.";
-  if (!passwordRules.every((r) => r.test(values.password)))
-    errors.password = "Password does not meet the requirements.";
+    errors.email = "Please enter a valid email address.";
   if (values.password !== values.confirmPassword)
-    errors.confirmPassword = "Passwords do not match.";
+    errors.confirmPassword = "Those passwords don't match.";
   return errors;
 }

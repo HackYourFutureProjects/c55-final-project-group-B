@@ -1,0 +1,114 @@
+.auth {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-left: auto;
+}
+
+/* Reserves the logged-out layout while the current session is being checked. */
+.pending {
+  visibility: hidden;
+}
+
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: var(--transition-lift);
+}
+
+.trigger:hover {
+  translate: -1px -1px;
+  box-shadow: var(--shadow-hard-md);
+}
+
+.trigger:active {
+  translate: 1px 1px;
+  box-shadow: none;
+}
+
+.trigger[aria-expanded="true"] {
+  background-color: var(--overlay);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  overflow: hidden;
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-hard);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--highlight-high);
+  background-color: var(--highlight-low);
+}
+
+.name {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.email {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  color: var(--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.item:hover {
+  background-color: var(--overlay);
+  color: var(--pine);
+}
+
+/* The menu clips its children, so the focus ring must sit inside. */
+.item:focus-visible {
+  outline-offset: -2px;
+}
+
+.item:disabled {
+  color: var(--subtle);
+  cursor: default;
+}
+
+.item + .item {
+  border-top: 1px solid var(--highlight-low);
+}

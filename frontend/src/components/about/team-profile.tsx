@@ -1,0 +1,50 @@
+import { GithubLogoIcon, LinkedinLogoIcon } from "@phosphor-icons/react/ssr";
+import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
+import styles from "./team-profile.module.css";
+
+export type TeamProfileProps = {
+  photo: StaticImageData;
+  name: string;
+  role: string;
+  github: string;
+  linkedin: string;
+};
+
+export default function TeamProfile({
+  photo,
+  name,
+  role,
+  github,
+  linkedin,
+}: TeamProfileProps) {
+  return (
+    <div className={styles.card}>
+      <Image src={photo} placeholder="blur" alt="" className={styles.photo} />
+      <div className={styles.details}>
+        <h3 className={styles.name}>{name}</h3>
+        <p className={styles.role}>{role}</p>
+        <div className={styles.links}>
+          <Link
+            className={`${styles.button} ${styles.github}`}
+            href={github}
+            aria-label={`${name} on GitHub`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <GithubLogoIcon size={32} weight="duotone" aria-hidden="true" />
+          </Link>
+          <Link
+            className={`${styles.button} ${styles.linkedin}`}
+            href={linkedin}
+            aria-label={`${name} on LinkedIn`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <LinkedinLogoIcon size={32} weight="duotone" aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

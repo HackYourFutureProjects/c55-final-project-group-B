@@ -1,15 +1,11 @@
-# HackYourFuture Final Project
-
-> **Using this template?** Everything marked **TODO** is yours to fill in or delete.
+# Flint — find your next role in the Netherlands
 
 This is our final project for the [HackYourFuture program](https://hackyourfuture.net/program), built as a
 team with three roles — frontend, backend, and data engineering. We worked in an agile way, in short
-sprints, supported by a group of mentors: a Product Manager and a a Tech Lead. The project is open source and available on GitHub.
+sprints, supported by a group of mentors: a Product Manager and a Tech Lead. The project is open source
+and available on GitHub.
 
-### 🌐 [Live demo](https://your-app.example.com)
-
-> **TODO: Point the link above at your deployed app,** or remove this section if the project is not
-> deployed. A visitor who can click through to a working app is worth more than any description.
+### 🌐 [Live demo](https://c55b.hyf.dev)
 
 ---
 
@@ -30,34 +26,45 @@ sprints, supported by a group of mentors: a Product Manager and a a Tech Lead. T
 
 ## About the project
 
-> **TODO: a short description about your app.** 
-> What problem does it solve? Who is it for? What
-> makes it interesting? Write it for someone who has never heard of the project.
+Flint is a job search platform for the Dutch job market. It collects postings from several job boards
+into one database every day, and puts them behind a fast, keyboard-friendly interface where you can
+search by role, skill, company or place, read the full posting, and keep the ones you like behind a
+free account.
+
+We built it for people like us: job seekers who are tired of juggling six tabs of job boards with six
+different filters. The name comes from the flint stone that was struck to make fire. Flint is the spark;
+the fire is up to you.
 
 ## Screenshots
 
-> **TODO: Replace the placeholder below with real screenshots of your app.** Put the image files in
-> the [`screenshots/`](screenshots) folder. Two or three shots of the most important screens work
-> better than ten of everything.
+![The Flint home page: a large search bar, popular searches, and live statistics about the jobs in the database](screenshots/home.png)
 
-![The main page of the application](screenshots/screenshot.png)
+![The jobs page: a scrolling list of job cards on the left and the full posting for the selected job on the right](screenshots/jobs.png)
+
+![The about page, with the team's promo video and an overview of the features](screenshots/about.png)
 
 ## Features
 
-> **TODO: List what your app can actually do.** Describe features from the user's point of view
-> (e.g.: "Search for recipes by ingredient").
-
-- Feature 1
-- Feature 2
-- Feature 3
+- **Search the whole market from one box.** Search by role, skill or company, with suggestions as you
+  type, and narrow the results to a city or a province.
+- **Read the posting without leaving the page.** Results and the full description sit side by side;
+  more jobs load as you scroll.
+- **Apply at the source.** Every job links to the original posting, so you apply where the employer is
+  looking.
+- **Save jobs for later.** Sign up, hit the heart on any job, and find it again on your saved-jobs page,
+  which has the same search and location filter.
+- **Popular searches** to get going with one click.
+- **Live numbers** on the home page: open roles, distinct titles, cities and provinces covered.
+- **Accessible by design.** Every control is labelled and reachable by keyboard, focus is always visible,
+  and animation respects the reduced-motion preference.
 
 ## Tech stack
 
 | Layer | Technologies |
 | --- | --- |
-| **Frontend** | Next.js, React, TypeScript, Biome |
-| **Backend** | Java 25, Spring Boot, PostgreSQL, Flyway, Maven |
-| **Data** | Python, SQL, dbt, PostgreSQL, Databricks, Airflow |
+| **Frontend** | Next.js 16, React 19, TypeScript, CSS Modules, Biome |
+| **Backend** | Java 25, Spring Boot, Spring Security, PostgreSQL, Flyway, Maven |
+| **Data** | Python, SQL, dbt, Airflow, Databricks, Azure Container Apps |
 | **Infrastructure** | Docker, Docker Compose, GitHub Actions, GitHub Container Registry |
 
 ## High-level Architecture
@@ -66,7 +73,7 @@ Three tracks, three layers, and one database where two of them meet.
 
 ```mermaid
 flowchart LR
-    EXT["External sources"]
+    EXT["Job boards (Adzuna API, JobSpy)"]
 
     subgraph de["Data"]
         ING["Ingest raw records"]
@@ -93,7 +100,6 @@ flowchart LR
     API -->|"read and write"| APP
     UI -->|"HTTP, JSON"| API
     User([User]) --> UI
-    APP -.->|"inbound sync, optional"| MODEL
 
     classDef d fill:#e8f4ea,stroke:#4a8055
     classDef b fill:#e8eef7,stroke:#4a6080
@@ -103,24 +109,21 @@ flowchart LR
     class UI f
 ```
 
-The application database holds two schemas. **`analytics`** is written by the
-data pipeline and read by the backend. **`app`** holds accounts, saved items and
-anything the application's own admins create, and only the backend writes it.
+The data pipeline runs once a day on Airflow: it ingests postings from the job boards, cleans and
+deduplicates them with dbt on Databricks, and publishes finished tables into the **`analytics`** schema
+of the application database. The backend reads those tables and owns the **`app`** schema, which holds
+accounts and saved jobs. The frontend only ever talks to the backend's REST API: server-rendered pages
+call it directly, and the browser reaches it through a same-origin proxy so the session cookie works
+without CORS.
 
-Three rules are worth reading off that picture, because they are the ones teams
-get wrong:
+Three rules keep the picture honest:
 
-- **The two schemas have two owners.** The data pipeline writes `analytics` and
-  nothing else. The backend writes `app` and nothing else. Neither side has
-  permission to write the other's, which is enforced by two database roles
-  rather than by everyone remembering.
-- **The data track publishes finished tables, not raw material.** The backend
-  should be able to fill a screen with one `SELECT`, without joining sources or
-  knowing where a row came from.
-- **Records the application creates stay on the application's side.** If an
-  admin adds a record by hand and the same thing later arrives from an external
-  source, deciding they are the same thing is application logic. It happens
-  behind the API, not in the pipeline.
+- **The two schemas have two owners.** The data pipeline writes `analytics` and nothing else. The
+  backend writes `app` and nothing else. Two database roles enforce it.
+- **The data track publishes finished tables, not raw material.** The backend fills a screen with one
+  `SELECT`, without joining sources or knowing where a row came from.
+- **Records the application creates stay on the application's side.** Accounts and saved jobs never
+  flow back into the pipeline.
 
 ## Project structure
 
@@ -131,7 +134,7 @@ get wrong:
 ├── data/               Data pipeline (Python, dbt, Airflow)
 ├── scripts/            Scripts for local development and deployment
 ├── screenshots/        Images used in this README
-├── .github/workflows/  CI/CD pipelines and other workflows
+├── .github/workflows/  CI/CD pipelines and PR checks
 ```
 
 ## Documentation
@@ -141,36 +144,40 @@ get wrong:
 | Frontend guide | [`frontend/README.md`](frontend/README.md) |
 | Backend guide | [`backend/README.md`](backend/README.md) |
 | Data pipeline guide | [`data/README.md`](data/README.md) |
-| Live API reference (Scalar) | http://server-host/api/docs |
-
+| Live API reference (Scalar) | https://c55b.hyf.dev/api/docs |
 
 ## CI/CD
 
-Two GitHub Actions workflows run automatically:
+Four GitHub Actions workflows run automatically:
 
 | Workflow | Triggers on | What it does |
 | --- | --- | --- |
 | [Backend CI/CD](.github/workflows/backend-ci-cd.yaml) | changes under `backend/**` | Checkstyle, tests, Docker build; pushes the image to GHCR on `main` |
-| [Frontend CI/CD](.github/workflows/frontend-ci-cd.yaml) | changes under `frontend/**` | Lint, build, Docker build; pushes the image to GHCR on `main` |
+| [Frontend CI/CD](.github/workflows/frontend-ci-cd.yaml) | changes under `frontend/**` | Biome lint, Next build, Docker build; pushes the image to GHCR on `main` |
+| [Data CI/CD](.github/workflows/data-ci-cd.yaml) | changes under `data/**` | Lint, format checks (black, sqlfmt), dbt project check, type check, tests, Airflow DAG import; builds the ingestion image and updates the Azure Container Apps jobs on `main` |
+| [PR checks](.github/workflows/pr-checks.yml) | every pull request | Requires the pull request template's sections and keeps the diff under 400 lines unless an `Oversized:` line explains why |
 
 Pull requests are only merged when their checks pass.
 
-
 ## Team
-
-> **(Optional) TODO: Fill in your team.** It's nice to give credit to the people who worked on the project. Make sure to ask for permission before you put anyone's name on the internet.
 
 | Name | Role | GitHub |
 | --- | --- | --- |
-| Name | Frontend | [@username](https://github.com/username) |
-| Name | Backend | [@username](https://github.com/username) |
-| Name | Data engineering | [@username](https://github.com/username) |
+| Jawad Al Bdiwi | Frontend | [@jivvyjams](https://github.com/jivvyjams) |
+| Salem Ba-Rabuod | Backend | [@Barboud](https://github.com/Barboud) |
+| Dagim Hailelassie | Backend | [@Unlock7](https://github.com/Unlock7) |
+| Marah Aboghanem | Data engineering | [@mareh-aboghanem](https://github.com/mareh-aboghanem) |
+| Hannah Nyongo | Data engineering | [@hannahwn](https://github.com/hannahwn) |
+| Jana Gombitová | Project manager | [@janagombitova](https://github.com/janagombitova) |
 
 ## Roadmap
 
-> **TODO: What is next?** An honest list of what is not built yet shows the reader you understand
-> your own project.
-
-- [ ] Planned improvement 1
-- [ ] Planned improvement 2
-
+- [ ] **Profile page and recommendations.** The API for preferred location, skills and recommended jobs
+      exists; the page is under construction and waits for skill extraction in the pipeline to fill the
+      job data it ranks on.
+- [ ] **Richer job details.** Salary, contract type, seniority and weekly hours are in the API but
+      sparsely filled by the sources today; they appear in the UI once the data is reliable.
+- [ ] **Mobile layout.** The app is designed for desktop first; the two-pane jobs page needs a
+      single-column fallback.
+- [ ] **Dark mode**, based on the Rose Pine palette the light theme already uses.
+- [ ] **End-to-end tests** for the search and save flows.

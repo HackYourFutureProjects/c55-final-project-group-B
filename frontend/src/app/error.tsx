@@ -2,9 +2,18 @@
 
 import { QuestionIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import { StatusPage } from "@/components/status-page";
+import { useEffect } from "react";
+import { StatusPage } from "@/components/ui/status-page";
 
-export default function ErrorPage({ reset }: { reset: () => void }) {
+export default function ErrorPage({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  useEffect(() => console.error(error), [error]);
+
   return (
     <StatusPage
       icon={QuestionIcon}
@@ -25,7 +34,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
         Something went wrong on our end while loading this page. It's usually
         temporary, so trying again will often sort it out.
       </p>
-      <p>Thanks for understanding!</p>
+      <p>Thanks for your patience.</p>
     </StatusPage>
   );
 }

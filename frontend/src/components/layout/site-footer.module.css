@@ -1,0 +1,36 @@
+.footer {
+  margin-top: auto;
+  font-size: var(--text-sm);
+  background-color: var(--surface);
+  color: var(--subtle);
+  border-top: 1px solid var(--highlight-high);
+  padding-block: 20px 24px;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  max-width: 75%;
+  padding-inline: var(--space-lg);
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  list-style: none;
+}
+
+.links {
+  text-underline-offset: 4px;
+  transition: color var(--duration-fast) ease;
+}
+
+.links:hover {
+  color: var(--pine);
+  text-decoration: underline;
+}

@@ -1,0 +1,12 @@
+.note {
+  margin-top: var(--space-lg);
+  color: var(--subtle);
+  font-size: var(--text-base);
+}
+
+.noteLink {
+  color: var(--pine);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
