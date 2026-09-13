@@ -41,7 +41,7 @@ The data we get from Adzuna includes: `id`, `title`, `description`, `company nam
 The description from Adzuna was a short paragraph coupled with a link to the actual job posting. The frontend asked to extend the description, so we started to think about a new data source. Other than that, the BE and FE asked us for new columns that we did not get from Adzuna, so we tried using an LLM to extract them from descriptions. However, putting LLM calls inside initial ingestion was inefficient. We then integrated JobSpy as a second data source.
 
 * **Why JobSpy?**
-Jobspy served as a second data source to support Adzuna. It covers tech jobs specifically, so we targeted predefined tech roles (see [#tech-roles](https://www.google.com/search?q=%23tech-roles)). We selected the Netherlands (`NL`) as our target country and collected postings primarily from Indeed and LinkedIn.
+Jobspy served as a second data source to support Adzuna. It covers tech jobs specifically, so we targeted predefined tech roles see [#tech-roles](#tech-roles-list). We selected the Netherlands (`NL`) as our target country and collected postings primarily from Indeed and LinkedIn.
 
 #### How `data.json` looks (top-level fields from JobSpy):
 
@@ -100,7 +100,7 @@ Initially, we had the LLM extraction running during the ingestion phase after tr
 > **Note:** If a batch fails, all records in that batch automatically fall back to `DEFAULT_ATTRIBUTES` (`unknown` / `null` / `[]`).
 
 ---
-
+<a id="tech-roles-list"></a>
 ### TECH ROLES
 
 ```python
