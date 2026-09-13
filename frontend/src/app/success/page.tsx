@@ -1,6 +1,6 @@
 import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
-import { StatusPage } from "@/components/status-page";
+import { StatusPage } from "@/components/ui/status-page";
 
 export default function SuccessPage() {
   return (

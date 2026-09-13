@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import UserMenu from "@/components/user-menu";
+import UserMenu from "@/components/layout/user-menu";
 import styles from "./site-header.module.css";
 
 const NAV_LINKS = [

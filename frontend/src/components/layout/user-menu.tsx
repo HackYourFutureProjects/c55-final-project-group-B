@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { logout } from "@/lib/auth";
-import { useCurrentUser } from "../context/current-user-provider";
+import { useCurrentUser } from "../../context/current-user-provider";
 import styles from "./user-menu.module.css";
 
 export default function UserMenu() {

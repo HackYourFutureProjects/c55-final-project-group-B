@@ -1,4 +1,4 @@
-import SavedJobResults from "@/components/saved-jobs-results";
+import SavedJobResults from "@/components/jobs/saved-jobs-results";
 import { SearchBar } from "@/components/search-bar";
 import styles from "./page.module.css";
 

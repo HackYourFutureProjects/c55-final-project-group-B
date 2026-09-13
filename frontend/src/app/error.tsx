@@ -2,7 +2,7 @@
 
 import { QuestionIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import { StatusPage } from "@/components/status-page";
+import { StatusPage } from "@/components/ui/status-page";
 
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (

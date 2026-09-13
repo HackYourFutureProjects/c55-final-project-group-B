@@ -1,5 +1,5 @@
-import JobFeed from "@/components/job-feed";
-import { NoSearchResults } from "@/components/no-search-results";
+import JobFeed from "@/components/jobs/job-feed";
+import { NoSearchResults } from "@/components/jobs/no-search-results";
 import { SearchBar } from "@/components/search-bar";
 import { BACKEND_API_URL } from "@/lib/config";
 import { parseLocation } from "@/lib/job-filters";

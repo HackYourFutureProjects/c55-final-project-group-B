@@ -7,7 +7,7 @@ import { filterJobs, parseLocation } from "@/lib/job-filters";
 import { getSavedJobs } from "@/lib/saved-jobs";
 import type { SavedJob } from "@/lib/types";
 import JobResults from "./job-results";
-import Loading from "./loading";
+import Loading from "../ui/loading";
 import { NoSavedJobs } from "./no-saved-jobs";
 import { NoSearchResults } from "./no-search-results";
 import styles from "./saved-jobs-results.module.css";

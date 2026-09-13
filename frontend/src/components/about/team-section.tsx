@@ -5,7 +5,7 @@ import jana from "@/assets/profiles/jana.png";
 import jawad from "@/assets/profiles/jawad.png";
 import marah from "@/assets/profiles/marah.png";
 import salem from "@/assets/profiles/salem.png";
-import TeamProfile from "@/components/team-profile";
+import TeamProfile from "@/components/about/team-profile";
 import styles from "./team-section.module.css";
 
 type Member = {
