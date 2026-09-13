@@ -22,6 +22,7 @@ dependencies = [
     "python-jobspy>=1.1.13",
     "tenacity>=9.1.4",
     "ruff>=0.16.5",
+    "sqlfmt>=0.0.2",
 ]
 
 [project.optional-dependencies]
@@ -69,6 +70,11 @@ line-length = 100
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "black>=25.12.0",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src", "optional"]
