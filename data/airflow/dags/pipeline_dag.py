@@ -222,10 +222,7 @@ def dbt_command() -> str:
     `dbt build` and before `--project-dir`.
     """
     inner = dbt_build_inner_command()
-    return (
-        f"flock -w {DBT_LOCK_WAIT_SECONDS} {DBT_PROJECT_LOCK} "
-        f"bash -c {shlex.quote(inner)}"
-    )
+    return f"flock -w {DBT_LOCK_WAIT_SECONDS} {DBT_PROJECT_LOCK} " f"bash -c {shlex.quote(inner)}"
 
 
 def run_shell_command_streaming(
