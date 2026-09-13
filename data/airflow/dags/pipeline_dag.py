@@ -33,6 +33,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -61,6 +62,8 @@ DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/airflow/include/dbt")
 # Bump the two together. uvx, because the Airflow image ships a newer Python
 # than stable dbt-core supports.
 DBT_RUNNER = "uvx --python 3.11 --from 'dbt-core==1.10.9' --with 'dbt-databricks==1.10.11' dbt"
+DBT_DEPS_LOCK = f"{DBT_PROJECT_DIR}/.dbt_deps.lock"
+DBT_UTILS_PROJECT = f"{DBT_PROJECT_DIR}/dbt_packages/dbt_utils/dbt_project.yml"
 
 # Optional override for one-off runs: dag run conf `dbt_build_extra_args` first,
 # then legacy Admin -> Variables `DBT_BUILD_EXTRA_ARGS`.
@@ -176,6 +179,21 @@ def dbt_build_xcom_value(extra: str, stdout: str) -> str:
     return summary
 
 
+def dbt_deps_command() -> str:
+    """Install dbt packages under a file lock.
+
+    Prod and dev DAGs share one dbt project dir on the VM. Without a lock,
+    concurrent `dbt deps` calls can leave dbt_packages half-written while the
+    lock file still says "Up to date!". Wipe broken installs before re-fetching.
+    """
+    inner = (
+        f"test -f {DBT_UTILS_PROJECT} || rm -rf {DBT_PROJECT_DIR}/dbt_packages; "
+        f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR} && "
+        f"test -f {DBT_UTILS_PROJECT}"
+    )
+    return f"flock -w 600 {DBT_DEPS_LOCK} bash -c {shlex.quote(inner)}"
+
+
 def dbt_command() -> str:
     """The dbt command, aimed at whoever is running it.
 
@@ -192,12 +210,11 @@ def dbt_command() -> str:
     target = "dev" if os.environ.get("DATABRICKS_TOKEN") else "prod"
     extra = dbt_build_extra_args()
     extra_suffix = f" {extra}" if extra else ""
-    deps = f"{DBT_RUNNER} deps --project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     build = (
         f"{DBT_RUNNER} build --target {target}{extra_suffix} "
         f"--project-dir {DBT_PROJECT_DIR} --profiles-dir {DBT_PROJECT_DIR}"
     )
-    return f"{deps} && {build}"
+    return f"{dbt_deps_command()} && {build}"
 
 
 def setting(name: str, default: str | None = None) -> str:
