@@ -1,22 +1,13 @@
-import type { StaticImageData } from "next/image";
 import dagim from "@/assets/profiles/dagim.png";
 import hannah from "@/assets/profiles/hannah.png";
 import jana from "@/assets/profiles/jana.png";
 import jawad from "@/assets/profiles/jawad.png";
 import marah from "@/assets/profiles/marah.png";
 import salem from "@/assets/profiles/salem.png";
-import TeamProfile from "@/components/about/team-profile";
+import TeamProfile, { type TeamProfileProps } from "./team-profile";
 import styles from "./team-section.module.css";
 
-type Member = {
-  photo: StaticImageData;
-  name: string;
-  role: string;
-  github: string;
-  linkedin: string;
-};
-
-const MEMBERS: Member[] = [
+const MEMBERS: TeamProfileProps[] = [
   {
     photo: jawad,
     name: "Jawad Al Bdiwi",

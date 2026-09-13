@@ -3,7 +3,7 @@ import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import styles from "./team-profile.module.css";
 
-type TeamProfileProps = {
+export type TeamProfileProps = {
   photo: StaticImageData;
   name: string;
   role: string;

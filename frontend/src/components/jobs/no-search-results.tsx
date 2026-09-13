@@ -1,7 +1,7 @@
 import { BinocularsIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
+import PopularSearches from "@/components/search/popular-searches";
 import styles from "./no-search-results.module.css";
-import PopularSearches from "./popular-searches";
 
 export function NoSearchResults({
   q,

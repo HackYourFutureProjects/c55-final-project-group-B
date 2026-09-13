@@ -1,24 +1,9 @@
 import JobFeed from "@/components/jobs/job-feed";
 import { NoSearchResults } from "@/components/jobs/no-search-results";
-import { SearchBar } from "@/components/search-bar";
-import { BACKEND_API_URL } from "@/lib/config";
+import { SearchBar } from "@/components/search/search-bar";
 import { parseLocation } from "@/lib/job-filters";
-import { buildJobsQuery, type JobFilters } from "@/lib/jobs";
-import type { JobPage } from "@/lib/types";
+import { getJobs } from "@/lib/jobs";
 import styles from "./page.module.css";
-
-async function getJobs(filters: JobFilters): Promise<JobPage> {
-  const queryString = buildJobsQuery(filters);
-  const url = `${BACKEND_API_URL}/api/jobs`;
-
-  const res = await fetch(`${url}?${queryString}`);
-  if (!res.ok) {
-    throw new Error(`Could not load jobs: (Error ${res.status})`);
-  }
-
-  const page: JobPage = await res.json();
-  return page;
-}
 
 export default async function JobsPage({
   searchParams,

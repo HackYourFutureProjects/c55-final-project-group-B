@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Logo } from "@/components/layout/logo";
-import UserMenu from "@/components/layout/user-menu";
+import { Logo } from "./logo";
 import styles from "./site-header.module.css";
+import UserMenu from "./user-menu";
 
 const NAV_LINKS = [
   { label: "Jobs", href: "/jobs" },

@@ -2,8 +2,8 @@ import { MapPinIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import styles from "./popular-searches.module.css";
 
-const roles = ["Frontend", "Backend", "Data"];
-const cities = ["Amsterdam", "Rotterdam", "Den Haag"];
+const ROLES = ["Frontend", "Backend", "Data"];
+const CITIES = ["Amsterdam", "Rotterdam", "Den Haag"];
 
 export default function PopularSearches() {
   return (
@@ -12,7 +12,7 @@ export default function PopularSearches() {
         Popular searches:
       </p>
       <ul className={styles.list}>
-        {roles.map((role) => (
+        {ROLES.map((role) => (
           <li key={role}>
             <Link
               href={{ pathname: "/jobs", query: { q: role } }}
@@ -22,7 +22,7 @@ export default function PopularSearches() {
             </Link>
           </li>
         ))}
-        {cities.map((city) => (
+        {CITIES.map((city) => (
           <li key={city}>
             <Link
               href={{ pathname: "/jobs", query: { location: `city:${city}` } }}

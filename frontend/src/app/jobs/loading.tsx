@@ -1,5 +1,5 @@
-import Loading from "@/components/ui/loading";
+import Spinner from "@/components/ui/spinner";
 
 export default function JobsLoading() {
-  return <Loading />;
+  return <Spinner />;
 }

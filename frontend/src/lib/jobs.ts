@@ -1,4 +1,5 @@
 import { BACKEND_API_URL } from "./config";
+import type { JobPage } from "./types";
 
 export type JobFilters = {
   search?: string;
@@ -35,6 +36,19 @@ export function buildJobsQuery(filters: JobFilters): string {
   params.set("size", String(JOBS_PAGE_SIZE));
 
   return params.toString();
+}
+
+export async function getJobs(filters: JobFilters): Promise<JobPage> {
+  const queryString = buildJobsQuery(filters);
+  const url = `${BACKEND_API_URL}/api/jobs`;
+
+  const res = await fetch(`${url}?${queryString}`);
+  if (!res.ok) {
+    throw new Error(`Could not load jobs: (Error ${res.status})`);
+  }
+
+  const page: JobPage = await res.json();
+  return page;
 }
 
 export async function getJobCount(): Promise<string | null> {

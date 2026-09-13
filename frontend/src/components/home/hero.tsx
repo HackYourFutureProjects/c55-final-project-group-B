@@ -1,7 +1,7 @@
-import { SearchBar } from "@/components/search-bar";
+import PopularSearches from "@/components/search/popular-searches";
+import { SearchBar } from "@/components/search/search-bar";
 import styles from "./hero.module.css";
 import HeroNote from "./hero-note";
-import PopularSearches from "./popular-searches";
 
 export function Hero() {
   return (

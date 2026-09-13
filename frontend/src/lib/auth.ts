@@ -2,7 +2,7 @@
 // the backend. The browser stores and sends the JSESSIONID session cookie by
 // itself; we never read it (it is HttpOnly).
 
-import type { ProblemDetail, User } from "@/lib/types";
+import type { ProblemDetail, User } from "./types";
 
 // Thrown when the backend answers with an error status. `fieldErrors` holds
 // per-field validation messages from a 400 response, e.g. { email: "..." }.

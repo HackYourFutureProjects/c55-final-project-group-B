@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatPostedDateShort } from "@/lib/formatPostedDate";
+import { formatPostedDateShort } from "@/lib/format-date";
 import type { Job } from "@/lib/types";
 import styles from "./job-card.module.css";
 import SaveJobButton from "./save-job-button";

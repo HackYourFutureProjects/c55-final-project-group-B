@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Spinner from "@/components/ui/spinner";
 import { useCurrentUser } from "@/context/current-user-provider";
 import { filterJobs, parseLocation } from "@/lib/job-filters";
 import { getSavedJobs } from "@/lib/saved-jobs";
 import type { SavedJob } from "@/lib/types";
 import JobResults from "./job-results";
-import Loading from "../ui/loading";
 import { NoSavedJobs } from "./no-saved-jobs";
 import { NoSearchResults } from "./no-search-results";
 import styles from "./saved-jobs-results.module.css";
@@ -49,7 +49,7 @@ export default function SavedJobsResults({
   }, [user]);
 
   if (isLoading) {
-    return <Loading />;
+    return <Spinner />;
   }
 
   if (!user) {
@@ -64,7 +64,7 @@ export default function SavedJobsResults({
   }
 
   if (state.status === "loading") {
-    return <Loading />;
+    return <Spinner />;
   }
 
   if (state.status === "error") {

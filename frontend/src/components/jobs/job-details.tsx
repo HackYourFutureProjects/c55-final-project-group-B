@@ -1,6 +1,6 @@
 import { ArrowSquareOutIcon } from "@phosphor-icons/react/ssr";
 import Markdown from "react-markdown";
-import { formatPostedDate } from "@/lib/formatPostedDate";
+import { formatPostedDate } from "@/lib/format-date";
 import type { Job } from "@/lib/types";
 import styles from "./job-details.module.css";
 import SaveJobButton from "./save-job-button";
