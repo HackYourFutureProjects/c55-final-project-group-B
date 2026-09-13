@@ -30,14 +30,12 @@ with
             -- Extract employment type from title before cleaning it
             -- Example: "Stageplek Sales & Events" -> "internship"
             case
-    when lower(title) rlike '\\b(afstudeerstage|afstudeeropdracht)\\b'
-    then 'graduation_internship'
-    when
-        lower(title)
-        rlike '\\b(stage|stageplek|stageplaats|stagiair|stagiaire|traineeship|trainee|werkervaringsplek|internship)\\b'
-    then 'internship'
-    else 'regular_job'
-end as employment_type
+               when lower(title) rlike '\\b(afstudeerstage|afstudeeropdracht)\\b'
+                   then 'graduation_internship'
+               when lower(title) rlike '\\b(stage|stageplek|stageplaats|stagiair|stagiaire|traineeship|trainee|werkervaringsplek|internship)\\b'
+                   then 'internship'
+               else 'regular_job'
+            end as employment_type
         from extract_contract
     ),
 
