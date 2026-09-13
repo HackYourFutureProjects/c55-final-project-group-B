@@ -1,5 +1,11 @@
 import type { Job } from "./types";
 
+export type LocactionOption = {
+  label: string;
+  value: string;
+  kind: "city" | "province";
+};
+
 export function parseLocation(location?: string): {
   city?: string;
   province?: string;
@@ -14,6 +20,28 @@ export function parseLocation(location?: string): {
     return { province: location.slice("province:".length) };
   }
   return {};
+}
+
+export function buildLocationOptions(
+  cities: string[],
+  provinces: string[],
+): LocactionOption[] {
+  const cityOptions = cities.map(
+    (city): LocactionOption => ({
+      label: city,
+      value: `city:${city}`,
+      kind: "city",
+    }),
+  );
+  const provinceOptions = provinces.map(
+    (province): LocactionOption => ({
+      label: province,
+      value: `province:${province}`,
+      kind: "province",
+    }),
+  );
+
+  return [...cityOptions, ...provinceOptions];
 }
 
 export function filterJobs(
