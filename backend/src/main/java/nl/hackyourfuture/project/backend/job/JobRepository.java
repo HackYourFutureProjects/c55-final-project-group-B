@@ -103,35 +103,33 @@ public class JobRepository {
         String skills = String.join("\u001F", userSkills);
         String sql = """
                 WITH user_skills AS (
-                    SELECT LOWER(TRIM(skill)) AS skill
+                    SELECT DISTINCT LOWER(TRIM(skill)) AS skill
                     FROM unnest(string_to_array(CAST(:skills AS text), CHR(31))) AS skill
                     WHERE TRIM(skill) <> ''
-                ), ranked_jobs AS (
-                    SELECT p.*, COALESCE(matches.match_count, 0) AS match_count,
-                           COALESCE(matches.matched_skills, ARRAY[]::text[]) AS matched_skills
-                    FROM analytics.fct_postings p
-                    LEFT JOIN LATERAL (
-                        SELECT COUNT(*)::integer AS match_count,
-                               ARRAY_AGG(user_skills.skill ORDER BY user_skills.skill) AS matched_skills
-                        FROM user_skills
-                        WHERE EXISTS (
-                            SELECT 1
-                            FROM unnest(regexp_split_to_array(COALESCE(p.skills, ''), '\\s*[,;/|]\\s*')) AS job_skill
-                            WHERE LOWER(TRIM(job_skill)) = user_skills.skill
-                        )
-                    ) matches ON TRUE
+                ), skill_matches AS (
+                    SELECT posting_skill.job_id,
+                           COUNT(DISTINCT user_skill.skill)::integer AS match_count,
+                           ARRAY_AGG(DISTINCT user_skill.skill ORDER BY user_skill.skill) AS matched_skills
+                    FROM analytics.fct_postings_skills posting_skill
+                    JOIN user_skills user_skill
+                      ON LOWER(TRIM(posting_skill.skill_name)) = user_skill.skill
+                    GROUP BY posting_skill.job_id
                 )
-                SELECT job_id, title, company_name, location_city, location_province,
-                       description, latitude, longitude, created, redirect_url, ingested_at,
-                       salary_min, salary_max, salary_display, salary_per_hour, employment_type,
-                       match_count, matched_skills
-                FROM ranked_jobs
-                ORDER BY match_count DESC,
+                SELECT posting.job_id, posting.title, posting.company_name,
+                       posting.location_city, posting.location_province, posting.description,
+                       posting.latitude, posting.longitude, posting.created, posting.redirect_url,
+                       posting.ingested_at, posting.salary_min, posting.salary_max,
+                       posting.salary_display, posting.salary_per_hour, posting.employment_type,
+                       COALESCE(skill_match.match_count, 0) AS match_count,
+                       COALESCE(skill_match.matched_skills, ARRAY[]::text[]) AS matched_skills
+                FROM analytics.fct_postings posting
+                LEFT JOIN skill_matches skill_match ON skill_match.job_id = posting.job_id
+                ORDER BY COALESCE(skill_match.match_count, 0) DESC,
                          CASE WHEN NULLIF(:preferredCity, '') IS NOT NULL
-                                   AND location_city ILIKE :preferredCity THEN 1 ELSE 0 END DESC,
+                                   AND posting.location_city ILIKE :preferredCity THEN 1 ELSE 0 END DESC,
                          CASE WHEN NULLIF(:preferredProvince, '') IS NOT NULL
-                                   AND location_province ILIKE :preferredProvince THEN 1 ELSE 0 END DESC,
-                         created DESC
+                                   AND posting.location_province ILIKE :preferredProvince THEN 1 ELSE 0 END DESC,
+                         posting.created DESC
                 LIMIT :size OFFSET :offset
                 """;
         return jdbcClient.sql(sql)
