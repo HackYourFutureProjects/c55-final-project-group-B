@@ -15,6 +15,7 @@ database you want to look at.
 """
 
 import os
+
 import pandas as pd
 import psycopg
 import streamlit as st
@@ -214,5 +215,6 @@ try:
     else:
         st.info("No records found in fct_postings_skills table yet.")
 
-except Exception as e:
-    st.warning(f"Could not load skills breakdown: {e}")
+except psycopg.Error as e:
+    st.warning(f"Could not load skills breakdown: Database error - {e}")
+
