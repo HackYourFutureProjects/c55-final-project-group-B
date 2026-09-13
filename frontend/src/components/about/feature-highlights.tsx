@@ -74,7 +74,10 @@ export default function FeatureHighlights() {
           {FEATURES.map((feature) => (
             <li key={feature.title} className={styles.item}>
               <div className={styles.top}>
-                <span aria-hidden className={`${styles.icon} ${feature.color}`}>
+                <span
+                  aria-hidden="true"
+                  className={`${styles.icon} ${feature.color}`}
+                >
                   {feature.icon}
                 </span>
                 <h3 className={styles.title}>{feature.title}</h3>

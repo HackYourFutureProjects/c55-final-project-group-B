@@ -51,7 +51,10 @@ export function FeatureCards() {
       <div className={`container ${styles.grid}`}>
         {FEATURES.map((feature) => (
           <article key={feature.title} className={`card ${styles.feature}`}>
-            <span aria-hidden className={`${styles.icon} ${feature.color}`}>
+            <span
+              aria-hidden="true"
+              className={`${styles.icon} ${feature.color}`}
+            >
               {feature.icon}
             </span>
             <h2 className={styles.title}>{feature.title}</h2>

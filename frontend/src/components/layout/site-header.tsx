@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/layout/logo";
 import UserMenu from "@/components/layout/user-menu";
 import styles from "./site-header.module.css";
 

@@ -115,7 +115,7 @@ function TrackCard({ track, color, technology }: Track) {
       <ul className={styles.list}>
         {technology.map((tech) => (
           <li key={tech.name} className={styles.item}>
-            <span aria-hidden className={`${styles.icon} ${color}`}>
+            <span aria-hidden="true" className={`${styles.icon} ${color}`}>
               {tech.icon}
             </span>
             <div>
