@@ -29,7 +29,8 @@
   text-underline-offset: 4px;
 }
 
-.link:hover {
+.link:hover,
+.link[aria-current="page"] {
   color: var(--pine);
   text-decoration: underline;
 }

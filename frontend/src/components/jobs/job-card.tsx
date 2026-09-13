@@ -16,20 +16,31 @@ export default function JobCard({
   const posted = formatPostedDateShort(job.created);
 
   return (
-    <div className={`${styles.card} ${isSelected ? styles.selected : ""}`}>
+    <li className={`${styles.card} ${isSelected ? styles.selected : ""}`}>
       <div className={styles.details}>
         <p className={styles.company}>{job.companyName}</p>
-        <h2 className={styles.title}>
-          <Link href={href} scroll={false} className={styles.link}>
+        <h3 className={styles.title}>
+          <Link
+            aria-current={isSelected ? "true" : undefined}
+            href={href}
+            scroll={false}
+            className={styles.link}
+          >
             {job.title}
           </Link>
-        </h2>
-        <p className={styles.location}>{job.locationCity}</p>
+        </h3>
+        <p className={styles.location}>
+          {job.locationCity ?? "Location not listed"}
+        </p>
       </div>
       <div className={styles.aside}>
-        <SaveJobButton jobId={job.jobId} />
-        <p className={styles.date}>{posted}</p>
+        <SaveJobButton jobId={job.jobId} jobTitle={job.title} />
+        <p className={styles.date}>
+          {posted && job.created && (
+            <time dateTime={job.created}>{posted}</time>
+          )}
+        </p>
       </div>
-    </div>
+    </li>
   );
 }

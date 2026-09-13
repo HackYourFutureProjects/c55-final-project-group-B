@@ -21,29 +21,31 @@ export async function SearchBar({
   const locationOptions = buildLocationOptions(cities, provinces);
 
   return (
-    <form action={action} method="get" className={styles.form}>
-      <MagnifyingGlassIcon
-        size={18}
-        weight="duotone"
-        className={styles.icon}
-        aria-hidden="true"
-      />
-      <SearchInput defaultValue={defaultQuery} titles={titles} />
-      <div className={styles.wrapper}>
-        <MapPinIcon
+    <search aria-label="Job search">
+      <form action={action} method="get" className={styles.form}>
+        <MagnifyingGlassIcon
           size={18}
           weight="duotone"
           className={styles.icon}
           aria-hidden="true"
         />
-        <LocationInput
-          defaultValue={defaultLocation}
-          options={locationOptions}
-        />
-      </div>
-      <button type="submit" className="button">
-        Search
-      </button>
-    </form>
+        <SearchInput defaultValue={defaultQuery} titles={titles} />
+        <div className={styles.wrapper}>
+          <MapPinIcon
+            size={18}
+            weight="duotone"
+            className={styles.icon}
+            aria-hidden="true"
+          />
+          <LocationInput
+            defaultValue={defaultLocation}
+            options={locationOptions}
+          />
+        </div>
+        <button type="submit" className="button">
+          Search
+        </button>
+      </form>
+    </search>
   );
 }

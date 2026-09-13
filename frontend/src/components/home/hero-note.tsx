@@ -10,7 +10,7 @@ export default function HeroNote() {
   if (isLoading) {
     return (
       <p className={styles.note}>
-        Not a user yet?{" "}
+        No account yet?{" "}
         <Link href="/signup" className={styles.noteLink}>
           Sign up
         </Link>{" "}
@@ -22,7 +22,7 @@ export default function HeroNote() {
   if (!user) {
     return (
       <p className={styles.note}>
-        Not a user yet?{" "}
+        No account yet?{" "}
         <Link href="/signup" className={styles.noteLink}>
           Sign up
         </Link>{" "}

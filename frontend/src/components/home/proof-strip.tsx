@@ -9,16 +9,16 @@ export default async function ProofStrip() {
   ]);
 
   return (
-    <section aria-label="flint in numbers" className={styles.section}>
+    <section aria-label="Flint in numbers" className={styles.section}>
       <dl className={`container ${styles.list}`}>
         <div className={styles.item}>
           <dt className={styles.title}>open roles right now</dt>
-          <dd className={styles.value}>{jobCount}</dd>
+          <dd className={styles.value}>{jobCount ?? "—"}</dd>
         </div>
 
         <div className={styles.item}>
-          <dt className={styles.title}>distinct job titles</dt>
-          <dd className={styles.value}>{titleCount}</dd>
+          <dt className={styles.title}>different job titles</dt>
+          <dd className={styles.value}>{titleCount ?? "—"}</dd>
         </div>
 
         <div className={styles.item}>

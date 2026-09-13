@@ -34,7 +34,7 @@ export default function ErrorPage({
         Something went wrong on our end while loading this page. It's usually
         temporary, so trying again will often sort it out.
       </p>
-      <p>Thanks for understanding!</p>
+      <p>Thanks for your patience.</p>
     </StatusPage>
   );
 }

@@ -18,14 +18,14 @@ export default function JobResults({
   hrefFor: (id: string) => string;
   subtitle: ReactNode;
   footer?: ReactNode;
-  listRef?: Ref<HTMLDivElement>;
+  listRef?: Ref<HTMLUListElement>;
 }) {
   return (
     <SavedJobsProvider>
       <div className={styles.layout}>
         <div className={styles.list}>
-          <p className={styles.subtitle}>{subtitle}</p>
-          <div className={styles.cards} ref={listRef}>
+          <h2 className={styles.subtitle}>{subtitle}</h2>
+          <ul aria-label="Job results" className={styles.cards} ref={listRef}>
             {jobs.map((job) => (
               <JobCard
                 key={job.jobId}
@@ -35,11 +35,11 @@ export default function JobResults({
               />
             ))}
             {footer}
-          </div>
+          </ul>
         </div>
-        <div className={styles.details}>
+        <section className={styles.details} aria-label="Job details">
           <JobDetails job={selectedJob} />
-        </div>
+        </section>
       </div>
     </SavedJobsProvider>
   );

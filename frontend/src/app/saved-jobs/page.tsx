@@ -2,6 +2,8 @@ import SavedJobsResults from "@/components/jobs/saved-jobs-results";
 import { SearchBar } from "@/components/search/search-bar";
 import styles from "./page.module.css";
 
+export const metadata = { title: "Saved jobs" };
+
 export default async function SavedJobsPage({
   searchParams,
 }: {

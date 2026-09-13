@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Logo } from "./logo";
+import NavLink from "./nav-link";
 import styles from "./site-header.module.css";
 import UserMenu from "./user-menu";
 
@@ -18,9 +18,9 @@ export function SiteHeader() {
           <ul className={styles.nav}>
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
-                <Link href={link.href} className={styles.link}>
+                <NavLink href={link.href} className={styles.link}>
                   {link.label}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>

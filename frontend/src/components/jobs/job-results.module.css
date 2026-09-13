@@ -19,6 +19,7 @@
   gap: var(--space-sm);
   overflow-y: auto;
   padding: var(--space-2xs) var(--space-md) var(--space-2xs) var(--space-2xs);
+  list-style: none;
 }
 
 .details {
@@ -29,6 +30,7 @@
 
 .subtitle {
   font-size: var(--text-sm);
+  font-weight: 400;
   padding: 0 var(--space-md);
   color: var(--subtle);
 }

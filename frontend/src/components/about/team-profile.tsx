@@ -20,12 +20,7 @@ export default function TeamProfile({
 }: TeamProfileProps) {
   return (
     <div className={styles.card}>
-      <Image
-        src={photo}
-        placeholder="blur"
-        alt={`${name} profile photo`}
-        className={styles.photo}
-      />
+      <Image src={photo} placeholder="blur" alt="" className={styles.photo} />
       <div className={styles.details}>
         <h3 className={styles.name}>{name}</h3>
         <p className={styles.role}>{role}</p>

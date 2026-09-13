@@ -71,7 +71,7 @@ export default function SavedJobsResults({
     return (
       <div className={styles.notice}>
         <p role="alert" className={styles.noticeText}>
-          Could not load your saved jobs. Please try again later.
+          We couldn't load your saved jobs. Give it another try in a moment.
         </p>
       </div>
     );

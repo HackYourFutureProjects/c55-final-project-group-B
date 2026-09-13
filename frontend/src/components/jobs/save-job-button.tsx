@@ -6,7 +6,13 @@ import { useCurrentUser } from "@/context/current-user-provider";
 import { useSavedJobs } from "@/context/saved-jobs-provider";
 import styles from "./save-job-button.module.css";
 
-export default function SaveJobButton({ jobId }: { jobId: string }) {
+export default function SaveJobButton({
+  jobId,
+  jobTitle,
+}: {
+  jobId: string;
+  jobTitle: string;
+}) {
   const { savedJobIds, toggleSaved } = useSavedJobs();
   const { user } = useCurrentUser();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,14 +67,8 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
     animationClass = styles.animateRemove;
   }
 
-  let ariaLabel = "";
-  if (loggedOut) {
-    ariaLabel = "Sign up or log in to save jobs.";
-  } else if (saved) {
-    ariaLabel = "Unsave job";
-  } else if (!saved) {
-    ariaLabel = "Save job";
-  }
+  // The name stays the same in both states; `aria-pressed` conveys saved/unsaved.
+  const ariaLabel = loggedOut ? "Log in to save jobs" : `Save job: ${jobTitle}`;
 
   return (
     <span className={styles.wrapper} ref={containerRef}>
@@ -82,7 +82,11 @@ export default function SaveJobButton({ jobId }: { jobId: string }) {
         onClick={handleClick}
         onAnimationEnd={() => setAnimation(null)}
       >
-        <HeartIcon size={20} weight={saved ? "fill" : "duotone"} />
+        <HeartIcon
+          size={20}
+          weight={saved ? "fill" : "duotone"}
+          aria-hidden="true"
+        />
       </button>
       {showLoginHint && (
         <output className={styles.hint}>Log in to save jobs</output>

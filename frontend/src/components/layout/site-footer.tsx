@@ -8,7 +8,7 @@ export function SiteFooter() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <p>
-          &#xA9; {year} Flint - a{" "}
+          &#xA9; {year} Flint — a{" "}
           <a
             className={styles.links}
             href="https://hackyourfuture.net"
@@ -17,29 +17,38 @@ export function SiteFooter() {
           >
             HackYourFuture
           </a>{" "}
-          Student Project
+          student project
         </p>
-        <ul aria-label="Footer links" className={styles.nav}>
-          <li className={styles.links}>
-            <Link href="/">Home</Link>
-          </li>
-          <li className={styles.links}>
-            <Link href="/jobs">Jobs</Link>
-          </li>
-          <li className={styles.links}>
-            <Link href="/about">About</Link>
-          </li>
-          <li className={styles.links}>
-            <Link
-              aria-label="Flint source code on GitHub"
-              href="https://github.com/HackYourFutureProjects/c55-final-project-group-B"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GithubLogoIcon size={24} weight="duotone" aria-hidden="true" />
-            </Link>
-          </li>
-        </ul>
+        <nav aria-label="Footer">
+          <ul className={styles.nav}>
+            <li>
+              <Link href="/" className={styles.links}>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/jobs" className={styles.links}>
+                Jobs
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className={styles.links}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link
+                className={styles.links}
+                aria-label="Flint source code on GitHub"
+                href="https://github.com/HackYourFutureProjects/c55-final-project-group-B"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GithubLogoIcon size={24} weight="duotone" aria-hidden="true" />
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </div>
     </footer>
   );

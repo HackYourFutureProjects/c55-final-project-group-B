@@ -13,7 +13,7 @@ export function NoSavedJobs() {
       />
       <h2 className={styles.title}>No saved jobs yet</h2>
       <p className={styles.body}>
-        Tap the heart on any job to keep it here for later.
+        Hit the heart on any job to keep it here for later.
       </p>
       <Link href="/jobs" className="button">
         Browse jobs

@@ -81,7 +81,9 @@ export default function SignupForm() {
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(
+          "Something went wrong on our end. Please try again in a moment.",
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -92,7 +94,11 @@ export default function SignupForm() {
     <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
-          <IdentificationCardIcon size={18} weight="duotone" />
+          <IdentificationCardIcon
+            size={18}
+            weight="duotone"
+            aria-hidden="true"
+          />
           <label htmlFor="name">Name</label>
         </div>
         <input
@@ -106,31 +112,36 @@ export default function SignupForm() {
           value={values.name}
           onChange={handleChange}
           onBlur={markTouched}
+          aria-invalid={Boolean(errorFor("name"))}
+          aria-describedby={errorFor("name") ? "name-error" : undefined}
         />
-        <FieldError message={errorFor("name")} />
+        <FieldError id="name-error" message={errorFor("name")} />
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <MailboxIcon size={18} weight="duotone" />
-          <label htmlFor="email">E-mail</label>
+          <MailboxIcon size={18} weight="duotone" aria-hidden="true" />
+          <label htmlFor="email">Email</label>
         </div>
         <input
           type="email"
           name="email"
           id="email"
           placeholder="user@example.com"
+          autoComplete="email"
           className={styles.input}
           value={values.email}
           onChange={handleChange}
           onBlur={markTouched}
+          aria-invalid={Boolean(errorFor("email"))}
+          aria-describedby={errorFor("email") ? "email-error" : undefined}
         />
-        <FieldError message={errorFor("email")} />
+        <FieldError id="email-error" message={errorFor("email")} />
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <LockOpenIcon size={18} weight="duotone" />
+          <LockOpenIcon size={18} weight="duotone" aria-hidden="true" />
           <label htmlFor="password">Password</label>
         </div>
         <PasswordInput
@@ -142,14 +153,18 @@ export default function SignupForm() {
           value={values.password}
           onChange={handleChange}
           onFocus={markTouched}
+          aria-invalid={Boolean(serverErrors.password)}
+          aria-describedby={
+            serverErrors.password ? "password-error" : undefined
+          }
         />
         {touched.password && <PasswordChecklist password={values.password} />}
-        <FieldError message={serverErrors.password} />
+        <FieldError id="password-error" message={serverErrors.password} />
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <LockIcon size={18} weight="duotone" />
+          <LockIcon size={18} weight="duotone" aria-hidden="true" />
           <label htmlFor="confirmPassword">Confirm password</label>
         </div>
         <PasswordInput
@@ -161,8 +176,15 @@ export default function SignupForm() {
           value={values.confirmPassword}
           onChange={handleChange}
           onBlur={markTouched}
+          aria-invalid={Boolean(errorFor("confirmPassword"))}
+          aria-describedby={
+            errorFor("confirmPassword") ? "confirmPassword-error" : undefined
+          }
         />
-        <FieldError message={errorFor("confirmPassword")} />
+        <FieldError
+          id="confirmPassword-error"
+          message={errorFor("confirmPassword")}
+        />
       </div>
 
       {error && <FieldError message={error} />}

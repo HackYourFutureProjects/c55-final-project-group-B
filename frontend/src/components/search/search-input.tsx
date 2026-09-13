@@ -107,7 +107,7 @@ export default function SearchInput({
         aria-label="Search by role, skill or company"
         aria-autocomplete="list"
         aria-expanded={showList}
-        aria-controls={listId}
+        aria-controls={showList ? listId : undefined}
         aria-activedescendant={activeId}
         placeholder="Search by role, skill or company"
         value={query}

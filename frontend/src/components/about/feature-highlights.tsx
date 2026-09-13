@@ -27,7 +27,7 @@ const FEATURES: Feature[] = [
   {
     title: "Build your profile",
     description:
-      "Complete your profile to get skill-based job matching, highlighting the most suitable roles first.",
+      "Coming soon: tell us your skills and where you'd like to work, and Flint will put the best matches first.",
     icon: <UserIcon size={24} weight="duotone" />,
     color: styles.swatchGold,
   },
@@ -39,16 +39,16 @@ const FEATURES: Feature[] = [
     color: styles.swatchFoam,
   },
   {
-    title: "Fresh listings automatically",
+    title: "Fresh jobs every day",
     description:
-      "Our database is refreshed daily, showing you the most recent listings first to give you a head start.",
+      "Our database is refreshed every day, so new postings show up as soon as they land.",
     icon: <PlantIcon size={24} weight="duotone" />,
     color: styles.swatchPine,
   },
   {
     title: "More ways to search",
     description:
-      "Search by role, skill, company name, or location. The perfect job is waiting for you to find it.",
+      "Search by role, skill, company or location. Your next job is out there somewhere; let's find it.",
     icon: <MagnifyingGlassIcon size={24} weight="duotone" />,
     color: styles.swatchIris,
   },
@@ -65,10 +65,10 @@ export default function FeatureHighlights() {
   return (
     <section className={styles.section}>
       <div className={`container ${styles.inner}`}>
-        <h2 className={styles.heading}>Feature Set</h2>
+        <h2 className={styles.heading}>What Flint can do</h2>
         <p>
           Everything Flint can do, in one place. Search for roles, save the good
-          ones, and let your profile do some of the looking for you.
+          ones, and jump straight to the employer when you're ready.
         </p>
         <ul className={styles.list}>
           {FEATURES.map((feature) => (

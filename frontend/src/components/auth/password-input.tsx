@@ -14,6 +14,8 @@ type PasswordInputProps = {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 };
 
 export default function PasswordInput({
@@ -26,6 +28,8 @@ export default function PasswordInput({
   onChange,
   onBlur,
   onFocus,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
 
@@ -49,18 +53,20 @@ export default function PasswordInput({
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
+        aria-invalid={ariaInvalid}
+        aria-describedby={ariaDescribedBy}
       />
       <button
         type="button"
         className={styles.toggle}
         onClick={toggleVisibility}
         aria-label={visible ? "Hide password" : "Show password"}
-        aria-pressed={visible}
+        aria-controls={id}
       >
         {visible ? (
-          <EyeIcon size={18} weight="duotone" />
+          <EyeIcon size={18} weight="duotone" aria-hidden="true" />
         ) : (
-          <EyeClosedIcon size={18} weight="duotone" />
+          <EyeClosedIcon size={18} weight="duotone" aria-hidden="true" />
         )}
       </button>
     </div>

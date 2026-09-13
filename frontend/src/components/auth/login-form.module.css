@@ -46,6 +46,9 @@
 }
 
 .form :global(.button:disabled) {
-  opacity: 0.6;
+  background-color: var(--highlight-high);
+  color: var(--text);
+  box-shadow: none;
+  translate: none;
   cursor: wait;
 }

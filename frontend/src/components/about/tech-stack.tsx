@@ -133,10 +133,10 @@ export default function TechStack() {
   return (
     <section className={styles.section}>
       <div className={`container ${styles.inner}`}>
-        <h2 className={styles.heading}>Tech Stack</h2>
+        <h2 className={styles.heading}>Tech stack</h2>
         <p>
           Three tracks, one app: the site you're reading, the API behind it all,
-          and the pipeline that keeps the job listings coming.
+          and the pipeline that keeps the jobs coming.
         </p>
         <div className={styles.grid}>
           {TRACKS.map((track) => (

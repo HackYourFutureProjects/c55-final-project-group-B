@@ -15,7 +15,7 @@ export default function ActionBanner() {
         </h2>
         <p className={styles.message}>
           {user
-            ? "Your saved jobs are waiting, and new roles landed today."
+            ? "Your saved jobs are waiting, and new roles land every day."
             : "Create an account to save the roles you like, or start browsing right away."}
         </p>
         <div className={styles.links}>

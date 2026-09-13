@@ -30,16 +30,16 @@ const FEATURES: Feature[] = [
     color: styles.swatchPine,
   },
   {
-    title: "Fresh listings daily",
+    title: "Fresh jobs daily",
     description:
-      "Our pipeline refreshes the database every day, showing you the newest roles first.",
+      "New roles land every day, so there is always something fresh to browse.",
     icon: <SparkleIcon size={24} weight="duotone" />,
     color: styles.swatchGold,
   },
   {
     title: "Straight to the source",
     description:
-      "Every listing links to the original posting, so you apply where the employer is looking.",
+      "Every job links to the original posting, so you apply where the employer is looking.",
     icon: <ArrowSquareOutIcon size={24} weight="duotone" />,
     color: styles.swatchIris,
   },

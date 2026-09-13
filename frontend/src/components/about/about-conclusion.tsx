@@ -7,12 +7,12 @@ export default function AboutConclusion() {
       <div className={`container ${styles.inner}`}>
         <h2 className={styles.heading}>Thank you!</h2>
         <p>
-          Flint was made in four weeks as submission for our final project for
-          HackYourFuture's program. A big thank you to the HackYourFuture team
+          Flint was made in four weeks as our final project for the
+          HackYourFuture programme. A big thank you to the HackYourFuture team
           for their support, the tech leads who helped shape this project, and
           every instructor and volunteer mentor who guided us along the way.
         </p>
-        <p>Shout out to the rest of the Cohort 55!</p>
+        <p>Shout out to the rest of Cohort 55!</p>
         <Link
           href="https://github.com/HackYourFutureProjects/c55-final-project-group-B"
           target="_blank"

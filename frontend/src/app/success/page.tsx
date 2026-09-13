@@ -2,6 +2,8 @@ import { UserCircleCheckIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { StatusPage } from "@/components/ui/status-page";
 
+export const metadata = { title: "Welcome aboard" };
+
 export default function SuccessPage() {
   return (
     <StatusPage

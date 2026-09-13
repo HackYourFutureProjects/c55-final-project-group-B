@@ -4,6 +4,8 @@ import FeatureHighlights from "@/components/about/feature-highlights";
 import TeamSection from "@/components/about/team-section";
 import TechStack from "@/components/about/tech-stack";
 
+export const metadata = { title: "About" };
+
 export default function AboutPage() {
   return (
     <>

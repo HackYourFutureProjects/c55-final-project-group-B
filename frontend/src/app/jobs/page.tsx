@@ -5,6 +5,8 @@ import { parseLocation } from "@/lib/job-filters";
 import { getJobs } from "@/lib/jobs";
 import styles from "./page.module.css";
 
+export const metadata = { title: "Jobs" };
+
 export default async function JobsPage({
   searchParams,
 }: {
@@ -31,18 +33,19 @@ export default async function JobsPage({
   const count = totalItems;
   const hasResults = count > 0;
 
-  const subtitle = (
-    <>
-      {count} {count === 1 ? "job" : "jobs"} available {q && `for ${q}`}{" "}
-      {place && ` in ${place}`}
-    </>
-  );
+  const subtitle = [
+    `${count} ${count === 1 ? "job" : "jobs"} available`,
+    q && `for “${q}”`,
+    place && `in ${place}`,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
         <div className="container">
-          <h1 className={styles.heading}>Find your next opportunity</h1>
+          <h1 className={styles.heading}>Find your next role</h1>
           <SearchBar defaultQuery={q} defaultLocation={location} />
         </div>
       </section>

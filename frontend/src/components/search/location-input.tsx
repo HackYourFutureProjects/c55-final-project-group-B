@@ -112,7 +112,7 @@ export default function LocationInput({
         aria-label="Location filter"
         aria-autocomplete="list"
         aria-expanded={showList}
-        aria-controls={listId}
+        aria-controls={showList ? listId : undefined}
         aria-activedescendant={activeId}
         placeholder="City or province"
         value={text}
@@ -149,7 +149,9 @@ export default function LocationInput({
               onClick={() => select(option)}
             >
               {option.label}
-              <span className={styles.kind}>{option.kind}</span>
+              <span className={styles.kind}>
+                {option.kind === "city" ? "City" : "Province"}
+              </span>
             </button>
           ))}
         </div>

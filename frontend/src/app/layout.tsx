@@ -16,7 +16,11 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Flint — Find your next role in the Netherlands",
+  metadataBase: new URL("https://c55b.hyf.dev"),
+  title: {
+    default: "Flint — Find your next role in the Netherlands",
+    template: "%s · Flint",
+  },
   description:
     "Flint is a job search platform with roles across the Netherlands. Search by role, city or province and find your next spark.",
 };

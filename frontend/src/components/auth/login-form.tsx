@@ -24,7 +24,7 @@ export default function LoginForm() {
   const validEmail = isValidEmail(email);
   const emailError =
     emailTouched && !validEmail
-      ? "Please enter a valid e-mail address."
+      ? "Please enter a valid email address."
       : undefined;
   const passwordEmpty = password.length === 0;
   const passwordError =
@@ -46,11 +46,13 @@ export default function LoginForm() {
       router.push("/");
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        setError("Invalid email or password.");
+        setError("That email and password don't match. Have another go?");
       } else if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(
+          "Something went wrong on our end. Please try again in a moment.",
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -61,8 +63,8 @@ export default function LoginForm() {
     <form noValidate className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
         <div className={styles.label}>
-          <MailboxIcon size={18} weight="duotone" />
-          <label htmlFor="email">E-mail</label>
+          <MailboxIcon size={18} weight="duotone" aria-hidden="true" />
+          <label htmlFor="email">Email</label>
         </div>
         <input
           type="email"
@@ -74,13 +76,15 @@ export default function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setEmailTouched(true)}
+          aria-invalid={Boolean(emailError)}
+          aria-describedby={emailError ? "email-error" : undefined}
         />
-        <FieldError message={emailError} />
+        <FieldError id="email-error" message={emailError} />
       </div>
 
       <div className={styles.field}>
         <div className={styles.label}>
-          <LockIcon size={18} weight="duotone" />
+          <LockIcon size={18} weight="duotone" aria-hidden="true" />
           <label htmlFor="password">Password</label>
         </div>
         <PasswordInput
@@ -92,8 +96,10 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onBlur={() => setPasswordTouched(true)}
+          aria-invalid={Boolean(passwordError)}
+          aria-describedby={passwordError ? "password-error" : undefined}
         />
-        <FieldError message={passwordError} />
+        <FieldError id="password-error" message={passwordError} />
       </div>
 
       <FieldError message={error} />

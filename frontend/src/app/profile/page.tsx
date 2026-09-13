@@ -1,13 +1,15 @@
+import { InfoIcon } from "@phosphor-icons/react/ssr";
 import Link from "next/link";
 import { StatusPage } from "@/components/ui/status-page";
-import { InfoIcon } from "@phosphor-icons/react/ssr";
+
+export const metadata = { title: "Profile" };
 
 export default function ProfilePage() {
   return (
     <StatusPage
       icon={InfoIcon}
       variant="info"
-      heading="Under Construction"
+      heading="Under construction"
       actions={
         <>
           <Link className="button" href="/">

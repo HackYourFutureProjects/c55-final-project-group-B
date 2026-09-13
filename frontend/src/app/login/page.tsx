@@ -2,6 +2,8 @@ import Link from "next/link";
 import LoginForm from "@/components/auth/login-form";
 import styles from "./page.module.css";
 
+export const metadata = { title: "Log in" };
+
 export default function LoginPage() {
   return (
     <section className={styles.section}>
@@ -15,7 +17,7 @@ export default function LoginPage() {
           <LoginForm />
 
           <p className={styles.note}>
-            Not a user yet?{" "}
+            No account yet?{" "}
             <Link href="/signup" className={styles.noteLink}>
               Sign up
             </Link>

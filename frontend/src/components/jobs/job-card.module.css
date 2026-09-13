@@ -12,6 +12,10 @@
   position: relative;
 }
 
+.selected {
+  background-color: var(--highlight-low);
+}
+
 .link {
   color: inherit;
   text-decoration: none;

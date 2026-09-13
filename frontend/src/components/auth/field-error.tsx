@@ -1,11 +1,18 @@
 import { ExclamationMarkIcon } from "@phosphor-icons/react/ssr";
 import styles from "./field-error.module.css";
 
-export default function FieldError({ message }: { message?: string }) {
+// `id` lets an input point at this message with `aria-describedby`.
+export default function FieldError({
+  id,
+  message,
+}: {
+  id?: string;
+  message?: string;
+}) {
   if (!message) return null;
   return (
-    <div className={styles.error}>
-      <ExclamationMarkIcon size={18} weight="duotone" />
+    <div id={id} className={styles.error}>
+      <ExclamationMarkIcon size={18} weight="duotone" aria-hidden="true" />
       <p className={styles.message} role="alert">
         {message}
       </p>

@@ -6,11 +6,11 @@
 .hint {
   z-index: 5;
   position: absolute;
-  left: 50%;
-  translate: -50%;
-  bottom: 100%;
+  right: calc(100% + var(--space-xs));
+  top: 50%;
+  translate: 0 -50%;
   white-space: nowrap;
-  padding: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-xs);
   font-size: var(--text-sm);
   color: var(--base);
   background-color: var(--love);
@@ -21,7 +21,10 @@
 }
 
 .like {
-  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--subtle);
   width: 24px;
   height: 24px;
   background: none;
@@ -41,7 +44,7 @@
 
 .like[aria-disabled="true"] {
   cursor: not-allowed;
-  color: var(--highlight-high);
+  color: var(--subtle);
 }
 
 .like[aria-disabled="true"]:hover {

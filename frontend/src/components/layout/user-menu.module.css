@@ -105,7 +105,7 @@
 }
 
 .item:disabled {
-  color: var(--muted);
+  color: var(--subtle);
   cursor: default;
 }
 

@@ -29,16 +29,21 @@ export function StatusPage({
   return (
     <section className={styles.section}>
       <div className="container">
-        <section className={styles.pane}>
+        <div className={styles.pane}>
           <div className={styles.card}>
-            <Icon size={64} weight="duotone" className={iconClass[variant]} />
+            <Icon
+              size={64}
+              weight="duotone"
+              className={iconClass[variant]}
+              aria-hidden="true"
+            />
             <h1 className={styles.heading}>{heading}</h1>
           </div>
           <div className={styles.message}>
             {children}
             {actions && <div className={styles.buttons}>{actions}</div>}
           </div>
-        </section>
+        </div>
       </div>
     </section>
   );

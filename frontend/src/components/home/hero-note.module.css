@@ -7,9 +7,6 @@
 .noteLink {
   color: var(--pine);
   font-weight: 600;
-  text-underline-offset: 4px;
-}
-
-.noteLink:hover {
   text-decoration: underline;
+  text-underline-offset: 4px;
 }

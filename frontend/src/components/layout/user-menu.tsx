@@ -70,6 +70,17 @@ export default function UserMenu() {
     );
   }
 
+  // Close when keyboard focus leaves the menu (Tab past "Log out"). A null
+  // relatedTarget means focus went to the document body, which is what Safari
+  // reports while clicking a button, so that case is left to the pointer
+  // handler above instead.
+  function handleBlur(event: React.FocusEvent<HTMLDivElement>) {
+    const next = event.relatedTarget;
+    if (next instanceof Node && !containerRef.current?.contains(next)) {
+      setIsOpen(false);
+    }
+  }
+
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
@@ -85,17 +96,22 @@ export default function UserMenu() {
   }
 
   return (
-    <div className={styles.auth} ref={containerRef}>
+    // biome-ignore lint/a11y/noStaticElementInteractions: focusout bubbles up here from the trigger and menu items; the wrapper is not a control itself
+    <div className={styles.auth} ref={containerRef} onBlur={handleBlur}>
       <button
         type="button"
         ref={triggerRef}
         className={styles.trigger}
         aria-label="Account menu"
         aria-expanded={isOpen}
-        aria-controls={menuId}
+        aria-controls={isOpen ? menuId : undefined}
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <UserCircleIcon size={28} weight={isOpen ? "fill" : "duotone"} />
+        <UserCircleIcon
+          size={28}
+          weight={isOpen ? "fill" : "duotone"}
+          aria-hidden="true"
+        />
       </button>
 
       {isOpen && (

@@ -30,7 +30,7 @@ export default function JobFeed({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const hasMore = page + 1 < totalPages;
   const selectedJob = jobs.find((j) => j.jobId === jobId) ?? jobs[0];
@@ -53,7 +53,7 @@ export default function JobFeed({
       const res = await fetch(
         `/api/jobs?${buildJobsQuery({ search: q, city, province, page: nextPage })}`,
       );
-      if (!res.ok) throw new Error("Could not load more jobs.");
+      if (!res.ok) throw new Error("We couldn't load more jobs. Try again?");
       const data: JobPage = await res.json();
       setJobs((prev) => {
         const seen = new Set(prev.map((job) => job.jobId));
@@ -62,7 +62,7 @@ export default function JobFeed({
       });
       setPage(nextPage);
     } catch {
-      setError("Could not load more jobs.");
+      setError("We couldn't load more jobs. Try again?");
     } finally {
       setIsLoading(false);
     }
@@ -108,14 +108,15 @@ export default function JobFeed({
           {"Load more"}
         </button>
       );
-    return null;
+    return <p>That's every job we have right now. Check back soon!</p>;
   }
 
+  // Rendered inside the results <ul>, so it has to be a list item.
   const footer = (
-    <div className={styles.footer}>
+    <li className={styles.footer}>
       {renderStatus()}
       <div ref={sentinelRef} />
-    </div>
+    </li>
   );
 
   return (
