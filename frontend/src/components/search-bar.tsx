@@ -1,9 +1,9 @@
 import { MagnifyingGlassIcon, MapPinIcon } from "@phosphor-icons/react/ssr";
-import { getJobTitles, getLocations } from "@/lib/jobs";
 import { buildLocationOptions } from "@/lib/job-filters";
+import { getJobTitles, getLocations } from "@/lib/jobs";
+import LocationInput from "./location-input";
 import styles from "./search-bar.module.css";
 import SearchInput from "./search-input";
-import LocationInput from "./location-input";
 
 export async function SearchBar({
   action = "/jobs",
