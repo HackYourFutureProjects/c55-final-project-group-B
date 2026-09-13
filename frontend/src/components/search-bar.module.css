@@ -12,15 +12,14 @@
   box-shadow: var(--shadow-hard);
 }
 
-.select {
-  background-color: transparent;
-  padding: 12px;
-  font-size: 15px;
-  color: var(--text);
-  font-family: var(--font-body);
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  gap: 8px;
   border: 1px solid var(--highlight-high);
   border-radius: var(--radius);
-  cursor: pointer;
 }
 
 .icon {
