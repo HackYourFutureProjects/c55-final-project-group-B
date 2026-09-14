@@ -3,7 +3,6 @@ package nl.hackyourfuture.project.backend.savedjob.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Schema(description = "A job posting saved by the current user")
 public record SavedJobResponse(

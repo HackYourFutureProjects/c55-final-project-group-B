@@ -6,13 +6,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.dto.JobPageResponse;
-import nl.hackyourfuture.project.backend.job.dto.RecommendedJobPageResponse;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/jobs")
