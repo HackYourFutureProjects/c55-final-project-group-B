@@ -3,8 +3,6 @@ package nl.hackyourfuture.project.backend.job;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.dto.JobPageResponse;
 import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
-import nl.hackyourfuture.project.backend.profile.UserProfileRepository;
-import nl.hackyourfuture.project.backend.profile.UserSkillRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,8 +14,6 @@ import java.util.List;
 public class JobService {
 
     private final JobRepository jobRepository;
-    private final UserProfileRepository userProfileRepository;
-    private final UserSkillRepository userSkillRepository;
 
     public List<String> getAllJobTitles() {
         return jobRepository.findAllJobTitles();

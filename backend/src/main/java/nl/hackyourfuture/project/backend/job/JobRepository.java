@@ -2,7 +2,6 @@ package nl.hackyourfuture.project.backend.job;
 
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
-import nl.hackyourfuture.project.backend.job.dto.RecommendedJobDto;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
