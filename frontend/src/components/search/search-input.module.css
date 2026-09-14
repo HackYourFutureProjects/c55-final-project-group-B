@@ -9,12 +9,18 @@
   color: var(--text);
   font-family: var(--font-body);
   font-size: var(--text-base);
-  border: none;
   padding: var(--space-2xs);
+  border: none;
+  border-bottom: 2px solid transparent;
 }
 
 .input::placeholder {
   color: var(--subtle);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--pine);
 }
 
 .list {
@@ -51,13 +57,4 @@
 .option.active {
   background-color: var(--overlay);
   color: var(--pine);
-}
-
-.form:has(input:focus-visible) {
-  outline: 2px solid var(--pine);
-  outline-offset: 2px;
-}
-
-.wrapper:has(input:focus-visible) {
-  border-color: var(--pine);
 }
