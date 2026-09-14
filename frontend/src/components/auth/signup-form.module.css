@@ -10,6 +10,10 @@
   gap: var(--space-xs);
 }
 
+.field:has(.input:focus-visible) .label svg {
+  color: var(--pine);
+}
+
 .label {
   display: flex;
   align-items: center;

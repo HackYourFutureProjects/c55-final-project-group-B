@@ -25,3 +25,12 @@
 .icon {
   color: var(--subtle);
 }
+
+.icon:has(+ * input:focus-visible) {
+  color: var(--pine);
+}
+
+.wrapper:has(input:focus-visible) {
+  border-color: var(--pine);
+  box-shadow: inset 0 0 0 1px var(--pine);
+}
