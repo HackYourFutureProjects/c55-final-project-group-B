@@ -49,7 +49,6 @@ public class SavedJobRepository {
                fct_postings.seniority_level,
                fct_postings.posting_language,
                fct_postings.weekly_hours,
-               fct_postings.skills,
                fct_postings.category_tag,
                saved_jobs.saved_at
         FROM saved_jobs
@@ -81,9 +80,6 @@ public class SavedJobRepository {
                         rs.getString("seniority_level"),
                         rs.getString("posting_language"),
                         rs.getString("weekly_hours"),
-                        rs.getArray("skills") == null
-                                ? List.of()
-                                : List.of((String[]) rs.getArray("skills").getArray()),
                         rs.getString("category_tag"),
                         rs.getString("saved_at")
                 ))
