@@ -18,7 +18,8 @@ public class JobRepository {
     // Kept in one place so findJobs() and countJobs() always stay in sync.
     private static final String JOB_FILTER_CONDITIONS = """
         WHERE (:search::text IS NULL OR title ILIKE '%' || :search || '%' OR description ILIKE '%' || :search || '%'
-              OR company_name ILIKE '%' || :search || '%' OR skills ILIKE '%' || :search || '%' )
+              OR company_name ILIKE '%' || :search || '%'
+              OR COALESCE(array_to_string(skills, ' '), '') ILIKE '%' || :search || '%')
           AND (:city::text IS NULL OR location_city ILIKE :city::text)
           AND (:province::text IS NULL OR location_province ILIKE :province::text)
         """;
