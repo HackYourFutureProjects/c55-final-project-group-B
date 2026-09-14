@@ -2,7 +2,6 @@ package nl.hackyourfuture.project.backend.job.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Schema(description = "Summary of a job posting displayed on the homepage")
 public record JobSummaryDto(

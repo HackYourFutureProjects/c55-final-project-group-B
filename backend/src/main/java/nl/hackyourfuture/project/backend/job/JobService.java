@@ -3,7 +3,6 @@ package nl.hackyourfuture.project.backend.job;
 import lombok.RequiredArgsConstructor;
 import nl.hackyourfuture.project.backend.job.dto.JobPageResponse;
 import nl.hackyourfuture.project.backend.job.dto.JobSummaryDto;
-import nl.hackyourfuture.project.backend.job.dto.RecommendedJobPageResponse;
 import nl.hackyourfuture.project.backend.profile.UserProfileRepository;
 import nl.hackyourfuture.project.backend.profile.UserSkillRepository;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
