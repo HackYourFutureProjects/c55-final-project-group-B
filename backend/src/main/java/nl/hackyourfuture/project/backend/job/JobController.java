@@ -53,15 +53,4 @@ public class JobController {
         return jobService.findJobs(search, city, province, page, size);
     }
 
-    @GetMapping("/recommended")
-    @Operation(summary = "Get personalised job recommendations",
-            description = "Ranks jobs by matched saved skills, then preferred city and province.")
-    public RecommendedJobPageResponse getRecommendedJobs(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return jobService.findRecommendedJobs(UUID.fromString(authentication.getName()), page, size);
-    }
-
 }

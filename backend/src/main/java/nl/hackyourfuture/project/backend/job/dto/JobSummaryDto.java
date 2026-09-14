@@ -66,9 +66,6 @@ public record JobSummaryDto(
         @Schema(description = "Weekly working hours as stated or inferred, when provided")
         String weeklyHours,
 
-        @Schema(description = "Skills extracted from the job description")
-        List<String> skills,
-
         @Schema(description = "Category tag from the source, in English, for display purposes")
         String categoryTag
 ) {
